@@ -76,7 +76,7 @@
 </head>
 <!-- ADD THE CLASS fixed TO GET A FIXED HEADER AND SIDEBAR LAYOUT -->
 <!-- the fixed layout is not compatible with sidebar-mini -->
-<body class="hold-transition fixed sidebar-mini" onload="clearOnly()">
+<body class="hold-transition fixed sidebar-mini">
 
   <!-- attend now modal -->
   <!-- <div class="modal fade" id="attendNowModal" tabindex="-1" role="dialog" aria-labelledby="attendNowModalLabel">
@@ -136,34 +136,33 @@
     <span class="label label-warning">10</span>
   </a>
   <ul class="dropdown-menu">
-    <li class="header">You have 10 notifications</li>
+    <li class="header">You have 5  notifications</li>
     <li>
       <!-- inner menu: contains the actual data -->
       <ul class="menu">
         <li>
           <a href="#">
-            <i class="fa fa-users text-aqua"></i> 5 new members joined today
+            <i class="fa fa-users text-aqua"></i> 3 new tires from MRF added today
           </a>
         </li>
         <li>
           <a href="#">
-            <i class="fa fa-warning text-yellow"></i> Very long description here that may not fit into the
-            page and may cause design problems
+            <i class="fa fa-warning text-yellow"></i> Product A has only 2 pices left
           </a>
         </li>
         <li>
           <a href="#">
-            <i class="fa fa-users text-red"></i> 5 new members joined
+            <i class="fa fa-ban text-red"></i> Product B is out of stock
           </a>
         </li>
         <li>
           <a href="#">
-            <i class="fa fa-shopping-cart text-green"></i> 25 sales made
+            <i class="fa fa-shopping-cart text-green"></i> 25 tyres sold today
           </a>
         </li>
         <li>
           <a href="#">
-            <i class="fa fa-user text-red"></i> You changed your username
+            <i class="fa fa-user text-red"></i> 1 new user has been added today
           </a>
         </li>
       </ul>
@@ -252,6 +251,59 @@
                       <a href=\"ManageLocation.php\" >
                         <i class=\"fa fa-location-arrow\"></i>
                         <span>Office Locations</span>
+                        <span class=\"pull-right-container\">
+                        <i class=\"fa fa-angle-right pull-right\"></i>
+                        </span>
+                      </a>
+                    </li>";
+            ?>
+
+          </ul>
+        </li>
+        <?php } ?>
+
+        <?php
+          $userRoleID = getUserRoleID();
+          $isActiveTV = "";
+          if($userRoleID ==1 )  // Admin role 1
+          {
+            if($CDATA['PAGE_NAME'] == 'VIEWPRD' || $CDATA['PAGE_NAME'] == 'ADDPRD' ) {
+              $isActiveTV =  'active';
+            } else {
+              $isActiveTV = "";
+            }
+        ?>
+
+        <li class="treeview <?php echo $isActiveTV ?>" >
+          <a href="#">
+            <i class="fa fa-cog"></i>
+            <span>Products</span>
+            <span class="pull-right-container">
+            <i class="fa fa-angle-down pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+
+            <?php $isActive = ""; if($CDATA['PAGE_NAME'] == 'MNUSER'){ $isActive =  'active'; }
+
+            echo "<li class=\"hover " . $isActive . " \">
+                    <a href=\"Products.php\" >
+                      <i class=\"fa fa-list\"></i>
+                      <span>Products</span>
+                      <span class=\"pull-right-container\">
+                      <i class=\"fa fa-angle-right pull-right\"></i>
+                      </span>
+                    </a>
+                  </li>";
+
+            $isActive = "";
+           if($CDATA['PAGE_NAME'] == 'MNGLOC') { $isActive =  'active';  }
+           ChromePhp::log('isa active '. $CDATA['PAGE_NAME'] );
+
+              echo "<li class=\"hover " . $isActive . " \">
+                      <a href=\"AddProduct.php\" >
+                        <i class=\"fa fa-plus-square\"></i>
+                        <span>Manage Product</span>
                         <span class=\"pull-right-container\">
                         <i class=\"fa fa-angle-right pull-right\"></i>
                         </span>

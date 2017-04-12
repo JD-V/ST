@@ -91,6 +91,7 @@ require '_header.php';
                 <th>Amount Paid</th>
                 <th>Notes</th>
                 <th><i class="fa fa-pencil" aria-hidden="true"></i></th>
+                <th>Invoice</i></th>
               </tr>
             </thead>
             <tbody>
@@ -111,6 +112,7 @@ require '_header.php';
                     <td><?php echo $service['AmountPaid']; ?></td>
                     <td><?php echo $service['Note']; ?></td>
                     <td><?php echo '<a href="addservicerecord.php?id='.$service['InvoiceNumber'].'"  onclick="return DelConfirm();" class=""><i class="fa fa-pencil" aria-hidden="true"></i></a>'; ?></td>
+                    <td><?php echo '<input type="button" class="btn btn-sm btn-info" value="Invoice" />'; ?></td>
                   </tr>
                   <?php
                 }
