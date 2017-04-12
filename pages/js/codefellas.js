@@ -332,6 +332,41 @@ $("#CoursesForm").submit(function (e) {
   }
 });
 
+$("#NonBillable").submit(function (e) {
+}).validate({
+
+  rules: {
+    RecDate:
+    {
+      required: true,
+    },
+    AmountPaid:
+    {
+      required: true,
+      digits: true,
+    }
+  },
+  // Specify the validation error messages
+  messages: {
+    RecDate:
+    {
+      required: "Please select a valid date",
+    },
+    AmountPaid:
+    {
+      required: "Please Enter a valid Amount",
+      digits: "Numreric values accepted only",
+    }
+  },
+  errorPlacement: function(error, element) {
+    error.insertAfter($(element).parent()).addClass('errorMessage');
+  },
+  submitHandler: function (form) {
+    $('input[name="UKey"]').val('2');
+    form.submit();
+  }
+});
+
 
 function addMultiInputNamingRulesSkipFirst(form,alt, field, rules) {
     $(form).find(field).each(function(index){

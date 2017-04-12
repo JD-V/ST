@@ -126,35 +126,31 @@ require '_header.php'
               <input type="hidden" value="<?php echo $_SESSION['AUTH_KEY']; ?>" name="akey" id="ID_akey" >
 
               <div class="form-group">
-                <label for="UserBday" class="control-label col-sm-3 lables">Date<span class="mandatoryLabel">*</span></label>
+                <label for="RecDate" class="control-label col-sm-3 lables">Bill Date<span class="mandatoryLabel">*</span></label>
                 <div class='col-sm-4'>
-                  <input type="datetime" class="form-control" name="RecDate" id="RecDate"  />
+                  <input type="text" class="form-control" name="RecDate"/>
                 </div>
-                <div id="errorMsgBDY" name="errorMsgBDY" class="errorMessage" role="error"></div>
               </div>
 
               <div class="form-group">
-                <label for="MemberAvail" class="control-label col-sm-3 lables">Perticulars</label>
+                <label for="Perticulars" class="control-label col-sm-3 lables">Perticulars</label>
                 <div class="col-sm-4">
-                  <textarea  class="form-control" id="MemberAvail" name="MemberAvail" placeholder="Perticulars"></textarea>
+                  <textarea  class="form-control" name="Perticulars" placeholder="Perticulars"></textarea>
                 </div>
-                <div id="errorMsgMAV" name="errorMsgMAV" class="errorMessage" role="error"></div>
               </div>
 
               <div class="form-group">
-                <label for="InvoiceNo" class="control-label col-sm-3 lables">Amount paid<span class="mandatoryLabel">*</span></label>
+                <label for="AmountPaid" class="control-label col-sm-3 lables">Amount paid<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" id="UserName" name="UserName" placeholder="0.00" value="<?php  if(isset($subEventData['EventCode'])) echo  $subEventData['TimeFrame']; ?>" >
+                  <input type="text" class="form-control" name="AmountPaid" placeholder="$0.00" value="<?php  if(isset($subEventData['EventCode'])) echo  $subEventData['TimeFrame']; ?>" >
                 </div>
-                <div id="errorMsgUN" name="errorMsgUN"  class="errorMessage" role="error"></div>
               </div>
 
               <div class="form-group">
-                <label for="MemberAvail" class="control-label col-sm-3 lables">Notes</label>
+                <label for="Notes" class="control-label col-sm-3 lables">Notes</label>
                 <div class="col-sm-4">
-                  <textarea  class="form-control" id="MemberAvail" name="MemberAvail" placeholder="Notes"></textarea>
+                  <textarea  class="form-control" name="Notes" placeholder="Notes"></textarea>
                 </div>
-                <div id="errorMsgMAV" name="errorMsgMAV" class="errorMessage" role="error"></div>
               </div>
 
               <div class="form-group">
