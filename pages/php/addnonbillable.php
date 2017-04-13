@@ -39,32 +39,44 @@ require '_header.php'
       ChromePhp::log("AKEY" . $_POST['akey']);
       if(@$_POST['akey'] == $_SESSION['AUTH_KEY'])
       {
-        if( isset($_POST['UserName']) && !empty($_POST['UserName']) &&
-            isset($_POST['UserEmail']) && !empty($_POST['UserEmail']) &&
-            isset($_POST['UserPhone']) && !empty($_POST['UserPhone']) &&
-            isset($_POST['UserBday']) && !empty($_POST['UserBday']) &&
-            isset($_POST['UserAddr']) && !empty($_POST['UserAddr']) &&
-            isset($_POST['UserRole']) && !empty($_POST['UserRole']) &&
-            isset($_POST['Status']) && !empty($_POST['Status'])  )
+        if( isset($_POST['RecDate']) && !empty($_POST['RecDate']) &&
+            isset($_POST['Perticulars']) && !empty($_POST['Perticulars']) &&
+            isset($_POST['AmountPaid']) && !empty($_POST['AmountPaid']) )
           {
-            $UserName = mysql_real_escape_string(trim($_POST['UserName']));
-            $UserEmail = mysql_real_escape_string(trim($_POST['UserEmail']));
-            $UserPhone = mysql_real_escape_string(trim($_POST['UserPhone']));
-            $UserBday = mysql_real_escape_string(trim($_POST['UserBday']));
-            $UserAddr = mysql_real_escape_string(trim($_POST['UserAddr']));
-            $UserRole = mysql_real_escape_string(trim($_POST['UserRole']));
-            $Status = mysql_real_escape_string(trim($_POST['Status']));
-            ChromePhp::log('role' . $UserRole);
+            $RecDate = mysql_real_escape_string(trim($_POST['RecDate']));
+            $Perticulars = mysql_real_escape_string(trim($_POST['Perticulars']));
+            $AmountPaid = mysql_real_escape_string(trim($_POST['AmountPaid']));
+            $Notes = '';
+             if(isset($_POST['Notes']) && !empty($_POST['Notes']) )
+               $Notes = mysql_real_escape_string(trim($_POST['Notes']));
+            $RecordId = 0;
+            if(isset($_POST['RecordId']) && !empty($_POST['RecordId']) )
+               $RecordId = mysql_real_escape_string(trim($_POST['RecordId']));
 
-            if($UpdateSubEvent = AddUser($UserName,$UserEmail,$UserPhone,$UserBday,$UserAddr,$UserRole,$Status) )
+             ChromePhp::log("RecordId = ");
+             ChromePhp::log($RecordId);
+             $Result = false;
+             $msg = "";
+            if($RecordId == 0)
+            {
+               $Result = AddNonBillable($RecDate,$Perticulars,$AmountPaid,$Notes);
+               $msg = ' Record Added successfully!
+                        </div>';
+            }
+            else
+            {
+              $Result = UpdateNonBillable($RecordId,$RecDate,$Perticulars,$AmountPaid,$Notes); 
+              $msg = ' Record Updated successfully!
+                        </div>';
+            }
+
+            if($Result)
             {
                   echo '<div class="alert alert-block alert-success">
                           <button type="button" class="close" data-dismiss="alert">
                             <i class="ace-icon fa fa-times"></i>
                           </button>
-                          <i class="ace-icon fa fa-check green"></i>
-                          User Added successfully!
-                        </div>';
+                          <i class="ace-icon fa fa-check green"></i>'+ $msg; //needs to correct 
             }
             else
             {
@@ -73,7 +85,7 @@ require '_header.php'
                         <i class="ace-icon fa fa-times"></i>
                       </button>
                       <i class="ace-icon fa fa-ban red"></i>
-                      Something went wrong, try again.
+                      Something went wrong, please contact your system admin.
                     </div>';
             }
           }
@@ -111,7 +123,14 @@ require '_header.php'
     <div class="box">
       <div class="box-header with-border">
         <h3 class="box-title"><?php echo 'Add'; ?></h3>
-
+        <?php
+          if($GetRecord = GetNonBillableRecord($_GET['id']))
+          {
+            ChromePhp::log("got record id ");
+            $Record  = mysql_fetch_assoc($GetRecord);
+            ChromePhp::log($Record);
+          }
+        ?>
        <!--  <div class="box-tools pull-right">
           <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
             <i class="fa fa-minus"></i></button>
@@ -122,34 +141,34 @@ require '_header.php'
       <div class="box-body">
 
       <div id="AddOrUpdateNonBillableRecord">
-          <form class="form-horizontal"  name="NonBillable" id="NonBillable" action="nonbillable.php?_auth=<?php echo $_SESSION['AUTH_KEY']; ?>" method="post">
+          <form class="form-horizontal"  name="NonBillable" id="NonBillable" action="addnonbillable.php?_auth=<?php echo $_SESSION['AUTH_KEY']; ?>" method="post">
               <input type="hidden" value="<?php echo $_SESSION['AUTH_KEY']; ?>" name="akey" id="ID_akey" >
 
               <div class="form-group">
                 <label for="RecDate" class="control-label col-sm-3 lables">Bill Date<span class="mandatoryLabel">*</span></label>
                 <div class='col-sm-4'>
-                  <input type="text" class="form-control" name="RecDate"/>
+                  <input type="text" class="form-control" name="RecDate" value = "<?php  if(isset($Record['RecordDate'])) echo  $Record['RecordDate']; ?>"/>
                 </div>
               </div>
 
               <div class="form-group">
                 <label for="Perticulars" class="control-label col-sm-3 lables">Perticulars</label>
                 <div class="col-sm-4">
-                  <textarea  class="form-control" name="Perticulars" placeholder="Perticulars"></textarea>
+                  <textarea  class="form-control" name="Perticulars" placeholder="Perticulars"><?php  if(isset($Record['Perticulars'])) echo  $Record['Perticulars']; ?></textarea>
                 </div>
               </div>
 
               <div class="form-group">
                 <label for="AmountPaid" class="control-label col-sm-3 lables">Amount paid<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" name="AmountPaid" placeholder="$0.00" value="<?php  if(isset($subEventData['EventCode'])) echo  $subEventData['TimeFrame']; ?>" >
+                  <input type="text" class="form-control" name="AmountPaid" placeholder="$0.00" value="<?php  if(isset($Record['AmountPaid'])) echo  $Record['AmountPaid']; ?>" >
                 </div>
               </div>
 
               <div class="form-group">
                 <label for="Notes" class="control-label col-sm-3 lables">Notes</label>
                 <div class="col-sm-4">
-                  <textarea  class="form-control" name="Notes" placeholder="Notes"></textarea>
+                  <textarea  class="form-control" name="Notes" placeholder="Notes" ><?php  if(isset($Record['Notes'])) echo  $Record['Notes']; ?></textarea>
                 </div>
               </div>
 
@@ -157,10 +176,10 @@ require '_header.php'
                 <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> </label>
 
                 <div class="col-sm-9">
-                  <input type="submit" name="nc_submit" value="submit" id="ID_Sub" class="btn btn-sm btn-success" style="<?php if(isset($subEventData['EventCode'])) echo 'margin-left:90px'; else echo 'margin-left:50px'; ?>" />
+                  <input type="submit" name="nc_submit" value="submit" id="ID_Sub" class="btn btn-sm btn-success" style="<?php if(isset($Record['RecordID'])) echo 'margin-left:90px'; else echo 'margin-left:50px'; ?>" />
                   <input type="hidden" name="UKey" value="1" id="ID_UKey" />
-                  <!-- <input type="hidden" name="eventCode" id="eventCode" value="<?php if(isset($subEventData['EventCode'])) echo $subEventData['EventCode'] ?>" /> -->
-                  <button type="reset" class="btn btn-sm btn-default" style="visibility:<?php if(isset($subEventData['EventCode'])) echo 'hidden'; else 'visible'?> ">Clear</button>
+                  <input type="hidden" name="RecordId" value="<?php if(isset($Record['RecordID'])) echo $Record['RecordID'] ?>" />
+                  <button type="reset" class="btn btn-sm btn-default" style="visibility:<?php if(isset($Record['RecordID'])) echo 'hidden'; else 'visible'?> ">Clear</button>
                 </div>
               </div>
 
