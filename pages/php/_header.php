@@ -267,7 +267,7 @@
           $isActiveTV = "";
           if($userRoleID ==1 )  // Admin role 1
           {
-            if($CDATA['PAGE_NAME'] == 'VIEWPRD' || $CDATA['PAGE_NAME'] == 'ADDPRD' ) {
+            if($CDATA['PAGE_NAME'] == 'PRODUCTS' || $CDATA['PAGE_NAME'] == 'ADDPRD' ) {
               $isActiveTV =  'active';
             } else {
               $isActiveTV = "";
@@ -284,7 +284,7 @@
           </a>
           <ul class="treeview-menu">
 
-            <?php $isActive = ""; if($CDATA['PAGE_NAME'] == 'MNUSER'){ $isActive =  'active'; }
+            <?php $isActive = ""; if($CDATA['PAGE_NAME'] == 'PRODUCTS'){ $isActive =  'active'; }
 
             echo "<li class=\"hover " . $isActive . " \">
                     <a href=\"Products.php\" >
@@ -297,7 +297,7 @@
                   </li>";
 
             $isActive = "";
-           if($CDATA['PAGE_NAME'] == 'MNGLOC') { $isActive =  'active';  }
+           if($CDATA['PAGE_NAME'] == 'ADDPRD') { $isActive =  'active';  }
            ChromePhp::log('isa active '. $CDATA['PAGE_NAME'] );
 
               echo "<li class=\"hover " . $isActive . " \">

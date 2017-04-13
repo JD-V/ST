@@ -395,13 +395,13 @@ function AddCourse($CourseName,$CourseCode,$DurationDays,$DurationMins,$PPI) {
       }  ChromePhp::log(' not inserted'); return false;}
 }
 
-function GetMaxMemberID()
+function GetMaxInvoiceID()
 {
-    $GetMemberID = mysql_query("SELECT MAX(MemberID) as MemberID FROM member");
+    $GetInvoiceID = mysql_query("SELECT MAX(InvoiceID) as InvoiceID FROM purchaseinvoice");
 
-    if(mysql_num_rows($GetMemberID)>=1) {
-        $ShowData = mysql_fetch_assoc($GetMemberID);
-        return $ShowData['MemberID'];
+    if(mysql_num_rows($GetInvoiceID)>=1) {
+        $ShowData = mysql_fetch_assoc($GetInvoiceID);
+        return $ShowData['InvoiceID'];
       }
 }
 
@@ -536,7 +536,7 @@ function StoreCoursesListSession()
     if(mysql_num_rows($getUserList) >= 1)
     {
       $user_array = array();
-      while($ShowData = mysql_fetch_assoc($getUserList))
+      while($ShowData = mysFql_fetch_assoc($getUserList))
       {
         $user_array[] = $ShowData;
         ChromePhp::log($ShowData);
@@ -607,70 +607,125 @@ function CheckRoomAvailibility($roomID,$dt1,$dt2){
       }
 
 }
-function GetMembersPaidForCourse($memberID) {
-  //$cr_array = array();
 
-    ChromePhp::log("fetching course for member-" . $memberID . "-end" );
+function AddInvoice($Invoice){
 
-    if($courseList = mysql_query("SELECT py.PaymentID, cr.CourseName, cr.courseID, mb.MemberID,
-                      mb.IDNumber FROM payment py JOIN member mb ON  mb.MemberID = py.MemberID
-                      JOIN course cr ON cr.courseID = py.CourseID  WHERE mb.MemberID = $memberID" )) {
+ChromePhp::log('InvoiceDate ' . $Invoice->invoiceDate );
+ChromePhp::log('InvoiceNumber ' . $Invoice->invoiceNumber );
+ChromePhp::log('Company ' . $Invoice->companyName );
+ChromePhp::log('TinNumber '. $Invoice->tinNumber);
+ChromePhp::log('SubTotal ' . $Invoice->subTotalAmount);
+ChromePhp::log('DiscountRs ' . $Invoice->discountsAmount);
+ChromePhp::log('DiscountPer ' . $Invoice->discountPer);
+ChromePhp::log('VatPer '. $Invoice->vatPer );
+ChromePhp::log('VatAmount ' . $Invoice->vatAmount);
+ChromePhp::log('Rounding ' . $Invoice->rounding);
+ChromePhp::log('TotalPaid ' . $Invoice->totalAmount);
+ChromePhp::log('Notes' .$Invoice->invoiceNotes);
 
-      if(mysql_num_rows($courseList) !=0) {
-          ChromePhp::log("yes got some courses");
-      }
-      else {
-          echo mysql_error();
-          ChromePhp::log("somehting wrong ");
-      }
-      return $courseList;
 
-      // if(mysql_num_rows($courseList) >= 1) {
-      //
-      //   while($ShowData = mysql_fetch_assoc($courseList))
-      //   {
-      //     $cr_array[] = $ShowData;
-      //     ChromePhp::log($ShowData);
-      //   }
-      //   return $cr_array;
-      // }
-    //   return courseList;
-    // }
-    // else {
-    //   return false;
-    // }
+  $addInvoice = mysql_query("INSERT INTO `purchaseinvoice` (`InvoiceDate`, `InvoiceNumber`, `Company`, `TinNumber`, `SubTotal`, 
+    `DiscountRs`, `DiscountPer`, `VatPer`, `VatAmount`, `Rounding`, `TotalPaid`, `Notes` ) VALUES 
+    ( '$Invoice->invoiceDate','$Invoice->invoiceNumber', '$Invoice->companyName',  '$Invoice->tinNumber', '$Invoice->subTotalAmount', 
+    '$Invoice->discountsAmount', '$Invoice->discountPer',  '$Invoice->vatPer', '$Invoice->vatAmount', '$Invoice->rounding', 
+    '$Invoice->totalAmount', '$Invoice->invoiceNotes' )" );
+
+  if($addInvoice)
+    return 1;
+  else
+    echo mysql_error();
+    return 0;
+}
+
+
+function AddProduct($Product){
+
+ChromePhp::log('InvoiceID ' . $Product->invoiceID );
+ChromePhp::log('productSize ' . $Product->productSize );
+ChromePhp::log('brand ' . $Product->brand );
+ChromePhp::log('units '. $Product->units);
+ChromePhp::log('rate ' . $Product->rate);
+ChromePhp::log('discountsAmount ' . $Product->discountsAmount);
+ChromePhp::log('DiscountPer ' . $Product->discountPer);
+ChromePhp::log('VatPer '. $Product->vatPer );
+ChromePhp::log('TotalPaid ' . $Product->subtotal);
+
+  $addProduct = mysql_query("INSERT INTO `products` (`InvoiceID`, `ProductSize`, `ProductBrand`, 
+    `ProductQty`, `UnitPrice`, `DiscountRs`, `DiscountPer`, `VatPer`, `SubTotal` ) VALUES 
+    ( '$Product->invoiceID','$Product->productSize', '$Product->brand',  '$Product->units', '$Product->rate', 
+    '$Product->discountsAmount', '$Product->discountPer',  '$Product->vatPer', '$Product->subtotal' )" );
+
+  if($addProduct)
+    return 1;
+  else
+    echo mysql_error();
+    return 0;
+}
+
+
+function GetInvoices(){
+
+   if($getInvoices = mysql_query("SELECT * FROM `purchaseinvoice`")) {
+    ChromePhp::log("true");
+    if(mysql_num_rows($getInvoices) >= 1)
+    {
+      ChromePhp::log("true1");
+      return $getInvoices;
+    }
+  }
+  else
+  {
+    return false;
   }
 
-  echo mysql_error();
-  ChromePhp::log("unable to fetch course for member " + $memberID );
-  return null;
-  // else {
-  //   if($courseList = mysql_query("SELECT SELECT payment.PaymentID, course.CourseName, course.courseID, member.MemberID, member.IDNumber  FROM `payment`, `member`,`course`  WHERE member.MemberID = payment.MemberID AND course.courseID = payment.CourseID AND member.MemberID = '$memberID' AND member.WalkIn = 0")) {
-  //     ChromePhp::log("yes have some courses");
-  //     return courseList;
-  //     if(mysql_num_rows($courseList) >= 1) {
-  //       while($ShowData = mysql_fetch_assoc($courseList))
-  //       {
-  //         $cr_array[] = $ShowData;
-  //         ChromePhp::log($ShowData);
-  //       }
-  //       return $cr_array;
-  //     }
-  //   }
-  //   else {
-  //     return false;
-  //   }
-  // }
-  //
-  // return $cr_array;
 }
- // function transliterateTurkishChars($inputText) {
- //     $search  = array('ç', 'Ç', 'ğ', 'Ğ', 'ı', 'İ', 'ö', 'Ö', 'ş', 'Ş', 'ü', 'Ü');
- //     $replace = array('c', 'C', 'g', 'G', 'i', 'I', 'o', 'O', 's', 'S', 'u', 'U');
- //     $outputText=str_replace($search, $replace, $inputText);
- //     return $outputText;
- // }
 
+function GetProducts() {
+
+  if($getProducts = mysql_query("SELECT p.*, pi.InvoiceNumber FROM products p JOIN purchaseinvoice pi ON pi.InvoiceID = p.InvoiceID")) {
+    ChromePhp::log("true");
+    if(mysql_num_rows($getProducts) >= 1)
+    {
+      ChromePhp::log("true1");
+      return $getProducts;
+    }
+  }
+  else
+  {
+    return false;
+  }
+
+}
+
+ class Product
+ {
+   public $invoiceID;
+   public $productSize;
+   public $brand;
+   public $units;
+   public $rate;
+   public $amount;
+   public $vatPer;
+   public $discountPer;
+   public $discountsAmount;
+   public $subtotal;
+ }
+
+ class Invoice
+ {
+    public $invoiceDate;
+    public $companyName;
+    public $invoiceNumber;
+    public $tinNumber;
+    public $vatAmount;
+    public $vatPer;
+    public $subTotalAmount;
+    public $discountsAmount = 0.00;
+    public $discountPer = 0.00;
+    public $rounding = 0.00;
+    public $totalAmount;
+    public $invoiceNotes = "";
+}
 
 
 ?>

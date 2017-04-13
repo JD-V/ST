@@ -10,6 +10,7 @@ require '_header.php'
 ?>
 
 <script type="text/javascript">
+var VatRate = 14.5;
 function AddProductFieldset(e){
 
   var $fieldsetmain = $(e).closest( 'fieldset' );
@@ -83,7 +84,7 @@ function CalculateAmount(e) {
 
   if($.isNumeric(Qty) && $.isNumeric(Rate) && $.isNumeric(DiscountPer) && $.isNumeric(DiscountRs)) {
     $fieldsetCurrent.find('.amount').val((Rate*Qty).toFixed(2));
-    $fieldsetCurrent.find('.subtotal').val(($fieldsetCurrent.find('.amount').val() - (Rate*Qty*DiscountPer/100.0).toFixed(2) - DiscountRs ).toFixed(2));
+    $fieldsetCurrent.find('.subtotal').val(((Rate*Qty) - (Rate*Qty*DiscountPer/100.0).toFixed(2) - DiscountRs ).toFixed(2));
     UpdateFinalSubtotal();
   }
   else
@@ -94,19 +95,52 @@ function CalculateAmount(e) {
 
 function UpdateFinalSubtotal() {
   var finalSubtotal = 0.00;
-  $('#AddorUpdateProduct').find('input.subtotal[type="text"]').each(function(index){
+  $('#AddorUpdateProduct').find('input.subtotal[type="text"]').each(function(index) {
     if( $.isNumeric($(this).val()) )
       finalSubtotal += + $(this).val();
   });
-    var finalDiscount = $('#AddorUpdateProduct').find('.final-discounts-amount').val();
+
+  var finalDiscount = $('#AddorUpdateProduct').find('.final-discounts-amount').val();
+
+  var finalDiscountPer = $('#AddorUpdateProduct').find('.final-discount-rate').val();
+
+  var rounding = $('#AddorUpdateProduct').find('.rounding').val();
+
+  if(finalDiscount == '')
+    finalDiscount = 0.00;
+  else
+    finalDiscount = parseFloat(finalDiscount);
+
+  if(finalDiscountPer == '')
+    finalDiscountPer = 0.00;
+  else
+    finalDiscountPer = parseFloat(finalDiscountPer);
+
+  if(rounding == '')
+    rounding = 0.00;
+  else
+    rounding = parseFloat(rounding);
+
+
+if($.isNumeric(finalDiscount) && $.isNumeric(finalDiscountPer) && $.isNumeric(rounding) ) {
+    var finalSubtotalWithDiscount = (finalSubtotal - finalDiscount - finalSubtotal * finalDiscountPer/100.0);
     $('#AddorUpdateProduct').find('.final-subTotal-amount').val((finalSubtotal).toFixed(2));
+    $('#AddorUpdateProduct').find('.vat-amount').val((finalSubtotalWithDiscount * VatRate/100.0).toFixed(2));
+    $('#AddorUpdateProduct').find('.total-paid').val( (finalSubtotalWithDiscount + (finalSubtotalWithDiscount * VatRate/100.0) + rounding).toFixed(2) );
+  }
+  else {
+    $('#AddorUpdateProduct').find('.final-subTotal-amount').val('0.00');
+    $('#AddorUpdateProduct').find('.vat-amount').val('0.00');
+    $('#AddorUpdateProduct').find('.total-paid').val('0.00');
+
+  }
 }
 
 
 function RemoveProductFieldset(e) {
 
   $(e).parent().fadeOut(300, function() {
-       //remove parent element (main section)
+       //Remove parent element (main section)
        $(e).closest( 'fieldset' ).remove();
        return false;
    });
@@ -143,31 +177,88 @@ function RemoveProductFieldset(e) {
       ChromePhp::log("AKEY" . $_POST['akey']);
       if(@$_POST['akey'] == $_SESSION['AUTH_KEY'])
       {
-        if( isset($_POST['UserName']) && !empty($_POST['UserName']) &&
-            isset($_POST['UserEmail']) && !empty($_POST['UserEmail']) &&
-            isset($_POST['UserPhone']) && !empty($_POST['UserPhone']) &&
-            isset($_POST['UserBday']) && !empty($_POST['UserBday']) &&
-            isset($_POST['UserAddr']) && !empty($_POST['UserAddr']) &&
-            isset($_POST['UserRole']) && !empty($_POST['UserRole']) &&
-            isset($_POST['Status']) && !empty($_POST['Status'])  )
+        if( isset($_POST['InvoiceDate']) && !empty($_POST['InvoiceDate']) &&
+            isset($_POST['CompanyName']) && !empty($_POST['CompanyName']) &&
+            isset($_POST['InvoiceNumber']) && !empty($_POST['InvoiceNumber']) &&
+            isset($_POST['TinNumber']) && !empty($_POST['TinNumber']) &&
+            isset($_POST['ProductSize']) && !empty($_POST['ProductSize']) &&
+            isset($_POST['Brand']) && !empty($_POST['Brand']) &&
+            isset($_POST['Quantity']) && !empty($_POST['Quantity']) &&
+            isset($_POST['Rate']) && !empty($_POST['Rate']) &&
+            isset($_POST['Amount']) && !empty($_POST['Amount']) &&
+            isset($_POST['Subtotal']) && !empty($_POST['Subtotal']) &&
+            isset($_POST['FinalSubTotalAmount']) && !empty($_POST['FinalSubTotalAmount']) &&
+            isset($_POST['VatPer']) && !empty($_POST['VatPer']) &&
+            isset($_POST['VatAmount']) && !empty($_POST['VatAmount']) &&
+            isset($_POST['TotalAmount']) && !empty($_POST['TotalAmount'])   )
           {
-            $UserName = mysql_real_escape_string(trim($_POST['UserName']));
-            $UserEmail = mysql_real_escape_string(trim($_POST['UserEmail']));
-            $UserPhone = mysql_real_escape_string(trim($_POST['UserPhone']));
-            $UserBday = mysql_real_escape_string(trim($_POST['UserBday']));
-            $UserAddr = mysql_real_escape_string(trim($_POST['UserAddr']));
-            $UserRole = mysql_real_escape_string(trim($_POST['UserRole']));
-            $Status = mysql_real_escape_string(trim($_POST['Status']));
-            ChromePhp::log('role' . $UserRole);
+            $Invoice = new Invoice();
+            
+            $dateStr = mysql_real_escape_string(trim($_POST['InvoiceDate']));
+            $date = DateTime::createFromFormat('d-m-Y', $dateStr);
+            $Invoice->invoiceDate = $date->format('Y-m-d'); // => 2013-12-24
+            $Invoice->companyName = mysql_real_escape_string(trim($_POST['CompanyName']));
+            $Invoice->invoiceNumber = mysql_real_escape_string(trim($_POST['InvoiceNumber']));
+            $Invoice->tinNumber = mysql_real_escape_string(trim($_POST['TinNumber']));
+            $Invoice->vatAmount = mysql_real_escape_string(trim($_POST['VatAmount']));
+            $Invoice->vatPer = mysql_real_escape_string(trim($_POST['VatPer']));
+            $Invoice->subTotalAmount = mysql_real_escape_string(trim($_POST['FinalSubTotalAmount']));
+            
+            if(isset($_POST['FinalDiscountsAmount']) && !empty($_POST['FinalDiscountsAmount']) )
+               $Invoice->discountsAmount = mysql_real_escape_string(trim($_POST['FinalDiscountsAmount']));
 
-            if($UpdateSubEvent = AddUser($UserName,$UserEmail,$UserPhone,$UserBday,$UserAddr,$UserRole,$Status) )
+            if(isset($_POST['FinalDiscountRate']) && !empty($_POST['FinalDiscountRate']) )
+              $Invoice->discountPer = mysql_real_escape_string(trim($_POST['FinalDiscountRate']));
+
+            if(isset($_POST['RoundingAmount']) && !empty($_POST['RoundingAmount']) )
+              $Invoice->rounding = mysql_real_escape_string(trim($_POST['RoundingAmount']));
+
+            $Invoice->totalAmount = mysql_real_escape_string(trim($_POST['TotalAmount']));
+          
+            if(isset($_POST['InvoiceNotes']) && !empty($_POST['InvoiceNotes']) )
+              $Invoice->invoiceNotes = mysql_real_escape_string(trim($_POST['InvoiceNotes']));
+
+            if(AddInvoice($Invoice))
             {
+              $successCount = 0;
+              
+              $MaxInvoiceID = GetMaxInvoiceID();
+
+              $vatPer = mysql_real_escape_string(trim($_POST['VatPer']));
+              $productSize = $_POST['ProductSize'];
+              $brand = $_POST['Brand'];
+              $units = $_POST['Quantity'];
+              $rate = $_POST['Rate'];
+              $amount = $_POST['Amount'];
+              $vatPer = mysql_real_escape_string(trim($_POST['VatPer']));
+              $discountsAmount = $_POST['DiscountRs'];
+              $discountPer = $_POST['Discount'];
+              $subtotal = $_POST['Subtotal'];
+              
+              for ($i=0; $i < count($productSize); $i++) {
+
+                $Product =  new Product();
+                $Product->invoiceID = $MaxInvoiceID;
+                $Product->productSize = $productSize[$i];
+                $Product->brand = $brand[$i];
+                $Product->units = $units[$i];
+                $Product->rate = $rate[$i];
+                $Product->amount = $amount[$i];
+                $Product->vatPer = $vatPer;
+                $Product->discountPer = $discountPer[$i];
+                $Product->discountsAmount = $discountsAmount[$i];
+                $Product->subtotal = $subtotal[$i];
+
+                if(AddProduct($Product))
+                  $successCount++;
+              }
+
                   echo '<div class="alert alert-block alert-success">
                           <button type="button" class="close" data-dismiss="alert">
                             <i class="ace-icon fa fa-times"></i>
                           </button>
                           <i class="ace-icon fa fa-check green"></i>
-                          User Added successfully!
+                          Invoice Added successfully!
                         </div>';
             }
             else
@@ -228,11 +319,12 @@ function RemoveProductFieldset(e) {
       <div id="AddOrUpdateProducts">
           <form class="form-horizontal" id="AddorUpdateProduct" name="AddorUpdateProduct" action="addproduct.php?_auth=<?php echo $_SESSION['AUTH_KEY']; ?>" method="post">
               <input type="hidden" value="<?php echo $_SESSION['AUTH_KEY']; ?>" name="akey" id="ID_akey" >
+              <input type="hidden" value="14.5" name="VatPer">
 
               <div class="form-group">
                 <label for="InvoiceDate" class="control-label col-sm-3 lables">Invoice Date<span class="mandatoryLabel">*</span></label>
                 <div class='col-sm-4'>
-                  <input type="datetime" class="form-control" name="InvoiceDate"  />
+                  <input type="datetime" class="form-control" name="InvoiceDate" id="InvoiceDate"  />
                 </div>
               </div>
 
@@ -278,44 +370,76 @@ function RemoveProductFieldset(e) {
               <div class="form-group">
                 <label for="Quantity" class="control-label col-sm-3 lables ">Quantity<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control quantity" name="Quantity[]" placeholder="0" onchange="CalculateAmount(this)">
+                  <input type="text" class="form-control quantity" name="Quantity[]" placeholder="0" onchange="CalculateAmount(this)" onkeypress="return isNumberKey(event)">
                 </div>
               </div>
 
               <div class="form-group">
                 <label for="Rate" class="control-label col-sm-3 lables">Rate<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control rate" name="Rate[]" placeholder="0.00" onchange="CalculateAmount(this)" >
+                  <div class='input-group'>
+                    <span class="input-group-addon">
+                        <span class="fa fa-inr"></span>
+                    </span>
+                    <input type="text" class="form-control rate currency" name="Rate[]" maskedFormat="10,2" placeholder="0.00" onchange="CalculateAmount(this)" >
+                  </div>
                 </div>
               </div>
 
               <div class="form-group">
                 <label for="Amount" class="control-label col-sm-3 lables">Amount<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control amount" name="Amount[]" placeholder="0.00" >
+                  <div class='input-group'>
+                    <span class="input-group-addon">
+                        <span class="fa fa-inr"></span>
+                    </span>
+                    <input type="text" class="form-control amount currency" name="Amount[]" maskedFormat="10,2" placeholder="0.00" >
+                  </div>
                 </div>
               </div>
 
               <div class="form-group">
                 <label for="Discount" class="control-label col-sm-3 lables">Discount (%)</label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control discount" name="Discount[]" placeholder="0.00%" value="0.00" onchange="CalculateAmount(this)" >
+                  <div class='input-group'>
+                    <span class="input-group-addon">
+                        <span class="fa fa-percent"></span>
+                    </span>
+                    <input type="text" class="form-control discount currency" name="Discount[]" maskedFormat="10,2" placeholder="0.00%" value="0.00" onchange="CalculateAmount(this)" >
+                  </div>
                 </div>
               </div>
 
               <div class="form-group">
                 <label for="Discount" class="control-label col-sm-3 lables">Discount Rs</label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control discount-rs" name="DiscountRs[]" placeholder="0.00" value="0.00" onchange="CalculateAmount(this)" >
+                  <div class='input-group'>
+                    <span class="input-group-addon">
+                        <span class="fa fa-inr"></span>
+                    </span>
+                    <input type="text" class="form-control discount-rs currency" name="DiscountRs[]" maskedFormat="10,2" placeholder="0.00" value="0.00" onchange="CalculateAmount(this)" >
+                  </div>
                 </div>
               </div>
 
               <div class="form-group">
                 <label for="Subtotal" class="control-label col-sm-3 lables">Subtotal<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control subtotal"  readonly="readonly" name="Subtotal[]" placeholder="0.00" >
+                  <div class='input-group'>
+                    <span class="input-group-addon">
+                        <span class="fa fa-inr"></span>
+                    </span>
+                    <input type="text" class="form-control subtotal currency"  readonly="readonly" maskedFormat="10,2" name="Subtotal[]" placeholder="0.00" >
+                  </div>
                 </div>
               </div>
+
+              <!-- <div class="form-group">
+                <label for="Subtotal" class="control-label col-sm-3 lables">Subtotal<span class="mandatoryLabel">*</span></label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control subtotal"  readonly="readonly" name="Subtotal[]" placeholder="0.00" >
+                </div>
+              </div> -->
 
               <div class="form-group">
                 <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> </label>
@@ -328,45 +452,77 @@ function RemoveProductFieldset(e) {
             </div>
           </fieldset>
 
+
           <div class="form-group">
             <label for="FinalSubTotalAmount" class="control-label col-sm-3 lables">Sub Total<span class="mandatoryLabel">*</span></label>
             <div class="col-sm-4">
-              <input type="text" readonly="readonly" class="form-control final-subTotal-amount" name="FinalSubTotalAmount" placeholder="0.00" >
+              <div class='input-group'>
+                <span class="input-group-addon">
+                    <span class="fa fa-inr"></span>
+                </span>
+                <input type="text" readonly="readonly" class="form-control final-subTotal-amount currency" maskedFormat="10,2" name="FinalSubTotalAmount" placeholder="0.00" >
+              </div>
             </div>
           </div>
 
           <div class="form-group">
             <label for="FinalDiscountRate" class="control-label col-sm-3 lables">Discount (%)</label>
             <div class="col-sm-4">
-              <input type="text" class="form-control final-discount-rate" name="FinalDiscountRate" placeholder="0.00 %" >
+              <div class='input-group'>
+                <span class="input-group-addon">
+                    <span class="fa fa-percent"></span>
+                </span>
+                <input type="text" class="form-control final-discount-rate currency" maskedFormat="10,2" name="FinalDiscountRate" placeholder="0.00 %" value="0.00" onchange="UpdateFinalSubtotal()">
+              </div>
             </div>
           </div>
 
           <div class="form-group">
             <label for="FinalDiscountAmountRs" class="control-label col-sm-3 lables">Discount Rs</label>
             <div class="col-sm-4">
-              <input type="text" class="form-control final-discounts-amount" name="FinalDiscountsAmount" placeholder="0.00" >
+              <div class='input-group'>
+                <span class="input-group-addon">
+                    <span class="fa fa-inr"></span>
+                </span>
+                <input type="text" class="form-control final-discounts-amount currency" maskedFormat="10,2" name="FinalDiscountsAmount" placeholder="0.00" value="0.00" onchange="UpdateFinalSubtotal()">
+              </div>
             </div>
           </div>
 
           <div class="form-group">
             <label for="VatAmount" class="control-label col-sm-3 lables">Vat<span class="mandatoryLabel">*</span></label>
             <div class="col-sm-4">
-              <input type="text" class="form-control" name="VatAmount" placeholder="0.00" >
+              <div class='input-group'>
+                <span class="input-group-addon">
+                    <span class="fa fa-inr"></span>
+                </span>
+                <input type="text" readonly="readonly" class="form-control vat-amount currency" maskedFormat="10,2" name="VatAmount" placeholder="0.00" >
+              </div>
             </div>
           </div>
 
           <div class="form-group">
             <label for="RoundingAmount" class="control-label col-sm-3 lables">Rounding</label>
             <div class="col-sm-4">
-              <input type="text" class="form-control" name="RoundingAmount" placeholder="0.00" >
+              <div class='input-group'>
+                <span class="input-group-addon">
+                    <span class="fa fa-inr"></span>
+                </span>
+                <input type="text" class="form-control rounding currency" name="RoundingAmount" maskedFormat="10,2" placeholder="0.00" onchange="UpdateFinalSubtotal()" >
+              </div>
             </div>
           </div>
+
 
           <div class="form-group">
             <label for="TotalAmount" class="control-label col-sm-3 lables">Total paid<span class="mandatoryLabel">*</span></label>
             <div class="col-sm-4">
-              <input type="text"  readonly="readonly" class="form-control" name="TotalAmount" placeholder="0.00" >
+              <div class='input-group'>
+                <span class="input-group-addon">
+                    <span class="fa fa-inr"></span>
+                </span>
+                <input type="text" readonly="readonly" class="form-control total-paid currency" maskedFormat="10,2" name="TotalAmount" placeholder="0.00" >
+              </div>
             </div>
           </div>
 
@@ -387,7 +543,7 @@ function RemoveProductFieldset(e) {
             </div>
           </div>
 
-            </form>
+        </form>
               <!-- /.form -->
       </div>
         <!-- /.form div -->
