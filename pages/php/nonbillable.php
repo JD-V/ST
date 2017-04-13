@@ -100,7 +100,7 @@ require '_header.php';
                     <td><?php echo $nonbillable['Perticulars']; ?></td>
                     <td><?php echo $nonbillable['AmountPaid'] ?></td>
                     <td><?php echo $nonbillable['Notes']; ?></td>
-                    <td><?php echo '<a href="addservicerecord.php?id='.$nonbillable['RecordID'].'"  onclick="return DelConfirm();" class=""><i class="fa fa-pencil" aria-hidden="true"></i></a>'; ?></td>
+                    <td><?php echo '<a href="addnonbillable.php?id='.$nonbillable['RecordID'].'"  onclick="return DelConfirm();" class=""><i class="fa fa-pencil" aria-hidden="true"></i></a>'; ?></td>
                   </tr>
                   <?php
                 }
