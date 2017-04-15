@@ -13,7 +13,7 @@ require '_header.php';
   <!-- Content Header (Page header) -->
   <section class="content-header" id="MainEventInfo" >
     <h1>
-      <div>Service history
+      <div>Non billable sale
       <small></small><div>
     </h1>
 <!--     <ol class="breadcrumb">

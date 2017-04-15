@@ -16,7 +16,7 @@ require '_header.php'
   <!-- Content Header (Page header) -->
   <section class="content-header" id="MainEventInfo" >
     <h1>
-    <div>Add Service record
+    <div>Service record
     </div>
     </h1>
 <!--     <ol class="breadcrumb">
@@ -39,32 +39,46 @@ require '_header.php'
       ChromePhp::log("AKEY" . $_POST['akey']);
       if(@$_POST['akey'] == $_SESSION['AUTH_KEY'])
       {
-        if( isset($_POST['UserName']) && !empty($_POST['UserName']) &&
-            isset($_POST['UserEmail']) && !empty($_POST['UserEmail']) &&
-            isset($_POST['UserPhone']) && !empty($_POST['UserPhone']) &&
-            isset($_POST['UserBday']) && !empty($_POST['UserBday']) &&
-            isset($_POST['UserAddr']) && !empty($_POST['UserAddr']) &&
-            isset($_POST['UserRole']) && !empty($_POST['UserRole']) &&
-            isset($_POST['Status']) && !empty($_POST['Status'])  )
+        if( isset($_POST['InvoiceNo']) && !empty($_POST['InvoiceNo']) &&
+            isset($_POST['ServiceInvoiceDate']) && !empty($_POST['ServiceInvoiceDate']) &&
+            isset($_POST['CustomerName']) && !empty($_POST['CustomerName']) &&
+            isset($_POST['CustomerPhone']) && !empty($_POST['CustomerPhone']) &&
+            isset($_POST['VehicleNo']) && !empty($_POST['VehicleNo']) &&
+            isset($_POST['AmountPaid']) && !empty($_POST['AmountPaid']) )
           {
-            $UserName = mysql_real_escape_string(trim($_POST['UserName']));
-            $UserEmail = mysql_real_escape_string(trim($_POST['UserEmail']));
-            $UserPhone = mysql_real_escape_string(trim($_POST['UserPhone']));
-            $UserBday = mysql_real_escape_string(trim($_POST['UserBday']));
-            $UserAddr = mysql_real_escape_string(trim($_POST['UserAddr']));
-            $UserRole = mysql_real_escape_string(trim($_POST['UserRole']));
-            $Status = mysql_real_escape_string(trim($_POST['Status']));
-            ChromePhp::log('role' . $UserRole);
 
-            if($UpdateSubEvent = AddUser($UserName,$UserEmail,$UserPhone,$UserBday,$UserAddr,$UserRole,$Status) )
+            $ServiceRecord = new ServiceRecord();
+
+            $ServiceRecord->invoiceNumber = mysql_real_escape_string(trim($_POST['InvoiceNo']));
+
+            $dateStr = mysql_real_escape_string(trim($_POST['ServiceInvoiceDate']));
+            $date = DateTime::createFromFormat('d-m-Y H:i', $dateStr);
+            $ServiceRecord->invoiceDate = $date->format('Y-m-d H:i:s');
+
+            $ServiceRecord->customerName = mysql_real_escape_string(trim($_POST['CustomerName']));
+            $ServiceRecord->customerPhone = mysql_real_escape_string(trim($_POST['CustomerPhone']));
+            $ServiceRecord->vehicleNumber = mysql_real_escape_string(trim($_POST['VehicleNo']));
+            $ServiceRecord->amountPaid = mysql_real_escape_string(trim($_POST['AmountPaid']));
+            
+            if(isset($_POST['Notes']))
+              $ServiceRecord->notes = mysql_real_escape_string(trim($_POST['Notes']));
+            
+            $Msg = "";
+            if(isset($_POST['InvoiceNumberForUpdate']) && !empty($_POST['InvoiceNumberForUpdate'])) {
+              $Result = UpdateServicerecord($ServiceRecord);
+              $Msg = "Service Record has been saved successfully!";
+            } else {
+              $Result = Addservicerecord($ServiceRecord);
+              $Msg = "Service Record has been updated successfully!";
+            }
+
+            if($Result)
             {
                   echo '<div class="alert alert-block alert-success">
                           <button type="button" class="close" data-dismiss="alert">
                             <i class="ace-icon fa fa-times"></i>
                           </button>
-                          <i class="ace-icon fa fa-check green"></i>
-                          User Added successfully!
-                        </div>';
+                          <i class="ace-icon fa fa-check green"></i>'. $Msg .'</div>';
             }
             else
             {
@@ -110,7 +124,16 @@ require '_header.php'
     <!-- Default box -->
     <div class="box">
       <div class="box-header with-border">
-        <h3 class="box-title"><?php echo 'Add'; ?></h3>
+      <?php
+          $title= "Add";
+          if($GetServiceRecord = @GetServiceRecord($_GET['id'])) {
+            ChromePhp::log("got record id ");
+            $serviceRecord  = mysql_fetch_assoc($GetServiceRecord);
+            ChromePhp::log($serviceRecord);
+            $title= "Update";
+          }
+        ?>
+        <h3 class="box-title"><?php echo $title; ?></h3>
 
        <!--  <div class="box-tools pull-right">
           <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
@@ -128,74 +151,84 @@ require '_header.php'
               <div class="form-group">
                 <label for="InvoiceNo" class="control-label col-sm-3 lables">Invoice No<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" id="UserName" readonly="readonly" name="UserName" placeholder="Invoice No"  value="<?php  if(isset($subEventData['EventCode'])) echo  $subEventData['TimeFrame']; ?>" >
+                  <input type="text" class="form-control" readonly="readonly" name="InvoiceNo" value="<?php  if(isset($serviceRecord['InvoiceNumber'])) echo  $serviceRecord['InvoiceNumber'];  else echo GetMaxServiceInoviceNumber()+1;?>" >
                 </div>
-                <div id="errorMsgUN" name="errorMsgUN"  class="errorMessage" role="error"></div>
               </div>
 
               <div class="form-group">
-                <label for="UserBday" class="control-label col-sm-3 lables">Invoice Date<span class="mandatoryLabel">*</span></label>
+                <label for="ServiceInvoiceDate" class="control-label col-sm-3 lables">Invoice Date<span class="mandatoryLabel">*</span></label>
                 <div class='col-sm-4'>
-                  <input type="datetime" class="form-control" name="InvoiceDate" id="InvoiceDate"  />
+                <?php
+                    $dateVal = "";
+                    if(isset($serviceRecord['InvoiceDateTime'])) {
+                      $dateStr = $serviceRecord['InvoiceDateTime']; 
+                      $date = DateTime::createFromFormat('Y-m-d H:i:s', $dateStr); 
+                      $dateVal =   $date->format('d-m-Y H:i'); 
+                    }
+                  ?>
+                  <input type="text" class="form-control" name="ServiceInvoiceDate" value = "<?php echo $dateVal ?>"/>
                 </div>
-                <div id="errorMsgBDY" name="errorMsgBDY" class="errorMessage" role="error"></div>
               </div>
 
               <div class="form-group">
-                <label for="InvoiceNo" class="control-label col-sm-3 lables">Cutomer name<span class="mandatoryLabel">*</span></label>
+                <label for="CustomerName" class="control-label col-sm-3 lables">Customer Name<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" id="UserName"  name="UserName" placeholder="Cutomer Name"  value="<?php  if(isset($subEventData['EventCode'])) echo  $subEventData['TimeFrame']; ?>" >
+                  <input type="text" class="form-control" name="CustomerName" placeholder="Cutomer Name"  value="<?php  if(isset($serviceRecord['CustomerName'])) echo  $serviceRecord['CustomerName']; ?>" >
                 </div>
-                <div id="errorMsgUN" name="errorMsgUN"  class="errorMessage" role="error"></div>
               </div>
 
               <div class="form-group">
-                <label for="UserPhone" class="control-label col-sm-3 lables">Phone<span class="mandatoryLabel">*</span></label>
+                <label for="CustomerPhone" class="control-label col-sm-3 lables">Phone<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" maxlength="10" id="UserPhone" name="UserPhone" placeholder="Phone Number"  value="<?php  if(isset($subEventData['EventCode'])) echo  $subEventData['TimeFrame']; ?>" >
+                  <div class='input-group'>
+                    <span class="input-group-addon">
+                        <span class="fa fa-mobile"></span>
+                    </span>
+                    <input type="text" class="form-control phone" maxlength="10" name="CustomerPhone" placeholder="Phone Number" onkeypress="return isNumberKey(event)"  value="<?php  if(isset($serviceRecord['CustomerPhone'])) echo  $serviceRecord['CustomerPhone']; ?>" >
+                  </div>
                 </div>
-                <div id="errorMsgUPH" name="errorMsgUPH" class="errorMessage" role="error"></div>
-              </div>
-
-
-              <div class="form-group">
-                <label for="InvoiceNo" class="control-label col-sm-3 lables">Vehicle number<span class="mandatoryLabel">*</span></label>
-                <div class="col-sm-4">
-                  <input type="text" class="form-control" id="UserName" name="UserName" placeholder="Vehicle Number"  value="<?php  if(isset($subEventData['EventCode'])) echo  $subEventData['TimeFrame']; ?>" >
-                </div>
-                <div id="errorMsgUN" name="errorMsgUN"  class="errorMessage" role="error"></div>
               </div>
 
               <div class="form-group">
-                <label for="InvoiceNo" class="control-label col-sm-3 lables">Amount paid<span class="mandatoryLabel">*</span></label>
+                <label for="VehicleNo" class="control-label col-sm-3 lables">Vehicle Number<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" id="UserName" name="UserName" placeholder="0.00" value="<?php  if(isset($subEventData['EventCode'])) echo  $subEventData['TimeFrame']; ?>" >
+                  <input type="text" class="form-control" name="VehicleNo" placeholder="Vehicle Number"  value="<?php  if(isset($serviceRecord['VehicleNumber'])) echo  $serviceRecord['VehicleNumber']; ?>" >
                 </div>
-                <div id="errorMsgUN" name="errorMsgUN"  class="errorMessage" role="error"></div>
               </div>
 
               <div class="form-group">
-                <label for="MemberAvail" class="control-label col-sm-3 lables">Notes</label>
+                <label for="AmountPaid" class="control-label col-sm-3 lables">Amount paid<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <textarea  class="form-control" id="MemberAvail" name="MemberAvail" placeholder="Notes"></textarea>
+                  <div class='input-group'>
+                    <span class="input-group-addon">
+                        <span class="fa fa-inr"></span>
+                    </span>
+                    <input type="text" class="form-control amount currency" maskedFormat="10,2" name="AmountPaid" placeholder="0.00" value="<?php  if(isset($serviceRecord['AmountPaid'])) echo  $serviceRecord['AmountPaid']; ?>" >
+                  </div>
                 </div>
-                <div id="errorMsgMAV" name="errorMsgMAV" class="errorMessage" role="error"></div>
+              </div>
+
+              <div class="form-group">
+                <label for="Notes" class="control-label col-sm-3 lables">Notes</label>
+                <div class="col-sm-4">
+                  <textarea  class="form-control" name="Notes" placeholder="Notes"><?php  if(isset($serviceRecord['Note'])) echo  $serviceRecord['Note']; ?></textarea>
+                </div>
               </div>
 
               <div class="form-group">
                 <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> </label>
 
                 <div class="col-sm-9">
-                  <input type="submit" name="nc_submit" value="submit" id="ID_Sub" class="btn btn-sm btn-success" style="<?php if(isset($subEventData['EventCode'])) echo 'margin-left:90px'; else echo 'margin-left:50px'; ?>" />
+                  <input type="submit" name="nc_submit" value="submit" id="ID_Sub" class="btn btn-sm btn-success" style="<?php if(isset($serviceRecord['InvoiceNumber'])) echo 'margin-left:90px'; else echo 'margin-left:50px'; ?>" />
                   <input type="hidden" name="UKey" value="1" id="ID_UKey" />
-                  <!-- <input type="hidden" name="eventCode" id="eventCode" value="<?php if(isset($subEventData['EventCode'])) echo $subEventData['EventCode'] ?>" /> -->
-                  <button type="reset" class="btn btn-sm btn-default" style="visibility:<?php if(isset($subEventData['EventCode'])) echo 'hidden'; else 'visible'?> ">Clear</button>
+                  <input type="hidden" name="InvoiceNumberForUpdate" value="<?php if(isset($serviceRecord['InvoiceNumber'])) echo $serviceRecord['InvoiceNumber'] ?>" /> 
+                  <button type="reset" class="btn btn-sm btn-default" style="visibility:<?php if(isset($serviceRecord['InvoiceNumber'])) echo 'hidden'; else 'visible'?> ">Clear</button>
                 </div>
               </div>
 
             </form>
               <!-- /.form -->
-      </div>
+       </div>
         <!-- /.form div -->
       </div>
       <!-- /.box body -->

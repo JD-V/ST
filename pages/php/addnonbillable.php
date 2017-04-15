@@ -16,7 +16,7 @@ require '_header.php'
   <!-- Content Header (Page header) -->
   <section class="content-header" id="MainEventInfo" >
     <h1>
-    <div>Add Non Billable record
+    <div>Non Billable record
     </div>
     </h1>
 <!--     <ol class="breadcrumb">
@@ -124,16 +124,16 @@ require '_header.php'
     <!-- Default box -->
     <div class="box">
       <div class="box-header with-border">
-        <h3 class="box-title"><?php echo 'Add'; ?></h3>
         <?php
-          if($GetRecord = @GetNonBillableRecord($_GET['id']))
-
-          {
+          $title="Add";
+          if($GetRecord = @GetNonBillableRecord($_GET['id'])) {
             ChromePhp::log("got record id ");
             $Record  = mysql_fetch_assoc($GetRecord);
             ChromePhp::log($Record);
+            $title="Update";
           }
         ?>
+        <h3 class="box-title"><?php echo $title; ?></h3>
        <!--  <div class="box-tools pull-right">
           <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
             <i class="fa fa-minus"></i></button>
@@ -201,7 +201,7 @@ require '_header.php'
 
             </form>
               <!-- /.form -->
-      </div>
+        </div>
         <!-- /.form div -->
       </div>
       <!-- /.box body -->

@@ -156,6 +156,22 @@ function GetServices() {
   }
 }
 
+function GetMaxServiceInoviceNumber()
+{
+  if($maxInvoiceNumber = mysql_query("SELECT MAX(InvoiceNumber) as InvoiceNumber FROM service"))
+    {
+      if(mysql_num_rows($maxInvoiceNumber) >= 1) {
+
+        $ShowData = mysql_fetch_assoc($maxInvoiceNumber);
+        return $ShowData['InvoiceNumber'];
+      }
+    }
+    else
+    {
+      return false;
+    }
+}
+
 function GetNonBillables() {
 
   if($getNonBillablesList = mysql_query("SELECT * FROM `nonbillable`"))
@@ -174,19 +190,15 @@ function GetNonBillables() {
 
 }
 
-function getInstructors() {
 
-  if($getInstructorsList = mysql_query("SELECT UserID, Name FROM user WHERE RoleID = 3"))
-  {
-    ChromePhp::log("true");
-    if(mysql_num_rows($getInstructorsList) >= 1)
-    {
-      ChromePhp::log("true1");
-      return $getInstructorsList;
+function GetServiceRecord($InvoiceNumber) {
+
+  if($GetRecordInformation = mysql_query("SELECT * FROM `service` WHERE InvoiceNumber = '$InvoiceNumber' ") ) {
+    if(mysql_num_rows($GetRecordInformation) == 1) {
+      return $GetRecordInformation;
     }
   }
-  else
-  {
+  else {
     return false;
   }
 }
@@ -336,21 +348,6 @@ function UpdateLocation($Location) {
        return 1;
  }
 
- function GetCityList()  {
-
-   if($getCityList = mysql_query("SELECT * FROM city")) {
-     ChromePhp::log("true");
-     if(mysql_num_rows($getCityList) >= 1) {
-       ChromePhp::log("true1");
-       return $getCityList;
-     }
-   }
-   else {
-     return false;
-   }
-
- }
-
  function GetRoles()
  {
    if($getRoleList = mysql_query("SELECT * FROM role"))
@@ -425,18 +422,26 @@ ChromePhp::log("RecordId" . $RecordId);
   }
 }
 
-function AddCourse($CourseName,$CourseCode,$DurationDays,$DurationMins,$PPI) {
+function UpdateServicerecord($ServiceRecord){
 
-  ChromePhp::log("cour name " . $CourseName);
-  ChromePhp::log("cour code  " . $CourseCode);
-  ChromePhp::log("durday " . $DurationDays);
-  ChromePhp::log("durmin " . $DurationMins);
-  ChromePhp::log("ppi " . $PPI);
-  ChromePhp::log("dpi " . $DPI);
+  if($updateKey = mysql_query("UPDATE service SET InvoiceDateTime = '$ServiceRecord->invoiceDate',
+   CustomerName = '$ServiceRecord->customerName', CustomerPhone='$ServiceRecord->customerPhone',
+   VehicleNumber='$ServiceRecord->vehicleNumber',  AmountPaid='$ServiceRecord->amountPaid',
+   Note='$ServiceRecord->notes' WHERE InvoiceNumber='$ServiceRecord->invoiceNumber' "))
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
 
+function Addservicerecord($ServiceRecord) {
 
-  if($result = mysql_query("INSERT INTO course (CourseName, CourseCode, DurationDays, DurationMins, PPI)
-                        VALUES ('$CourseName', '$CourseCode','$DurationDays','$DurationMins','$PPI')" ) )
+  if($result = mysql_query("INSERT INTO service (InvoiceDateTime,CustomerName,CustomerPhone, VehicleNumber, AmountPaid, Note)
+      VALUES ('$ServiceRecord->invoiceDate','$ServiceRecord->customerName','$ServiceRecord->customerPhone',
+      '$ServiceRecord->vehicleNumber', '$ServiceRecord->amountPaid', '$ServiceRecord->notes')" ) )
       {ChromePhp::log('inserted'); return true;}
     else
       { if (false === $result) {
@@ -444,8 +449,8 @@ function AddCourse($CourseName,$CourseCode,$DurationDays,$DurationMins,$PPI) {
       }  ChromePhp::log(' not inserted'); return false;}
 }
 
-function GetMaxInvoiceID()
-{
+function GetMaxInvoiceID() {
+
     $GetInvoiceID = mysql_query("SELECT MAX(InvoiceID) as InvoiceID FROM purchaseinvoice");
 
     if(mysql_num_rows($GetInvoiceID)>=1) {
@@ -454,101 +459,6 @@ function GetMaxInvoiceID()
       }
 }
 
-function  WalkinRegister($MemberName,$MemberPhone,$RegDate,
-                          $MemberAvail,$IDNumber,$MemberEmail,
-                          $MemberBDay,$MemCity,$MemAddress,
-                          $MemProf,$MemRef,$walkIn = 1 ) {
-
-    if($result = mysql_query("INSERT INTO member (Name, IDNumber, RegistrationDate, Email, Phone, Availability, Birthday, CityID, Profession, ReferenceID,WalkIn)
-                        VALUES ('$MemberName', '$IDNumber','$RegDate','$MemberEmail','$MemberPhone','$MemberAvail','$MemberBDay','$MemCity','$MemProf','$MemRef','$walkIn')" ) )
-      {ChromePhp::log('inserted'); return true;}
-    else
-      { if (false === $result) {
-          //echo mysql_error();
-      }  ChromePhp::log(' not inserted'); return false;}
-
-
-}
-
-function  AddStatus($StatusDate,$UserID,$CurrentStatusID,$Notes,$MemberID ) {
-
-    if($result = mysql_query("INSERT INTO status (StatusDate, UserID, CurrentStatusID, Notes, MemberID)
-                        VALUES ('$StatusDate', '$UserID','$CurrentStatusID','$Notes','$MemberID')" ) )
-      {ChromePhp::log('inserted'); return true;}
-    else
-      { if (false === $result) {
-          //echo mysql_error();
-      }  ChromePhp::log(' not inserted'); return false;}
-
-
-}
-
-
-function  AddPayment($PaymentDate,$CourseID,$PurchasedDuration,$PaymentType,$ToBePaid,$Paid,$Note,$MemberID) {
-
-    if($result = mysql_query("INSERT INTO payment (PaymentDate, CourseID, PurchasedDuration, PaymentType, ToBePaid, Paid, Note, MemberID)
-                        VALUES ('$PaymentDate', '$CourseID','$PurchasedDuration','$PaymentType','$ToBePaid','$Paid', '$Note', '$MemberID')" ) )
-      {ChromePhp::log('inserted'); return true;}
-    else
-      { if (false === $result) {
-          //echo mysql_error();
-      }  ChromePhp::log(' not inserted'); return false;}
-}
-
-function AddReservation($MemberID,$CourseID,$AllocID) {
-
-  if($result = mysql_query("INSERT INTO reservation (MemberID, CourseID, AllocID )
-                          VALUES ('$MemberID', '$CourseID','$AllocID')" ) )
-    {ChromePhp::log('inserted  res'); return true;}
-  else
-    { if (false === $result) {
-        //echo mysql_error();
-    }  ChromePhp::log(' not inserted'); return false;}
-
-}
-
-function AllocateRoom($AllocID,$RoomID,$dateTime1,$dateTime2,$UserID) {
-
-ChromePhp::log('datetime item');
-    if($result = mysql_query("INSERT INTO roomsalloc (AllocID, RoomID, StartDateTime, EndDateTime, InstructorID )
-                        VALUES ('$AllocID', '$RoomID', '$dateTime1','$dateTime2','$UserID')" ) )
-      {ChromePhp::log('inserted'); return true;}
-    else
-      { if (false === $result) {
-          //echo mysql_error();
-      }  ChromePhp::log(' not inserted'); return false;}
-
-}
-
-
-function GetReferenceList(){
-
-     if($getRefList = mysql_query("SELECT * FROM reference")) {
-       ChromePhp::log("true");
-       if(mysql_num_rows($getRefList) >= 1) {
-         ChromePhp::log("true1");
-         return $getRefList;
-       }
-     }
-     else {
-       return false;
-     }
-
-}
-
-function GetCurrentStatusList(){
-
-     if($getCurrentStatusList = mysql_query("SELECT * FROM currentstatus")) {
-       ChromePhp::log("true");
-       if(mysql_num_rows($getCurrentStatusList) >= 1) {
-         ChromePhp::log("true1");
-         return $getCurrentStatusList;
-       }
-     }
-     else {
-       return false;
-     }
-}
 
 function GetStaffNamesList() {
 
@@ -564,76 +474,8 @@ function GetStaffNamesList() {
      }
 }
 
-function GetCourseList() {
-
-     if($courseList = mysql_query("SELECT * FROM course")) {
-       ChromePhp::log("true");
-       if(mysql_num_rows($courseList) >= 1) {
-         ChromePhp::log("true1");
-         return $courseList;
-       }
-     }
-     else {
-       return false;
-     }
-}
-
-function StoreCoursesListSession()
-{
-  if($getUserList = GetCourseList())
-  {
-    if(mysql_num_rows($getUserList) >= 1)
-    {
-      $user_array = array();
-      while($ShowData = mysFql_fetch_assoc($getUserList))
-      {
-        $user_array[] = $ShowData;
-        ChromePhp::log($ShowData);
-      }
-      $_SESSION['CourseList'] = $user_array;
-    }
-  }
-}
 
 
-function GetMemberNamesList($includeWalkin = 1) {
-
-  if($includeWalkin == 1) {
-    if($memberList = mysql_query("SELECT MemberID, Name, IDNumber FROM member")) {
-      ChromePhp::log("true");
-      if(mysql_num_rows($memberList) >= 1) {
-        ChromePhp::log("true1");
-        return $memberList;
-      }
-    }
-    else {
-      return false;
-    }
-  }
-  else {
-    if($memberList = mysql_query("SELECT MemberID, Name, IDNumber FROM member WHERE WalkIn = 0")) {
-      ChromePhp::log("true");
-      if(mysql_num_rows($memberList) >= 1) {
-        ChromePhp::log("members");
-        return $memberList;
-      }
-    }
-    else {
-      return false;
-    }
-  }
-}
-
-function GetCourseDuration($CourseID) {
-
-  if($courseDur = mysql_query("SELECT DurationMins FROM course WHERE courseID = '$CourseID' ")) {
-    if(mysql_num_rows($courseDur)==1) {
-        $ShowData = mysql_fetch_assoc($courseDur);
-        $DurationMins  = $ShowData['DurationMins'];
-        echo $DurationMins;
-    }
-  }
-}
 
 function CheckRoomAvailibility($roomID,$dt1,$dt2){
 
@@ -774,6 +616,18 @@ function GetProducts() {
     public $rounding = 0.00;
     public $totalAmount;
     public $invoiceNotes = "";
+}
+
+class ServiceRecord
+{
+  public $invoiceNumber;
+  public $invoiceDate;
+  public $customerName;
+  public $customerPhone;
+  public $vehicleNumber;
+  public $amountPaid=0.00;
+  public $notes="";
+  
 }
 
 
