@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
   //allowing only upto 2 decimal places
-  $('body').on('keyup', '.maskedExt', function () {
+  $('body').on('keyup', '.currency', function () {
        var num = $(this).attr("maskedFormat").toString().split(',');
        var regex = new RegExp("^\\d{0," + num[0] + "}(\\.\\d{0," + num[1] + "})?$");
        if (!regex.test(this.value)) {
@@ -15,6 +15,11 @@ $(document).ready(function() {
       var validTime = /^(([0-1]?[0-9])|([2][0-3])):([0-5]?[0-9])(:([0-5]?[0-9]))?$/i.test(stamp[1]);
       return this.optional(element) || (validDate && validTime);
   }, "Please enter a valid date and time.");
+
+  $.validator.addMethod("dateonly", function(value, element) {
+        var validDate = !/Invalid|NaN/.test(new Date(value.split("-").reverse().join("-")).toString());
+        return this.optional(element) || validDate;
+    }, "Please enter a valid date in the format DD-MM-YYYY");
 
   jQuery.validator.addMethod("validDate", function(value, element) {
     var stamp = value.split(" ");
@@ -151,7 +156,7 @@ $(document).ready(function() {
         InvoiceDate :
         {
           required: true,
-          dateTime: true,
+          dateonly: true,
         },
         CompanyName :
         {
@@ -177,6 +182,7 @@ $(document).ready(function() {
         'Quantity[]':
         {
           required: true,
+          digits: true,
         },
         'Rate[]':
         {
@@ -234,6 +240,7 @@ $(document).ready(function() {
         'Quantity[]':
         {
           required: "Please specify Product quantity",
+          digits: "please enter digits only",
         },
         'Amount[]':
         {
@@ -257,10 +264,21 @@ $(document).ready(function() {
         }
       },
       errorPlacement: function(error, element) {
+        if($(element).hasClass( "currency" ))
+          error.insertAfter($(element).parent().parent()).addClass('errorMessage');
+        else
         error.insertAfter($(element).parent()).addClass('errorMessage');
       },
       submitHandler: function (form) {
         $('input[name="UKey"]').val('2');
+        removeMultiInputNamingRules(form, 'input[alt="ProductSize[]"]');
+        removeMultiInputNamingRules(form, 'input[alt="Brand[]"]');
+        removeMultiInputNamingRules(form, 'input[alt="Quantity[]"]');
+        removeMultiInputNamingRules(form, 'input[alt="Rate[]"]');
+        removeMultiInputNamingRules(form, 'input[alt="Amount[]"]');
+        removeMultiInputNamingRules(form, 'input[alt="Discount[]"]');
+        removeMultiInputNamingRules(form, 'input[alt="DiscountRs[]"]');
+        removeMultiInputNamingRules(form, 'input[alt="Subtotal[]"]');
         form.submit();
       }
     });
@@ -395,4 +413,12 @@ function removeMultiInputNamingRules(form, field) {
     $(this).attr('name', $(this).attr('alt'));
     $(this).removeAttr('alt');
   });
+}
+
+function isNumberKey(evt) {
+  var charCode = (evt.which) ? evt.which : evt.keyCode;
+  if ( (charCode < 48 || charCode > 57))
+     return false;
+
+  return true;
 }
