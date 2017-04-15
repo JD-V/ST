@@ -96,11 +96,11 @@ require '_header.php';
                   ?>
                   <tr>
                     <th><?php echo '<a href="addnonbillable.php?id='.$nonbillable['RecordID'].'">' . $i+=1  . '</a>'; ?></th>
-                    <td><?php $date = date_create($nonbillable['RecordDate']); echo date_format($date, 'm/d/Y H:i'); ?></td>
+                    <td><?php $date = date_create($nonbillable['RecordDate']); echo date_format($date, 'd-m-Y H:i'); ?></td>
                     <td><?php echo $nonbillable['Perticulars']; ?></td>
                     <td><?php echo $nonbillable['AmountPaid'] ?></td>
                     <td><?php echo $nonbillable['Notes']; ?></td>
-                    <td><?php echo '<a href="addservicerecord.php?id='.$nonbillable['RecordID'].'"  onclick="return DelConfirm();" class=""><i class="fa fa-pencil" aria-hidden="true"></i></a>'; ?></td>
+                    <td><?php echo '<a href="addnonbillable.php?id='.$nonbillable['RecordID'].'"  onclick="return DelConfirm();" class=""><i class="fa fa-pencil" aria-hidden="true"></i></a>'; ?></td>
                   </tr>
                   <?php
                 }

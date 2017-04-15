@@ -265,6 +265,20 @@ function getLocations() {
   }
 }
 
+function GetNonBillableRecord($Record_id) {
+
+  if($GetRecordInformation = mysql_query("SELECT * FROM `nonbillable` WHERE RecordID = '$Record_id' ") )
+  {
+    if(mysql_num_rows($GetRecordInformation) == 1)
+    {
+      return $GetRecordInformation;
+    }
+  }
+  else
+  {
+    return false;
+  }
+}
 
 function GetMaxAllocID(){
 
@@ -375,6 +389,41 @@ function AddUser($UserName,$UserEmail,$UserPhone,$UserBday,$UserAddr,$UserRole,$
 
 }
 
+function AddNonBillable($RecDate,$Perticulars,$AmountPaid,$Notes){
+
+  ChromePhp::log("RecDate" . $RecDate);
+  ChromePhp::log("Perticulars " . $Perticulars);
+  ChromePhp::log("AmountPaid" . $AmountPaid);
+  ChromePhp::log("Notes" . $Notes);
+
+  if($result = mysql_query("INSERT INTO nonbillable (RecordDate, Perticulars, AmountPaid, Notes)
+                        VALUES ('$RecDate', '$Perticulars','$AmountPaid','$Notes')" ) )
+      {ChromePhp::log('inserted'); return true;}
+    else
+      {if (false === $result) {
+          //echo mysql_error();
+      }  ChromePhp::log(' not inserted'); return false;}
+
+}
+
+function UpdateNonBillable($RecordId,$RecDate,$Perticulars,$AmountPaid,$Notes){
+
+ChromePhp::log("RecordId" . $RecordId);
+  ChromePhp::log("RecDate" . $RecDate);
+  ChromePhp::log("Perticulars " . $Perticulars);
+  ChromePhp::log("AmountPaid" . $AmountPaid);
+  ChromePhp::log("Notes" . $Notes);
+
+  if($updateKey = mysql_query("UPDATE nonbillable SET RecordDate   = '$RecDate' , Perticulars = '$Perticulars', AmountPaid = '$AmountPaid',
+   Notes = '$Notes' WHERE RecordID='$RecordId'"))
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
 
 function AddCourse($CourseName,$CourseCode,$DurationDays,$DurationMins,$PPI) {
 

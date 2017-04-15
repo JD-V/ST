@@ -103,7 +103,7 @@ require '_header.php';
                   <tr>
                     <th><?php echo '<a href="addservicerecord.php?id='.$service['InvoiceNumber'].'">' . $i+=1  . '</a>'; ?></th>
                     <td><?php echo $service['InvoiceNumber']; ?></td>
-                    <td><?php $date = date_create($service['InvoiceDateTime']); echo date_format($date, 'm/d/Y H:i'); ?></td>
+                    <td><?php $date = date_create($service['InvoiceDateTime']); echo date_format($date, 'd-m-Y H:i'); ?></td>
 
                     <td><?php echo $service['CustomerName']; ?></td>
                     <td><?php echo $service['CustomerPhone'] ?></td>

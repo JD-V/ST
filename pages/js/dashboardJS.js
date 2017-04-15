@@ -16,7 +16,7 @@ $(document).ready(function() {
   "columnDefs": [{ "orderable": false, "targets": [ 5,6,7,8,9,10,11,12] }]
 });
 
-  $('*[name=RecDate]').appendDtpicker();
+  $('*[name=RecDate]').appendDtpicker({"dateFormat":'DD-MM-YYYY hh:mm'});
   $('*[name=InvoiceDate]').appendDtpicker({"dateOnly": true, "dateFormat":'DD-MM-YYYY' });
 
 });
