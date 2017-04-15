@@ -377,7 +377,10 @@ $("#NonBillable").submit(function (e) {
     }
   },
   errorPlacement: function(error, element) {
-    error.insertAfter($(element).parent()).addClass('errorMessage');
+    if($(element).hasClass( "amount" ))
+      error.insertAfter($(element).parent().parent()).addClass('errorMessage');
+    else     
+      error.insertAfter($(element).parent()).addClass('errorMessage');
   },
   submitHandler: function (form) {
     $('input[name="UKey"]').val('2');

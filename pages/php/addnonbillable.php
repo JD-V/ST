@@ -43,7 +43,10 @@ require '_header.php'
             isset($_POST['Perticulars']) && !empty($_POST['Perticulars']) &&
             isset($_POST['AmountPaid']) && !empty($_POST['AmountPaid']) )
           {
-            $RecDate = mysql_real_escape_string(trim($_POST['RecDate']));
+            $dateStr = mysql_real_escape_string(trim($_POST['RecDate']));
+            $date = DateTime::createFromFormat('d-m-Y H:i', $dateStr);
+
+            $RecDate = $date->format('Y-m-d H:i:s');
             $Perticulars = mysql_real_escape_string(trim($_POST['Perticulars']));
             $AmountPaid = mysql_real_escape_string(trim($_POST['AmountPaid']));
             $Notes = '';
@@ -60,14 +63,12 @@ require '_header.php'
             if($RecordId == 0)
             {
                $Result = AddNonBillable($RecDate,$Perticulars,$AmountPaid,$Notes);
-               $msg = ' Record Added successfully!
-                        </div>';
+               $msg = ' Record Added successfully!';
             }
             else
             {
               $Result = UpdateNonBillable($RecordId,$RecDate,$Perticulars,$AmountPaid,$Notes); 
-              $msg = ' Record Updated successfully!
-                        </div>';
+              $msg = ' Record Updated successfully!';
             }
 
             if($Result)
@@ -76,7 +77,7 @@ require '_header.php'
                           <button type="button" class="close" data-dismiss="alert">
                             <i class="ace-icon fa fa-times"></i>
                           </button>
-                          <i class="ace-icon fa fa-check green"></i>'+ $msg; //needs to correct 
+                          <i class="ace-icon fa fa-check green"></i>'. $msg . '</div>'; //needs to correct 
             }
             else
             {
@@ -124,7 +125,7 @@ require '_header.php'
       <div class="box-header with-border">
         <h3 class="box-title"><?php echo 'Add'; ?></h3>
         <?php
-          if($GetRecord = GetNonBillableRecord($_GET['id']))
+          if($GetRecord = @GetNonBillableRecord($_GET['id']))
           {
             ChromePhp::log("got record id ");
             $Record  = mysql_fetch_assoc($GetRecord);
@@ -147,7 +148,15 @@ require '_header.php'
               <div class="form-group">
                 <label for="RecDate" class="control-label col-sm-3 lables">Bill Date<span class="mandatoryLabel">*</span></label>
                 <div class='col-sm-4'>
-                  <input type="text" class="form-control" name="RecDate" value = "<?php  if(isset($Record['RecordDate'])) echo  $Record['RecordDate']; ?>"/>
+                  <?php 
+                    $dateVal = "";
+                    if(isset($Record['RecordDate'])) {
+                      $dateStr = $Record['RecordDate']; 
+                      $date = DateTime::createFromFormat('Y-m-d H:i:s', $dateStr); 
+                      $dateVal =   $date->format('d-m-Y H:i'); 
+                    }
+                  ?>
+                  <input type="text" class="form-control" name="RecDate" value = "<?php echo $dateVal ?>"/>
                 </div>
               </div>
 
@@ -161,7 +170,12 @@ require '_header.php'
               <div class="form-group">
                 <label for="AmountPaid" class="control-label col-sm-3 lables">Amount paid<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" name="AmountPaid" placeholder="$0.00" value="<?php  if(isset($Record['AmountPaid'])) echo  $Record['AmountPaid']; ?>" >
+                  <div class='input-group'>
+                    <span class="input-group-addon">
+                        <span class="fa fa-inr"></span>
+                    </span>
+                    <input type="text" class="form-control amount" name="AmountPaid" onkeypress="return isNumberKey(event)" placeholder="00" value="<?php  if(isset($Record['AmountPaid'])) echo  $Record['AmountPaid']; ?>" >
+                  </div>
                 </div>
               </div>
 
