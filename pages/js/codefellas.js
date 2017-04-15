@@ -361,7 +361,6 @@ $("#NonBillable").submit(function (e) {
     AmountPaid:
     {
       required: true,
-      digits: true,
     }
   },
   // Specify the validation error messages
@@ -373,7 +372,6 @@ $("#NonBillable").submit(function (e) {
     AmountPaid:
     {
       required: "Please Enter a valid Amount",
-      digits: "Numreric values accepted only",
     }
   },
   errorPlacement: function(error, element) {
@@ -387,6 +385,81 @@ $("#NonBillable").submit(function (e) {
     form.submit();
   }
 });
+
+$("#Service").submit(function (e) {
+}).validate({
+
+  rules: {
+    InvoiceNo:
+    {
+      required: true,
+    },
+    ServiceInvoiceDate:
+    {
+      required: true,
+    },
+    CustomerName:
+    {
+      required: true,
+    },
+    CustomerPhone:
+    {
+      required: true,
+      digits: true,
+      minlength:10,
+      maxlength:10,
+    },
+    VehicleNo:
+    {
+      required: true,
+    },
+    AmountPaid:
+    {
+      required: true,
+    }
+  },
+  // Specify the validation error messages
+  messages: {
+    InvoiceNo:
+    {
+      required: "please provide invoice number",
+    },
+    ServiceInvoiceDate:
+    {
+      required: "Please select a valid date/time",
+    },
+    CustomerName:
+    {
+      required: "Please enter customer name",
+    },
+    CustomerPhone:
+    {
+      required: "Please enter a valid phone number",
+      digits: "Only digits allowed",
+      minlength: "Enter 10 digit mobile number",
+      maxlength: "Enter 10 digit mobile number",
+    },
+    VehicleNo:
+    {
+      required: "Please enter vehicle number",
+    },
+    AmountPaid:
+    {
+      required: "Please Enter a valid Amount",
+    }
+  },
+  errorPlacement: function(error, element) {
+    if($(element).hasClass( "amount" ) || $(element).hasClass( "phone" ) )
+      error.insertAfter($(element).parent().parent()).addClass('errorMessage');
+    else     
+      error.insertAfter($(element).parent()).addClass('errorMessage');
+  },
+  submitHandler: function (form) {
+    $('input[name="UKey"]').val('2');
+    form.submit();
+  }
+});
+
 
 
 function addMultiInputNamingRulesSkipFirst(form,alt, field, rules) {

@@ -18,5 +18,5 @@ $(document).ready(function() {
 
   $('*[name=RecDate]').appendDtpicker({"dateFormat":'DD-MM-YYYY hh:mm'});
   $('*[name=InvoiceDate]').appendDtpicker({"dateOnly": true, "dateFormat":'DD-MM-YYYY' });
-
+  $('*[name=ServiceInvoiceDate]').appendDtpicker({"dateFormat":'DD-MM-YYYY hh:mm' });
 });

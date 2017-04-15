@@ -223,7 +223,7 @@
         ?>
         <li class="treeview <?php echo $isActiveTV ?>" >
           <a href="#">
-            <i class="fa fa-cogs"></i>
+            <i class="fa fa-laptop"></i>
             <span>Manage</span>
             <span class="pull-right-container">
             <i class="fa fa-angle-down pull-right"></i>
@@ -277,7 +277,7 @@
         <li class="treeview <?php echo $isActiveTV ?>" >
           <a href="#">
             <i class="fa fa-cog"></i>
-            <span>Products</span>
+            <span>Products / Invoices</span>
             <span class="pull-right-container">
             <i class="fa fa-angle-down pull-right"></i>
             </span>
@@ -289,7 +289,7 @@
             echo "<li class=\"hover " . $isActive . " \">
                     <a href=\"Products.php\" >
                       <i class=\"fa fa-list\"></i>
-                      <span>Products</span>
+                      <span>Products / Invoices</span>
                       <span class=\"pull-right-container\">
                       <i class=\"fa fa-angle-right pull-right\"></i>
                       </span>
@@ -303,7 +303,7 @@
               echo "<li class=\"hover " . $isActive . " \">
                       <a href=\"AddProduct.php\" >
                         <i class=\"fa fa-plus-square\"></i>
-                        <span>Manage Product</span>
+                        <span>Add Invoice</span>
                         <span class=\"pull-right-container\">
                         <i class=\"fa fa-angle-right pull-right\"></i>
                         </span>
@@ -317,11 +317,41 @@
 
         <?php
           $userRoleID = getUserRoleID();
-          if($userRoleID == 1)	// Admin role 1
+          $isActiveTV = "";
+          if($userRoleID ==1 )  // Admin role 1
           {
-            $isActive = "";
-            if($CDATA['PAGE_NAME'] == 'ADSRVREC'){ $isActive =  'active'; }
+            if($CDATA['PAGE_NAME'] == 'ADSRVREC' || $CDATA['PAGE_NAME'] == 'SERVICES' ) {
+              $isActiveTV =  'active';
+            } else {
+              $isActiveTV = "";
+            }
+          ?>
+          <li class="treeview <?php echo $isActiveTV ?>" >
+            <a href="#">
+              <i class="fa fa-car"></i>
+              <span>Services</span>
+              <span class="pull-right-container">
+              <i class="fa fa-angle-down pull-right"></i>
+              </span>
+            </a>
+            <ul class="treeview-menu">
 
+            <?php $isActive = ""; if($CDATA['PAGE_NAME'] == 'SERVICES'){ $isActive =  'active'; }
+        
+
+            echo "<li class=\"hover " . $isActive . " \">
+                    <a href=\"services.php\" >
+                      <i class=\"fa fa-list\"></i>
+                      <span>Services</span>
+                      <span class=\"pull-right-container\">
+                      <i class=\"fa fa-angle-right pull-right\"></i>
+                      </span>
+                    </a>
+                  </li>";
+                  
+                  
+          $isActive = "";
+            if($CDATA['PAGE_NAME'] == 'ADSRVREC'){ $isActive =  'active'; }
             echo "<li class=\"hover " . $isActive . " \">
                     <a href=\"addservicerecord.php\" >
                       <i class=\"fa fa-plus-square\"></i>
@@ -331,49 +361,63 @@
                       </span>
                     </a>
                   </li>";
+          ?>
+          </ul>
+        </li>
+        <?php } ?>
 
-            $isActive = "";
-            if($CDATA['PAGE_NAME'] == 'ADNONBILLREC'){ $isActive =  'active'; }
-
-            echo "<li class=\"hover " . $isActive . " \">
-                    <a href=\"addnonbillable.php\" >
-                      <i class=\"fa fa-plus-square\"></i>
-                      <span>Add Non billable record</span>
-                      <span class=\"pull-right-container\">
-                      <i class=\"fa fa-angle-right pull-right\"></i>
-                      </span>
-                    </a>
-                  </li>";
-
-            $isActive = "";
-            if($CDATA['PAGE_NAME'] == 'SERVICES'){ $isActive =  'active'; }
-
-            echo "<li class=\"hover " . $isActive . " \">
-                    <a href=\"services.php\" >
-                      <i class=\"fa fa-user\"></i>
-                      <span>Services</span>
-                      <span class=\"pull-right-container\">
-                      <i class=\"fa fa-angle-right pull-right\"></i>
-                      </span>
-                    </a>
-                  </li>";
-
+         <?php
+          $userRoleID = getUserRoleID();
+          $isActiveTV = "";
+          if($userRoleID ==1 )  // Admin role 1
+          {
+            if($CDATA['PAGE_NAME'] == 'ADNONBILLREC' || $CDATA['PAGE_NAME'] == 'NONBILLREC' ) {
+              $isActiveTV =  'active';
+            } else {
+              $isActiveTV = "";
+            }
+          ?>
+          <li class="treeview <?php echo $isActiveTV ?>" >
+            <a href="#">
+              <i class="fa fa-thumb-tack"></i>
+              <span>NonBillables</span>
+              <span class="pull-right-container">
+              <i class="fa fa-angle-down pull-right"></i>
+              </span>
+            </a>
+            <ul class="treeview-menu">
+            <?php
+            
             $isActive = "";
             if($CDATA['PAGE_NAME'] == 'NONBILLREC'){ $isActive =  'active'; }
 
             echo "<li class=\"hover " . $isActive . " \">
                     <a href=\"nonbillable.php\" >
-                      <i class=\"fa fa-user\"></i>
+                      <i class=\"fa fa-list\"></i>
                       <span>Non billable</span>
                       <span class=\"pull-right-container\">
                       <i class=\"fa fa-angle-right pull-right\"></i>
                       </span>
                     </a>
                   </li>";
+         
+          $isActive = "";
+          if($CDATA['PAGE_NAME'] == 'ADNONBILLREC'){ $isActive =  'active'; }
 
-          }
+          echo "<li class=\"hover " . $isActive . " \">
+                  <a href=\"addnonbillable.php\" >
+                    <i class=\"fa fa-plus-square\"></i>
+                    <span>Add Non billable record</span>
+                    <span class=\"pull-right-container\">
+                    <i class=\"fa fa-angle-right pull-right\"></i>
+                    </span>
+                  </a>
+                </li>";
           ?>
 
+          </ul>
+        </li>
+        <?php } ?>
 
         <li class="header">REPORTS</li>
 
