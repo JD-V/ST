@@ -33,7 +33,7 @@ if(!isLogin())
 <body class="hold-transition login-page">
 <div class="login-box">
   <div class="login-logo">
-    <a href="index.php"><b>My Admin Pannel</b> | <i>JD</a>
+    <h2>Inventory Management system&nbsp;&nbsp;|&nbsp;&nbsp;<a href="http://www.pikesace.com" target="_blank"><small style="color: #3c8dbc!important;">PIKES <i>ACE</i></small></a></h2>
   </div>
   <!-- /.login-logo -->
   <div class="login-box-body" id="content">

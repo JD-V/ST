@@ -1,8 +1,14 @@
 <footer class="main-footer">
 	<div class="pull-right hidden-xs">
-		<strong><i>C</i>odefellas</strong>
+		<a href="https://www.facebook.com/jrvaghasiya" target="_blank"><i class="ace-icon fa fa-facebook-square text-primary pikesAceFooterIcons"></i></a>
 	</div>
-	<strong>Copyright &copy; 2016</strong>
+	<span>
+		<a href="http://www.pikesace.com" target="_blank">
+		<span class="pikesAceFooter">
+			<strong>PIKES <i>ACE</i> </strong>
+		</span>
+		</a>&copy; <?php echo date('Y')  ?>
+	</span> 
 </footer>
 
 <!-- Add the sidebar's background. This div must be placed

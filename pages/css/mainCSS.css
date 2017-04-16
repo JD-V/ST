@@ -215,3 +215,16 @@ legend
   padding: 5px 5px 5px 10px;
   background-color: #DCDCDC;
 }
+
+.pikesAceFooter
+{
+	font-size: 110%!important;
+	color: #478fca!important; font-weight:bolder;
+}
+
+.pikesAceFooterIcons
+{
+	font-size: 120%!important;
+	color: #478fca!important; font-weight:bolder;
+}
+

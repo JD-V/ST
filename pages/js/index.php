@@ -1,0 +1,1 @@
+Resticted Access pikesAce&copy;<?php echo date('Y');?>
