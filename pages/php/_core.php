@@ -292,7 +292,7 @@ function GetNonBillableRecord($Record_id) {
   }
 }
 
-function GetMaxAllocID(){
+function GetMaxAllocID() {
 
   if($maxAllocID = mysql_query("SELECT MAX(AllocID) as maxAllocID FROM roomsalloc"))
   {
@@ -309,8 +309,8 @@ function GetMaxAllocID(){
 
 }
 
-function RemoveLocation($LocationId)
-{
+function RemoveLocation($LocationId) {
+
   ChromePhp::log("LocID : " .$LocationId);
   $RemoveLocation =  mysql_query("DELETE FROM `location` WHERE `LocationID` = $LocationId ");
   $result = mysql_affected_rows();
@@ -322,10 +322,8 @@ function RemoveLocation($LocationId)
     print 1;
 }
 
-function AddLocation($Location)
-{
+function AddLocation($Location) {
   ChromePhp::log("LocName : " .$Location->LocName);
-
 
   $addLocaiton = mysql_query(" INSERT INTO `location` (`LocationName`) VALUES ( '$Location->LocName')" );
 
@@ -346,10 +344,9 @@ function UpdateLocation($Location) {
        return 0;
      else
        return 1;
- }
+}
 
- function GetRoles()
- {
+ function GetRoles() {
    if($getRoleList = mysql_query("SELECT * FROM role"))
    {
      ChromePhp::log("true");
@@ -362,7 +359,7 @@ function UpdateLocation($Location) {
    else  {
      return false;
    }
- }
+}
 
 function AddUser($UserName,$UserEmail,$UserPhone,$UserBday,$UserAddr,$UserRole,$Status) {
 
@@ -405,7 +402,7 @@ function AddNonBillable($RecDate,$Perticulars,$AmountPaid,$Notes){
 
 function UpdateNonBillable($RecordId,$RecDate,$Perticulars,$AmountPaid,$Notes){
 
-ChromePhp::log("RecordId" . $RecordId);
+  ChromePhp::log("RecordId" . $RecordId);
   ChromePhp::log("RecDate" . $RecDate);
   ChromePhp::log("Perticulars " . $Perticulars);
   ChromePhp::log("AmountPaid" . $AmountPaid);
@@ -459,7 +456,6 @@ function GetMaxInvoiceID() {
       }
 }
 
-
 function GetStaffNamesList() {
 
      if($getStaffNames = mysql_query("SELECT UserID, Name FROM user")) {
@@ -473,9 +469,6 @@ function GetStaffNamesList() {
        return false;
      }
 }
-
-
-
 
 function CheckRoomAvailibility($roomID,$dt1,$dt2){
 
@@ -501,18 +494,18 @@ function CheckRoomAvailibility($roomID,$dt1,$dt2){
 
 function AddInvoice($Invoice){
 
-ChromePhp::log('InvoiceDate ' . $Invoice->invoiceDate );
-ChromePhp::log('InvoiceNumber ' . $Invoice->invoiceNumber );
-ChromePhp::log('Company ' . $Invoice->companyName );
-ChromePhp::log('TinNumber '. $Invoice->tinNumber);
-ChromePhp::log('SubTotal ' . $Invoice->subTotalAmount);
-ChromePhp::log('DiscountRs ' . $Invoice->discountsAmount);
-ChromePhp::log('DiscountPer ' . $Invoice->discountPer);
-ChromePhp::log('VatPer '. $Invoice->vatPer );
-ChromePhp::log('VatAmount ' . $Invoice->vatAmount);
-ChromePhp::log('Rounding ' . $Invoice->rounding);
-ChromePhp::log('TotalPaid ' . $Invoice->totalAmount);
-ChromePhp::log('Notes' .$Invoice->invoiceNotes);
+  ChromePhp::log('InvoiceDate ' . $Invoice->invoiceDate );
+  ChromePhp::log('InvoiceNumber ' . $Invoice->invoiceNumber );
+  ChromePhp::log('Company ' . $Invoice->companyName );
+  ChromePhp::log('TinNumber '. $Invoice->tinNumber);
+  ChromePhp::log('SubTotal ' . $Invoice->subTotalAmount);
+  ChromePhp::log('DiscountRs ' . $Invoice->discountsAmount);
+  ChromePhp::log('DiscountPer ' . $Invoice->discountPer);
+  ChromePhp::log('VatPer '. $Invoice->vatPer );
+  ChromePhp::log('VatAmount ' . $Invoice->vatAmount);
+  ChromePhp::log('Rounding ' . $Invoice->rounding);
+  ChromePhp::log('TotalPaid ' . $Invoice->totalAmount);
+  ChromePhp::log('Notes' .$Invoice->invoiceNotes);
 
 
   $addInvoice = mysql_query("INSERT INTO `purchaseinvoice` (`InvoiceDate`, `InvoiceNumber`, `Company`, `TinNumber`, `SubTotal`, 
@@ -528,18 +521,17 @@ ChromePhp::log('Notes' .$Invoice->invoiceNotes);
     return 0;
 }
 
-
 function AddProduct($Product){
 
-ChromePhp::log('InvoiceID ' . $Product->invoiceID );
-ChromePhp::log('productSize ' . $Product->productSize );
-ChromePhp::log('brand ' . $Product->brand );
-ChromePhp::log('units '. $Product->units);
-ChromePhp::log('rate ' . $Product->rate);
-ChromePhp::log('discountsAmount ' . $Product->discountsAmount);
-ChromePhp::log('DiscountPer ' . $Product->discountPer);
-ChromePhp::log('VatPer '. $Product->vatPer );
-ChromePhp::log('TotalPaid ' . $Product->subtotal);
+  ChromePhp::log('InvoiceID ' . $Product->invoiceID );
+  ChromePhp::log('productSize ' . $Product->productSize );
+  ChromePhp::log('brand ' . $Product->brand );
+  ChromePhp::log('units '. $Product->units);
+  ChromePhp::log('rate ' . $Product->rate);
+  ChromePhp::log('discountsAmount ' . $Product->discountsAmount);
+  ChromePhp::log('DiscountPer ' . $Product->discountPer);
+  ChromePhp::log('VatPer '. $Product->vatPer );
+  ChromePhp::log('TotalPaid ' . $Product->subtotal);
 
   $addProduct = mysql_query("INSERT INTO `products` (`InvoiceID`, `ProductSize`, `ProductBrand`, 
     `ProductQty`, `UnitPrice`, `DiscountRs`, `DiscountPer`, `VatPer`, `SubTotal` ) VALUES 
@@ -552,7 +544,6 @@ ChromePhp::log('TotalPaid ' . $Product->subtotal);
     echo mysql_error();
     return 0;
 }
-
 
 function GetInvoices(){
 
@@ -585,6 +576,47 @@ function GetProducts() {
   {
     return false;
   }
+
+}
+
+function getServiceable($Depricated = 0) {
+
+  if($Depricated == 0)
+    return mysql_query("SELECT * FROM `serviceable` WHERE Depricated = '0'");
+  else
+    return mysql_query("SELECT * FROM `serviceable` ");
+}
+
+function MarkServiceableDepricate($ItemID) {
+
+  if($updateServiceable = mysql_query("UPDATE serviceable SET Depricated = 1 WHERE ItemID='$ItemID' ")) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+function UpdateServiceable($srv) {
+  
+  $updateServiceable = mysql_query(" UPDATE `serviceable` SET `Item` = '$srv->Item', `Price` = '$srv->Price'  WHERE `ItemID` = '$srv->ItemID' " );
+
+   if(-1 == mysql_affected_rows())
+       return 0;
+     else
+       return 1;
+}
+
+function AddServiceable($srv) {
+  ChromePhp::log("Item : " .$srv->Item);
+
+  $addItem = mysql_query(" INSERT INTO `serviceable` (`Item`,`Price`) VALUES ( '$srv->Item', '$srv->Price')" );
+
+  ChromePhp::log("ADD LOC qrY : " .$addItem);
+
+  if($addItem)
+    return 1;
+  else
+    return 0;
 
 }
 

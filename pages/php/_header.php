@@ -256,6 +256,20 @@
                         </span>
                       </a>
                     </li>";
+
+            $isActive = "";
+           if($CDATA['PAGE_NAME'] == 'MNSRVS') { $isActive =  'active';  }
+           ChromePhp::log('isa active '. $CDATA['PAGE_NAME'] );
+
+              echo "<li class=\"hover " . $isActive . " \">
+                      <a href=\"manageservicable.php\" >
+                        <i class=\"fa fa-crosshairs\"></i>
+                        <span>Manage Servicable</span>
+                        <span class=\"pull-right-container\">
+                        <i class=\"fa fa-angle-right pull-right\"></i>
+                        </span>
+                      </a>
+                    </li>";
             ?>
 
           </ul>

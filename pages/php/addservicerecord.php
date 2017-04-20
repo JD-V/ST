@@ -144,7 +144,7 @@ require '_header.php'
       </div>
       <div class="box-body">
 
-      <div id="AddOrUpdateServiceRecord">
+      <div id="AddOrUpdateServiceRecord" ng-app="serviceApp" ng-controller="serviceCtrl">
           <form class="form-horizontal"  name="Service" id="Service" action="addservicerecord.php?_auth=<?php echo $_SESSION['AUTH_KEY']; ?>" method="post">
               <input type="hidden" value="<?php echo $_SESSION['AUTH_KEY']; ?>" name="akey" id="ID_akey" >
 
@@ -196,6 +196,18 @@ require '_header.php'
                 </div>
               </div>
 
+            <div class="form-group">
+            <label for="addItems" class="control-label col-sm-3 lables">Add Items<span class="mandatoryLabel">*</span></label>
+              <div class="col-sm-4" >
+                <div class="dropdown">
+                  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Add serviceables&nbsp;&nbsp;&nbsp;&nbsp;<span class="caret"></span></button>
+                  <ul class="dropdown-menu">
+                    <li ng-repeat="item in serviceable"><a href="#" onclick="someevent()">{{item.Item}}&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;{{item.Price}}</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>         
+
               <div class="form-group">
                 <label for="AmountPaid" class="control-label col-sm-3 lables">Amount paid<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
@@ -239,6 +251,59 @@ require '_header.php'
   <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
+
+<script type="text/javascript">
+
+  angular.module('serviceApp', [])
+  .controller('serviceCtrl', function($scope, dataService) {
+  
+  // refreshing data in the table
+  $scope.RefreshView = function() {
+    dataService.getServiceable(function(response) {
+      console.log(response.data);
+      $scope.serviceable = response.data;
+    });
+  };
+  $scope.minlength = 3;
+
+  // initial call
+  $scope.RefreshView();
+  })
+  .service('dataService', function($http) {
+
+    //get Location Service
+    this.getServiceable = function(callback) {
+      console.log("Get Locations"); 
+      $http({
+        method : "GET",
+        url : "AddUpdateRetriveServiceable.php?action=Retrive",
+      }).then(callback)
+    };
+
+    //Delete Location Service
+    this.deleteServiceable = function(ItemId,callback) {
+      console.log("delete Location");
+      $http({
+        method : "GET",
+        url : "AddUpdateRetriveServiceable.php?action=Remove&ItemID=" + ItemId,
+      }).then(callback)
+    };
+
+    //Save Location Service
+    this.saveAll = function(ItemArray,callback) {
+      
+      console.log("Save All Locations");
+      $http({
+        method : 'GET',
+        url : "AddUpdateRetriveServiceable.php?action=save",
+        params:{ItemArr : JSON.stringify(ItemArray)},
+      }).then(callback)
+    };
+
+  });
+</script>
+
+
 <?php
 require '_footer.php';
 }
