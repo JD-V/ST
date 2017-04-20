@@ -26,6 +26,8 @@ require '_header.php'
     </ol> -->
   </section>
 
+
+
   <!-- Main content -->
   <section class="content">
     <div id ="messages">
@@ -202,11 +204,62 @@ require '_header.php'
                 <div class="dropdown">
                   <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Add serviceables&nbsp;&nbsp;&nbsp;&nbsp;<span class="caret"></span></button>
                   <ul class="dropdown-menu">
-                    <li ng-repeat="item in serviceable"><a href="#" onclick="someevent()">{{item.Item}}&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;{{item.Price}}</a></li>
+                    <li ng-repeat="item in serviceable"><a href="#" ng-click="AddItem(item.ItemID)">{{item.Item}}&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;{{item.Price}}</a></li>
                   </ul>
                 </div>
               </div>
-            </div>         
+            </div>     
+
+            <fieldset class="col-sm-9 col-xs-offset-1">
+                <legend>Serviceable<span class="mandatoryLabel">*</span></legend>
+                <div class="box-body">
+      <div class="table-responsive col-sm-12" id= "OrganizerList" >
+        <table id="OrgTable" class="table table-striped table-hover" >
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Price</th>
+              <th>Qty</th>
+              <th>Amount</th>
+
+              <th><i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp;&nbsp;&nbsp;<i class="fa fa-times" aria-hidden="true"></i></th>
+            </tr>
+          </thead>
+          <tr ng-repeat="item in serviceItem">
+            <td>
+            <div ng-class="{'edited': item.itemEdited, 'error' : item.itemInvalid }">
+              <label ng-hide="item.editing" >{{item.Item}}</label>
+                <input ng-change="item.itemEdited = true;" ng-click="item.editing = true" ng-blur="item.editing = false; item.itemInvalid = validateInput(item.Item); item.itemEdited = !item.itemInvalid" type="text" ng-show="item.editing" ng-model="item.Item;"  />
+            </div>
+            </td>
+            <td>
+            <div ng-class="{'edited': item.priceEdited, 'error' : item.priceInvalid}">
+              <label  ng-hide="item.editing" >{{item.Price}}</label>
+                <input ng-change="item.priceEdited = true" ng-click="item.editing = true" ng-blur=" item.editing = false; item.priceInvalid = validateInput(item.Price  ); item.priceEdited = !item.priceInvalid" onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editing" ng-model="item.Price"  />
+            </div>
+            </td>
+            <td>
+            <div ng-class="{'edited': item.QtyEdited, 'error' : item.QtyInvalid}">
+              <label  ng-hide="item.editing" >{{item.Qty}}</label>
+                <input ng-change="item.QtyEdited = true" ng-click="item.editing = true" ng-blur=" item.editing = false; item.QtyInvalid = validateInput(item.Qty  ); item.QtyEdited = !item.QtyInvalid" onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editing" ng-model="item.Qty"  />
+            </div>
+            </td>
+
+            <td>
+            <div>
+              <label  ng-model="item.Amount" >{{item.Qty*item.Price}}</label>
+            </div>
+            </td>
+
+            <td>
+            <a href="#" ng-click="item.editing = !item.editing;" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>&nbsp;&nbsp;&nbsp;
+            <a href="#" ng-click="RemoveItem(item.ItemID, $index);" ><i class="fa fa-times" aria-hidden="true"></i></a>
+            </td>
+          </tr>
+        </table>
+      </div>
+      </div>
+           </fieldset>    
 
               <div class="form-group">
                 <label for="AmountPaid" class="control-label col-sm-3 lables">Amount paid<span class="mandatoryLabel">*</span></label>
@@ -255,7 +308,18 @@ require '_header.php'
 <script type="text/javascript">
 
   angular.module('serviceApp', [])
-  .controller('serviceCtrl', function($scope, dataService) {
+  .filter('getById', function() {
+  return function(input, id) {
+    var i=0, len=input.length;
+    for (; i<len; i++) {
+      if (+input[i].ItemID == +id) {
+        return input[i];
+      }
+    }
+    return null;
+  }
+})
+  .controller('serviceCtrl', function($scope,$filter, dataService) {
   
   // refreshing data in the table
   $scope.RefreshView = function() {
@@ -264,11 +328,43 @@ require '_header.php'
       $scope.serviceable = response.data;
     });
   };
-  $scope.minlength = 3;
+  $scope.serviceItem = [];
+  
+  
+$scope.AddItem = function(ItemId){
+       if($filter('getById')($scope.serviceItem, ItemId)== null){
+       
+       var found = $filter('getById')($scope.serviceable, ItemId);
+         console.log(found);
+var obj = {
+      'ItemID': found.ItemID,
+      'Item' : found.Item,
+      'Price' : found.Price,
+      'Qty' :1,
+      'Amount': found.Price
+    };
+
+         $scope.serviceItem.push(obj);
+         
+       }
+      };
+      
+      $scope.RemoveItem = function($ItemID,$index){
+    console.log('itemid' +$ItemID);
+    console.log('index' +$index);
+   // if($ItemID == null) {
+      console.log("Removing at index : " + $index)
+      $scope.serviceItem.splice($index,1);
+    //}
+  //  });
+    
+    };
 
   // initial call
   $scope.RefreshView();
   })
+  
+  
   .service('dataService', function($http) {
 
     //get Location Service
