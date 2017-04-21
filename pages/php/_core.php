@@ -400,6 +400,18 @@ function AddNonBillable($RecDate,$Perticulars,$AmountPaid,$Notes){
 
 }
 
+function AddSupplier($Name,$TinNum,$MobileNum,$Email,$Address,$ContactPerson){
+    if($result = mysql_query("INSERT INTO supplier (SupplierName, TinNumber, Mobile, Email,Address, ContactPerson)
+                        VALUES ('$Name', '$TinNum','$MobileNum','$Email', '$Address', '$ContactPerson')" ) )
+      {ChromePhp::log('inserted'); return true;}
+    else
+      {
+        if (false === $result) {
+      }  ChromePhp::log(' not inserted'); return false;
+      }
+
+}
+
 function UpdateNonBillable($RecordId,$RecDate,$Perticulars,$AmountPaid,$Notes){
 
   ChromePhp::log("RecordId" . $RecordId);

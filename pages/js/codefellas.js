@@ -394,6 +394,63 @@ $("#NonBillable").submit(function (e) {
 });
 
 
+$("#Supplier").submit(function (e) {
+}).validate({
+
+  rules: {
+    SupplierName:
+    {
+      required: true,
+    },
+    TinNum:
+    {
+      required: true,
+    },
+    Email:
+    {
+      email: true,
+    },
+    MobileNum :
+    {
+      digits: true,
+      minlength:10,
+      maxlength:10,
+    }
+  },
+  // Specify the validation error messages
+  messages: {
+    SupplierName:
+    {
+      required: "Please supplier name",
+    },
+    TinNum:
+    {
+      required: "Please Enter Vaild TIN number",
+    },
+    Email:
+    {
+      email: "Please Enter Valid Email ID",
+    },
+    MobileNum :
+    {
+      digits: "Only digits allowed",
+      minlength: "Enter 10 digit mobile number",
+      maxlength: "Enter 10 digit mobile number",
+    }
+  },
+  errorPlacement: function(error, element) {
+    if($(element).hasClass( "amount" ))
+      error.insertAfter($(element).parent().parent()).addClass('errorMessage');
+    else     
+      error.insertAfter($(element).parent()).addClass('errorMessage');
+  },
+  submitHandler: function (form) {
+    $('input[name="UKey"]').val('2');
+    form.submit();
+  }
+});
+
+
 // this is static form validation you can refer this to validate any static forms
 $("#CoursesForm").submit(function (e) {
 }).validate({

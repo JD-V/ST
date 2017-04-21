@@ -551,6 +551,36 @@
 
           </ul>
         </li>
+
+        <li class="treeview <?php echo $isActiveTV ?>" >
+            <a href="#">
+              <i class="fa fa-industry"></i>
+              <span>Suppliers</span>
+              <span class="pull-right-container">
+              <i class="fa fa-angle-down pull-right"></i>
+              </span>
+            </a>
+            <ul class="treeview-menu">
+            <?php
+            
+            $isActive = "";
+            if($CDATA['PAGE_NAME'] == 'ADDSUPPLIER'){ $isActive =  'active'; }
+
+            echo "<li class=\"hover " . $isActive . " \">
+                    <a href=\"addsupplier.php\" >
+                      <i class=\"fa fa-plus-square\"></i>
+                      <span>Supplier</span>
+                      <span class=\"pull-right-container\">
+                      <i class=\"fa fa-angle-right pull-right\"></i>
+                      </span>
+                    </a>
+                  </li>";
+                
+          ?>
+
+          </ul>
+        </li>
+
         <?php } ?>
 
         <li class="header">REPORTS</li>
