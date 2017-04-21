@@ -620,6 +620,139 @@ function AddServiceable($srv) {
 
 }
 
+function GetBrands() {
+  
+  if($getBrands = mysql_query("SELECT * FROM brands")) {
+    ChromePhp::log("true");
+    if(mysql_num_rows($getBrands) >= 1) {
+      return $getBrands;
+    }
+  }
+  else {
+    return false;
+  }
+}
+
+function GetSuppliers() {
+
+  if($getSuppliers = mysql_query("SELECT * FROM supplier")) {
+    ChromePhp::log("true got supps");
+    if(mysql_num_rows($getSuppliers) >= 1) {
+      return $getSuppliers;
+    }
+  }
+  else {
+    return false;
+  }
+}
+
+function GetProdcutTypes(){
+  
+  if($getProductTypes = mysql_query("SELECT * FROM producttype")) {
+    ChromePhp::log("true got supps");
+    if(mysql_num_rows($getProductTypes) >= 1) {
+      return $getProductTypes;
+    }
+  }
+  else {
+    return false;
+  }
+}
+
+function AddProductInventory($ProductInventory) {
+
+  $addProductInventory = mysql_query("INSERT INTO `productinvetory` (`ProductName`, `BrandID`, `SupplierID`, 
+    `ProductTypeID`, `CostPrice`, `SellingPrice`, `ProductNotes`, `MinStockAlert`, `dateOfEntry` ) VALUES 
+    ( '$ProductInventory->productName', '$ProductInventory->brandID',  '$ProductInventory->supplierID', 
+      '$ProductInventory->productTypeID', '$ProductInventory->costPrice', '$ProductInventory->sellingPrice',
+      '$ProductInventory->productNotes', '$ProductInventory->minStockAlert','$ProductInventory->dateOfEntry'  )" );
+
+  if($addProductInventory)
+    return 1;
+  else
+    echo mysql_error();
+    return 0;
+}
+
+function UpdateProductInventory($ProductInventory) {
+
+  $updateProductInventory = mysql_query("UPDATE `productinvetory` SET 
+    `ProductName` = '$ProductInventory->productName', `BrandID` = '$ProductInventory->brandID', 
+    `SupplierID` = '$ProductInventory->supplierID', `ProductTypeID`= '$ProductInventory->productTypeID', 
+    `CostPrice` = '$ProductInventory->costPrice', `SellingPrice` = '$ProductInventory->sellingPrice', 
+    `ProductNotes` = '$ProductInventory->productNotes', `MinStockAlert` = '$ProductInventory->minStockAlert',
+    `dateOfEntry` = '$ProductInventory->dateOfEntry' WHERE `ProductID` =  '$ProductInventory->productID' " );
+
+  if($updateProductInventory)
+    return 1;
+  else
+    echo mysql_error();
+    return 0;
+}
+
+function GetProductInventory(){
+  
+  if($getProductInventory = mysql_query("select p.*, pt.ProductTypeName, b.BrandName, s.SupplierName from productinvetory p JOIN brands b ON p.BrandID = b.BrandID JOIN supplier s ON p.SupplierID = s.SupplierID JOIN producttype pt ON p.ProductTypeID = pt.ProductTypeID")) {
+    ChromePhp::log("true got supps");
+    if(mysql_num_rows($getProductInventory) >= 1) {
+      return $getProductInventory;
+    }
+  }
+  else {
+    return false;
+  }
+}
+
+function GetProductInventoryByID($productID){
+  
+  if($getProductInventory = mysql_query("select p.*, pt.ProductTypeName, b.BrandName, s.SupplierName from productinvetory p JOIN brands b ON p.BrandID = b.BrandID JOIN supplier s ON p.SupplierID = s.SupplierID JOIN producttype pt ON p.ProductTypeID = pt.ProductTypeID WHERE p.ProductID = '$productID' ")) {
+    ChromePhp::log("true got supps");
+    if(mysql_num_rows($getProductInventory) >= 1) {
+      return $getProductInventory;
+    }
+  }
+  else {
+    return false;
+  }
+}
+
+function GetProductStocks() {
+
+  if($getProductInventory = mysql_query("SELECT pr.ProductID, pr.ProductName , SUM(st.Qty) AS Qty FROM productinvetory pr LEFT JOIN stockentries st ON pr.ProductID = st.ProductID GROUP BY ProductID ")) {
+    ChromePhp::log("true got supps");
+    if(mysql_num_rows($getProductInventory) >= 1) {
+      return $getProductInventory;
+    }
+  }
+  else {
+    return false;
+  }
+}
+
+function AddStockEntry($stock) {
+   $addStockEntry = mysql_query("INSERT INTO `stockentries` (`ProductID`, `Qty`, `TansactionTypeID`) VALUES 
+    ( '$stock->ProductID', '$stock->Qty',  '$stock->TansactionTypeID' )" );
+
+  if($addStockEntry)
+    return 1;
+  else
+    echo mysql_error();
+    return 0;
+}
+
+function GetStockTransactionHistory() {
+  
+  if($getStockTransactionHistory = mysql_query("select pi.ProductName, pi.ProductID, se.Qty, se.TansactionTypeID, tt.TranasactionTypeName, se.TimeStamp FROM stockentries se JOIN productinvetory pi ON se.ProductID = pi.ProductID JOIN tranasactiontype tt ON se.TansactionTypeID = tt.TansactionTypeID")) {
+    
+    if(mysql_num_rows($getStockTransactionHistory) >= 1) {
+      return $getStockTransactionHistory;
+    }
+  }
+  else {
+    return false;
+  }
+}
+
  class Product
  {
    public $invoiceID;
@@ -632,6 +765,23 @@ function AddServiceable($srv) {
    public $discountPer;
    public $discountsAmount;
    public $subtotal;
+ }
+
+  class ProductInventory
+ {
+   public $productID;
+   public $brandName;
+   public $brandID;
+   public $supplierName;
+   public $supplierID;
+   public $productType;
+   public $productTypeID;
+   public $productName;
+   public $costPrice;
+   public $sellingPrice;
+   public $productNotes= "";
+   public $minStockAlert = 0;
+   public $dateOfEntry;
  }
 
  class Invoice

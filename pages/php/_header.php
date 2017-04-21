@@ -215,7 +215,7 @@
           $isActiveTV = "";
           if($userRoleID ==1 )  // Admin role 1
           {
-            if($CDATA['PAGE_NAME'] == 'MNUSER' || $CDATA['PAGE_NAME'] == 'MNGLOC' ) {
+            if($CDATA['PAGE_NAME'] == 'MNUSER' || $CDATA['PAGE_NAME'] == 'MNGLOC' || $CDATA['PAGE_NAME'] == 'MNSRVS' ) {
               $isActiveTV =  'active';
             } else {
               $isActiveTV = "";
@@ -281,7 +281,7 @@
           $isActiveTV = "";
           if($userRoleID ==1 )  // Admin role 1
           {
-            if($CDATA['PAGE_NAME'] == 'PRODUCTS' || $CDATA['PAGE_NAME'] == 'ADDPRD' ) {
+            if($CDATA['PAGE_NAME'] == 'INVOICE' || $CDATA['PAGE_NAME'] == 'ADDINV' ) {
               $isActiveTV =  'active';
             } else {
               $isActiveTV = "";
@@ -291,43 +291,163 @@
         <li class="treeview <?php echo $isActiveTV ?>" >
           <a href="#">
             <i class="fa fa-cog"></i>
-            <span>Products / Invoices</span>
+            <span>Purchase Invoices</span>
             <span class="pull-right-container">
             <i class="fa fa-angle-down pull-right"></i>
             </span>
           </a>
           <ul class="treeview-menu">
 
-            <?php $isActive = ""; if($CDATA['PAGE_NAME'] == 'PRODUCTS'){ $isActive =  'active'; }
+            <?php $isActive = ""; if($CDATA['PAGE_NAME'] == 'INVOICE'){ $isActive =  'active'; }
 
             echo "<li class=\"hover " . $isActive . " \">
-                    <a href=\"Products.php\" >
+                    <a href=\"invoices.php\" >
                       <i class=\"fa fa-list\"></i>
-                      <span>Products / Invoices</span>
+                      <span>Invoices</span>
                       <span class=\"pull-right-container\">
                       <i class=\"fa fa-angle-right pull-right\"></i>
                       </span>
                     </a>
                   </li>";
 
-            $isActive = "";
-           if($CDATA['PAGE_NAME'] == 'ADDPRD') { $isActive =  'active';  }
+           $isActive = "";
+           if($CDATA['PAGE_NAME'] == 'ADDINV') { $isActive =  'active';  }
            ChromePhp::log('isa active '. $CDATA['PAGE_NAME'] );
 
               echo "<li class=\"hover " . $isActive . " \">
-                      <a href=\"AddProduct.php\" >
+                      <a href=\"addInvoice.php\" >
                         <i class=\"fa fa-plus-square\"></i>
                         <span>Add Invoice</span>
                         <span class=\"pull-right-container\">
                         <i class=\"fa fa-angle-right pull-right\"></i>
                         </span>
                       </a>
-                    </li>";
+                    </li>"; 
             ?>
 
           </ul>
         </li>
         <?php } ?>
+
+        <?php
+          $userRoleID = getUserRoleID();
+          $isActiveTV = "";
+          if($userRoleID ==1 )  // Admin role 1
+          {
+            if($CDATA['PAGE_NAME'] == 'ADDPRD' || $CDATA['PAGE_NAME'] == 'PRDS') {
+              $isActiveTV =  'active';
+            } else {
+              $isActiveTV = "";
+            }
+        ?>
+
+        <li class="treeview <?php echo $isActiveTV ?>" >
+          <a href="#">
+            <i class="fa fa-cog"></i>
+            <span>Products Inventory</span>
+            <span class="pull-right-container">
+            <i class="fa fa-angle-down pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+
+            <?php $isActive = ""; if($CDATA['PAGE_NAME'] == 'INVPRDS'){ $isActive =  'active'; }
+
+           $isActive = "";
+           if($CDATA['PAGE_NAME'] == 'INVPRDS') { $isActive =  'active'; ChromePhp::log('isa active '. $CDATA['PAGE_NAME'] );  }
+          
+           echo "<li class=\"hover " . $isActive . " \">
+                    <a href=\"invetoryProducts.php\" >
+                      <i class=\"fa fa-list\"></i>
+                      <span>Products</span>
+                      <span class=\"pull-right-container\">
+                      <i class=\"fa fa-angle-right pull-right\"></i>
+                      </span>
+                    </a>
+                  </li>";
+
+           $isActive = "";
+           if($CDATA['PAGE_NAME'] == 'ADDPRD') { $isActive =  'active';  }
+           ChromePhp::log('isa active '. $CDATA['PAGE_NAME'] );
+
+              echo "<li class=\"hover " . $isActive . " \">
+                      <a href=\"addProduct.php\" >
+                        <i class=\"fa fa-plus-square\"></i>
+                        <span>Add Product</span>
+                        <span class=\"pull-right-container\">
+                        <i class=\"fa fa-angle-right pull-right\"></i>
+                        </span>
+                      </a>
+                    </li>";      
+
+                                  
+            ?>
+
+          </ul>
+        </li>
+        <?php } ?>
+
+
+
+<?php
+          $userRoleID = getUserRoleID();
+          $isActiveTV = "";
+          if($userRoleID ==1 )  // Admin role 1
+          {
+            if($CDATA['PAGE_NAME'] == 'MNSTOCK' || $CDATA['PAGE_NAME'] == 'STOCKENT') {
+              $isActiveTV =  'active';
+            } else {
+              $isActiveTV = "";
+            }
+        ?>
+
+        <li class="treeview <?php echo $isActiveTV ?>" >
+          <a href="#">
+            <i class="fa fa-cog"></i>
+            <span>Manage Stocks</span>
+            <span class="pull-right-container">
+            <i class="fa fa-angle-down pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+
+          <?php $isActive = ""; if($CDATA['PAGE_NAME'] == 'INVPRDS'){ $isActive =  'active'; }
+
+           $isActive = "";
+           if($CDATA['PAGE_NAME'] == 'INVPRDS') { $isActive =  'active'; ChromePhp::log('isa active '. $CDATA['PAGE_NAME'] );  }
+          
+           echo "<li class=\"hover " . $isActive . " \">
+                    <a href=\"manageStock.php\" >
+                      <i class=\"fa fa-th-large\"></i>
+                      <span>Stock</span>
+                      <span class=\"pull-right-container\">
+                      <i class=\"fa fa-angle-right pull-right\"></i>
+                      </span>
+                    </a>
+                  </li>";
+
+           $isActive = "";
+           if($CDATA['PAGE_NAME'] == 'ADDPRD') { $isActive =  'active';  }
+           ChromePhp::log('isa active '. $CDATA['PAGE_NAME'] );
+
+              echo "<li class=\"hover " . $isActive . " \">
+                      <a href=\"stockTransactions.php\" >
+                        <i class=\"fa fa-list\"></i>
+                        <span>Transactions</span>
+                        <span class=\"pull-right-container\">
+                        <i class=\"fa fa-angle-right pull-right\"></i>
+                        </span>
+                      </a>
+                    </li>";      
+
+                                  
+            ?>
+
+          </ul>
+        </li>
+        <?php } ?>
+
+
 
         <?php
           $userRoleID = getUserRoleID();

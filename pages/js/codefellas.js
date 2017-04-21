@@ -150,7 +150,7 @@ $(document).ready(function() {
     });
 
     //Reservation form
-    $("#AddorUpdateProduct").submit(function (e) {
+    $("#AddorUpdateInvoice").submit(function (e) {
     }).validate({
       rules: {
         InvoiceDate :
@@ -283,6 +283,116 @@ $(document).ready(function() {
       }
     });
 });
+
+// Add product Form
+$("#AddorUpdateProduct").submit(function (e) {
+}).validate({
+
+  rules: {
+    BrandName:
+    {
+      required: true,
+    },
+    SupplierName:
+    {
+      required: true,
+    },
+    ProductType:
+    {
+      required: true,
+    },
+    ProductName:
+    {
+      required: true,
+    },
+    CostPrice:
+    {
+      required: true,
+      number: true,
+    },
+    SellingPrice:
+    {
+      required: true,
+      number: true,
+    }
+  },
+  // Specify the validation error messages
+  messages: {
+    BrandName:
+    {
+      required: "Please select brand ",
+    },
+    SupplierName:
+    {
+      required: "Please select supplier ",
+    },
+    ProductType:
+    {
+      required: "Please select product type ",
+    },        
+    ProductName:
+    {
+      required: "Please Enter Product name",
+    },
+    CostPrice:
+    {
+      required: "Please Enter a valid Price",
+      number: "Numreric values accepted only",
+    },
+    SellingPrice:
+    {
+      required: "Please Enter a valid Duration",
+      number: "Numreric values accepted only",
+    }
+  },
+  errorPlacement: function(error, element) {
+     if($(element).hasClass( "currency" ))
+          error.insertAfter($(element).parent().parent()).addClass('errorMessage');
+        else
+        error.insertAfter($(element).parent()).addClass('errorMessage');
+  },
+  submitHandler: function (form) {
+    $('input[name="UKey"]').val('2');
+    form.submit();
+  }
+});
+
+$("#NonBillable").submit(function (e) {
+}).validate({
+
+  rules: {
+    RecDate:
+    {
+      required: true,
+    },
+    AmountPaid:
+    {
+      required: true,
+    }
+  },
+  // Specify the validation error messages
+  messages: {
+    RecDate:
+    {
+      required: "Please select a valid date",
+    },
+    AmountPaid:
+    {
+      required: "Please Enter a valid Amount",
+    }
+  },
+  errorPlacement: function(error, element) {
+    if($(element).hasClass( "amount" ))
+      error.insertAfter($(element).parent().parent()).addClass('errorMessage');
+    else     
+      error.insertAfter($(element).parent()).addClass('errorMessage');
+  },
+  submitHandler: function (form) {
+    $('input[name="UKey"]').val('2');
+    form.submit();
+  }
+});
+
 
 // this is static form validation you can refer this to validate any static forms
 $("#CoursesForm").submit(function (e) {
