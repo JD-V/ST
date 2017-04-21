@@ -45,9 +45,6 @@
 <script type="text/javascript" src="../../plugins/MultiDatesPicker/jquery-ui.multidatespicker.js"></script>
 
 
-<!-- Bootstrap multiselect -->
-<!-- <script src="../../dist/css/bootstrap-multiselect.css"></script> -->
-
 <script type="text/javascript">
 
 
@@ -277,7 +274,7 @@
         <?php } ?>
 
         <?php
-          $userRoleID = getUserRoleID();
+          //$userRoleID = getUserRoleID();
           $isActiveTV = "";
           if($userRoleID ==1 )  // Admin role 1
           {
@@ -330,7 +327,7 @@
         <?php } ?>
 
         <?php
-          $userRoleID = getUserRoleID();
+          //$userRoleID = getUserRoleID();
           $isActiveTV = "";
           if($userRoleID ==1 )  // Admin role 1
           {
@@ -389,8 +386,8 @@
 
 
 
-<?php
-          $userRoleID = getUserRoleID();
+      <?php
+          //$userRoleID = getUserRoleID();
           $isActiveTV = "";
           if($userRoleID ==1 )  // Admin role 1
           {
@@ -411,10 +408,10 @@
           </a>
           <ul class="treeview-menu">
 
-          <?php $isActive = ""; if($CDATA['PAGE_NAME'] == 'INVPRDS'){ $isActive =  'active'; }
+          <?php $isActive = ""; if($CDATA['PAGE_NAME'] == 'MNSTOCK'){ $isActive =  'active'; }
 
            $isActive = "";
-           if($CDATA['PAGE_NAME'] == 'INVPRDS') { $isActive =  'active'; ChromePhp::log('isa active '. $CDATA['PAGE_NAME'] );  }
+           if($CDATA['PAGE_NAME'] == 'MNSTOCK') { $isActive =  'active'; ChromePhp::log('isa active '. $CDATA['PAGE_NAME'] );  }
           
            echo "<li class=\"hover " . $isActive . " \">
                     <a href=\"manageStock.php\" >
@@ -427,7 +424,7 @@
                   </li>";
 
            $isActive = "";
-           if($CDATA['PAGE_NAME'] == 'ADDPRD') { $isActive =  'active';  }
+           if($CDATA['PAGE_NAME'] == 'STOCKENT') { $isActive =  'active';  }
            ChromePhp::log('isa active '. $CDATA['PAGE_NAME'] );
 
               echo "<li class=\"hover " . $isActive . " \">
@@ -448,9 +445,68 @@
         <?php } ?>
 
 
+      <?php
+          //$userRoleID = getUserRoleID();
+          $isActiveTV = "";
+          if($userRoleID ==1 )  // Admin role 1
+          {
+            if($CDATA['PAGE_NAME'] == 'MNORDER' || $CDATA['PAGE_NAME'] == 'ORDERS') {
+              $isActiveTV =  'active';
+            } else {
+              $isActiveTV = "";
+            }
+        ?>
+
+        <li class="treeview <?php echo $isActiveTV ?>" >
+          <a href="#">
+            <i class="fa fa-sellsy"></i>
+            <span>Sales</span>
+            <span class="pull-right-container">
+            <i class="fa fa-angle-down pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+
+          <?php
+
+           $isActive = "";
+           if($CDATA['PAGE_NAME'] == 'MNORDER') { $isActive =  'active'; }
+          
+           echo "<li class=\"hover " . $isActive . " \">
+                    <a href=\"addneworder.php\" >
+                      <i class=\"fa fa-plus-square\"></i>
+                      <span>Add new Order</span>
+                      <span class=\"pull-right-container\">
+                      <i class=\"fa fa-angle-right pull-right\"></i>
+                      </span>
+                    </a>
+                  </li>";
+
+           $isActive = "";
+           if($CDATA['PAGE_NAME'] == 'ORDERS') { $isActive =  'active';  }
+           ChromePhp::log('isa active '. $CDATA['PAGE_NAME'] );
+
+              echo "<li class=\"hover " . $isActive . " \">
+                      <a href=\"orders.php\" >
+                        <i class=\"fa fa-list\"></i>
+                        <span>Orders</span>
+                        <span class=\"pull-right-container\">
+                        <i class=\"fa fa-angle-right pull-right\"></i>
+                        </span>
+                      </a>
+                    </li>";      
+
+                                  
+            ?>
+
+          </ul>
+        </li>
+        <?php } ?>
+
+
 
         <?php
-          $userRoleID = getUserRoleID();
+          //$userRoleID = getUserRoleID();
           $isActiveTV = "";
           if($userRoleID ==1 )  // Admin role 1
           {
@@ -501,7 +557,7 @@
         <?php } ?>
 
          <?php
-          $userRoleID = getUserRoleID();
+          //$userRoleID = getUserRoleID();
           $isActiveTV = "";
           if($userRoleID ==1 )  // Admin role 1
           {
@@ -558,12 +614,12 @@
         <li class="<?php if($CDATA['PAGE_NAME'] == 'SUMMARY'){ echo 'active'; } ?> hover">
             <a href="
 							<?php
-								$userRoleID = getUserRoleID();
-											if($userRoleID == 1)	// Admin role 1
-												echo "summary_Admin.php";
-											else                      // Associate role 4
-												echo "summaryAssociate.php";
-											?>" >
+								//$userRoleID = getUserRoleID();
+                if($userRoleID == 1)	// Admin role 1
+                  echo "summary_Admin.php";
+                else                      // Associate role 4
+                  echo "summaryAssociate.php";
+                ?>" >
                 <i class="fa fa-file-text"></i>
                 <span>Summary</span>
                 <span class="pull-right-container">

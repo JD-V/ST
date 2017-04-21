@@ -49,9 +49,6 @@
 <!--for date time picker-->
 <link type="text/css" href="../../dist/css/jquery.simple-dtpicker.css" rel="stylesheet" />
 
-<!-- Bootstrap multiselect -->
-<script src="../../dist/js/bootstrap-multiselect.js"></script>
-
 <!-- time picker -- >
 <link type="text/css" href="../../plugins/timepicker/bootstrap-timepicker.min.css" />
 

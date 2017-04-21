@@ -172,6 +172,23 @@ function GetMaxServiceInoviceNumber()
     }
 }
 
+
+function GetMaxSalesInoviceNumber()
+{
+  if($maxInvoiceNumber = mysql_query("SELECT MAX(InvoiceNumber) as InvoiceNumber FROM sales"))
+    {
+      if(mysql_num_rows($maxInvoiceNumber) >= 1) {
+
+        $ShowData = mysql_fetch_assoc($maxInvoiceNumber);
+        return $ShowData['InvoiceNumber'];
+      }
+    }
+    else
+    {
+      return false;
+    }
+}
+
 function GetNonBillables() {
 
   if($getNonBillablesList = mysql_query("SELECT * FROM `nonbillable`"))
@@ -729,6 +746,22 @@ function GetProductStocks() {
   }
 }
 
+function getProductWithStocks() {
+  
+  if($getProductInventory = mysql_query("SELECT pr.ProductID, pr.ProductName, pr.ProductTypeID,pt.ProductTypeName,
+     pr.CostPrice, pr.SellingPrice, br.BrandName, SUM(st.Qty) AS Qty FROM productinvetory pr LEFT JOIN stockentries st 
+     ON pr.ProductID = st.ProductID JOIN producttype pt ON pt.ProductTypeID = pr.ProductTypeID JOIN brands br ON 
+     pr.BrandID = br.BrandID GROUP BY ProductID ")) {
+    ChromePhp::log("true got supps");
+    if(mysql_num_rows($getProductInventory) >= 1) {
+      return $getProductInventory;
+    }
+  }
+  else {
+    return false;
+  }
+}
+
 function AddStockEntry($stock) {
    $addStockEntry = mysql_query("INSERT INTO `stockentries` (`ProductID`, `Qty`, `TansactionTypeID`) VALUES 
     ( '$stock->ProductID', '$stock->Qty',  '$stock->TansactionTypeID' )" );
@@ -751,6 +784,47 @@ function GetStockTransactionHistory() {
   else {
     return false;
   }
+}
+
+function AddNewSalesItem($order) {
+
+  $AddOrder = mysql_query("INSERT INTO `sales` (`InvoiceNumber`, `InvoiceDateTime`, `CustomerName`, `CustomerPhone`, `VehicleNumber`, `SubTotal`, `Discount`, `Vat`, `AmountPaid`, `Notes` ) VALUES 
+    (  '$order->invoiceNumber', '$order->invoiceDate', '$order->customerName',  '$order->customerPhone',
+       '$order->vehicleNumber', '$order->subTotal',  '$order->discount', 
+       '$order->vatAmount', '$order->amountPaid',  '$order->notes' )" );
+
+  if($AddOrder)
+    return 1;
+  else
+    echo mysql_error();
+    return 0;
+}
+
+function AddProductToSalesInvoice($product,$invoiceNumber) {
+
+  $AddProductToInvoice = mysql_query("INSERT INTO `salesproducts` (`ProductID`, `InvoiceNumber`, `ProductDispName`, `Qty`, `CostPrice`, `SalePrice` ) VALUES 
+    (  '$product->productID', '$invoiceNumber', '$product->productName',
+       '$product->qty', '$product->costPrice', '$product->sellingPrice' )" );
+
+  if($AddProductToInvoice)
+    return 1;
+  else
+    echo mysql_error();
+    return 0;
+}
+
+class Order
+{
+  public $invoiceNumber;
+  public $invoiceDate;
+  public $customerName;
+  public $customerPhone;
+  public $vehicleNumber;
+  public $subTotal=0.00;
+  public $discount=0.00;
+  public $vatAmount=0.00;
+  public $amountPaid=0.00;
+  public $notes="";
 }
 
  class Product
@@ -782,6 +856,7 @@ function GetStockTransactionHistory() {
    public $productNotes= "";
    public $minStockAlert = 0;
    public $dateOfEntry;
+   public $qty;
  }
 
  class Invoice
