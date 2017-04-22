@@ -564,12 +564,24 @@
             <?php
             
             $isActive = "";
-            if($CDATA['PAGE_NAME'] == 'ADDSUPPLIER'){ $isActive =  'active'; }
+            if($CDATA['PAGE_NAME'] == 'SUPPLIER'){ $isActive =  'active'; }
 
+            echo "<li class=\"hover " . $isActive . " \">
+                    <a href=\"supplier.php\" >
+                      <i class=\"fa fa-list\"></i>
+                      <span>Supplier</span>
+                      <span class=\"pull-right-container\">
+                      <i class=\"fa fa-angle-right pull-right\"></i>
+                      </span>
+                    </a>
+                  </li>";
+            
+            $isActive = "";
+            if($CDATA['PAGE_NAME'] == 'ADDSUPPLIER'){ $isActive =  'active'; }
             echo "<li class=\"hover " . $isActive . " \">
                     <a href=\"addsupplier.php\" >
                       <i class=\"fa fa-plus-square\"></i>
-                      <span>Supplier</span>
+                      <span>Add Supplier</span>
                       <span class=\"pull-right-container\">
                       <i class=\"fa fa-angle-right pull-right\"></i>
                       </span>

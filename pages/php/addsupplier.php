@@ -16,7 +16,7 @@ require '_header.php'
   <!-- Content Header (Page header) -->
   <section class="content-header" id="MainEventInfo" >
     <h1>
-    <div>Add new supplier
+    <div>Supplier
     </div>
     </h1>
 <!--     <ol class="breadcrumb">
@@ -43,7 +43,7 @@ require '_header.php'
         if( isset($_POST['SupplierName']) && !empty($_POST['SupplierName']) &&
             isset($_POST['TinNum']) && !empty($_POST['TinNum']))
           {
-            $RecordId = 0;
+
             $SupplierName = mysql_real_escape_string(trim($_POST['SupplierName']));
             $TinNum = mysql_real_escape_string(trim($_POST['TinNum']));
 
@@ -63,21 +63,25 @@ require '_header.php'
             if(isset($_POST['ContactPerson']) && !empty($_POST['ContactPerson']) )
               $ContactPerson = mysql_real_escape_string(trim($_POST['ContactPerson']));
 
+            $SupplierID = 0;
+            if(isset($_POST['SupplierID']) && !empty($_POST['SupplierID']) )
+              $SupplierID = mysql_real_escape_string(trim($_POST['SupplierID']));  
 
-             ChromePhp::log("RecordId = ");
-             ChromePhp::log($RecordId);
+
+             ChromePhp::log("SupplierID = ");
+             ChromePhp::log($SupplierID);
              $Result = false;
              $msg = "";
-            if($RecordId == 0)
+            if($SupplierID == 0)
             {
                $Result = AddSupplier($SupplierName, $TinNum, $MobileNum, $Email, $Address, $ContactPerson);
-               $msg = ' Record Added successfully!';
+               $msg = ' Suppplier Added successfully!';
 
             }
             else
             {
-              $Result = UpdateNonBillable($RecordId,$RecDate,$Perticulars,$AmountPaid,$Notes); 
-              $msg = ' Record Updated successfully!';
+              $Result = UpdateSupplier($SupplierID, $SupplierName, $TinNum, $MobileNum, $Email, $Address, $ContactPerson);
+              $msg = ' Supplier Updated successfully!';
             }
 
             if($Result)
@@ -134,7 +138,7 @@ require '_header.php'
       <div class="box-header with-border">
         <?php
           $title="Add";
-          if($GetRecord = @GetNonBillableRecord($_GET['id'])) {
+          if($GetRecord = @GetSuppliersRecords($_GET['id'])) {
             ChromePhp::log("got record id ");
             $Record  = mysql_fetch_assoc($GetRecord);
             ChromePhp::log($Record);
@@ -164,10 +168,17 @@ require '_header.php'
               <div class="form-group">
                 <label for="TinNum" class="control-label col-sm-3 lables">TIN Number<span class="mandatoryLabel">*</span></label>
                 <div class='col-sm-4'>
-                  <input type="text" class="form-control" name="TinNum" onkeypress = "return isNumberKey(event)" placeholder = "TIN Number" value = "<?php  if(isset($Record['TinNum'])) echo  $Record['TinNum']; ?>"/>
+                  <input type="text" class="form-control" name="TinNum" onkeypress = "return isNumberKey(event)" placeholder = "TIN Number" value = "<?php  if(isset($Record['TinNumber'])) echo  $Record['TinNumber']; ?>"/>
                 </div>
               </div>
               
+              <div class="form-group">
+                <label for="ContactPerson" class="control-label col-sm-3 lables">Contact Person Name</label>
+                <div class='col-sm-4'>
+                  <input type="text" class="form-control" name="ContactPerson" placeholder = "Name" value = "<?php  if(isset($Record['ContactPerson'])) echo  $Record['ContactPerson']; ?>"/>
+                </div>
+              </div>
+
               <div class="form-group">
                 <label for="MobileNum" class="control-label col-sm-3 lables">Mobile Number</label>
                 <div class="col-sm-4">
@@ -175,7 +186,7 @@ require '_header.php'
                     <span class="input-group-addon">
                         <span class="fa fa-mobile"></span>
                     </span>
-                    <input type="text" class="form-control" name="MobileNum" onkeypress="return isNumberKey(event)" value="<?php  if(isset($Record['AmountPaid'])) echo  $Record['AmountPaid']; ?>" >
+                    <input type="text" class="form-control mobile"  name="MobileNum" onkeypress="return isNumberKey(event)" value="<?php  if(isset($Record['Mobile'])) echo  $Record['Mobile']; ?>" >
                   </div>
                 </div>
               </div>
@@ -187,30 +198,25 @@ require '_header.php'
                 <span class="input-group-addon">
                <span class="fa fa-envelope"></span>
                     </span>
-                    <input type="text" class="form-control" name="Email" placeholder = "Email ID"  value="<?php  if(isset($Record['AmountPaid'])) echo  $Record['AmountPaid']; ?>" >
+                    <input type="text" class="form-control email" name="Email" placeholder = "Email ID"  value="<?php  if(isset($Record['Email'])) echo  $Record['Email']; ?>" >
                 </div>
                 </div>
               </div>
               <div class="form-group">
                 <label for="Address" class="control-label col-sm-3 lables">Address</label>
                 <div class="col-sm-4">
-                  <textarea  class="form-control" name="Address" placeholder="Address" ><?php  if(isset($Record['Notes'])) echo  $Record['Notes']; ?></textarea>
+                  <textarea  class="form-control" name="Address" placeholder="Address" ><?php  if(isset($Record['Address'])) echo  $Record['Address']; ?></textarea>
                 </div>
               </div>
-              <div class="form-group">
-                <label for="ContactPerson" class="control-label col-sm-3 lables">Contact Person Name</label>
-                <div class='col-sm-4'>
-                  <input type="text" class="form-control" name="ContactPerson" placeholder = "Name" value = "<?php  if(isset($Record['ContactPerson'])) echo  $Record['ContactPerson']; ?>"/>
-                </div>
-              </div>
+              
               <div class="form-group">
                 <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> </label>
 
                 <div class="col-sm-9">
-                  <input type="submit" name="nc_submit" value="submit" id="ID_Sub" class="btn btn-sm btn-success" style="<?php if(isset($Record['RecordID'])) echo 'margin-left:90px'; else echo 'margin-left:50px'; ?>" />
+                  <input type="submit" name="nc_submit" value="submit" id="ID_Sub" class="btn btn-sm btn-success" style="<?php if(isset($Record['SupplierID'])) echo 'margin-left:90px'; else echo 'margin-left:50px'; ?>" />
                   <input type="hidden" name="UKey" value="1" id="ID_UKey" />
-                  <input type="hidden" name="RecordId" value="<?php if(isset($Record['RecordID'])) echo $Record['RecordID'] ?>" />
-                  <button type="reset" class="btn btn-sm btn-default" style="visibility:<?php if(isset($Record['RecordID'])) echo 'hidden'; else 'visible'?> ">Clear</button>
+                  <input type="hidden" name="SupplierID" value="<?php if(isset($Record['SupplierID'])) echo $Record['SupplierID'] ?>" />
+                  <button type="reset" class="btn btn-sm btn-default" style="visibility:<?php if(isset($Record['SupplierID'])) echo 'hidden'; else 'visible'?> ">Clear</button>
                 </div>
               </div>
 

@@ -292,6 +292,21 @@ function GetNonBillableRecord($Record_id) {
   }
 }
 
+function GetSuppliersRecords($SupplierID) {
+
+  if($GetRecordInformation = mysql_query("SELECT * FROM `supplier` WHERE SupplierID = '$SupplierID' ") )
+  {
+    if(mysql_num_rows($GetRecordInformation) == 1)
+    {
+      return $GetRecordInformation;
+    }
+  }
+  else
+  {
+    return false;
+  }
+}
+
 function GetMaxAllocID() {
 
   if($maxAllocID = mysql_query("SELECT MAX(AllocID) as maxAllocID FROM roomsalloc"))
@@ -411,6 +426,35 @@ function AddSupplier($Name,$TinNum,$MobileNum,$Email,$Address,$ContactPerson){
       }
 
 }
+
+
+function GetSuppliers() {
+  if ($suppliers=mysql_query("SELECT * FROM `supplier`")) {
+    ChromePhp::log("true");
+    if (mysql_num_rows($suppliers) >=1) {
+      ChromePhp::log("true1");
+      return $suppliers;
+    }
+  }
+  else {
+    return false;
+  }
+}
+
+function UpdateSupplier($SupplierID, $SupplierName, $TinNum, $MobileNum, $Email, $Address, $ContactPerson)
+{
+  if($updateKey = mysql_query("UPDATE supplier SET SupplierName   = '$SupplierName' , TinNumber = '$TinNum', Mobile = '$MobileNum',
+   Email = '$Email', Address = '$Address', ContactPerson = '$ContactPerson' WHERE SupplierID='$SupplierID'"))
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+
 
 function UpdateNonBillable($RecordId,$RecDate,$Perticulars,$AmountPaid,$Notes){
 
@@ -645,21 +689,8 @@ function GetBrands() {
   }
 }
 
-function GetSuppliers() {
-
-  if($getSuppliers = mysql_query("SELECT * FROM supplier")) {
-    ChromePhp::log("true got supps");
-    if(mysql_num_rows($getSuppliers) >= 1) {
-      return $getSuppliers;
-    }
-  }
-  else {
-    return false;
-  }
-}
 
 function GetProdcutTypes(){
-  
   if($getProductTypes = mysql_query("SELECT * FROM producttype")) {
     ChromePhp::log("true got supps");
     if(mysql_num_rows($getProductTypes) >= 1) {
