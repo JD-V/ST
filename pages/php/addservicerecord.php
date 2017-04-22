@@ -241,7 +241,7 @@ require '_header.php'
             <td>
             <div ng-class="{'edited': item.QtyEdited, 'error' : item.QtyInvalid}">
               <label  ng-hide="item.editing" >{{item.Qty}}</label>
-                <input ng-change="item.QtyEdited = true" ng-click="item.editing = true" ng-blur=" item.editing = false; item.QtyInvalid = validateInput(item.Qty  ); item.QtyEdited = !item.QtyInvalid" onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editing" ng-model="item.Qty"  />
+              <input ng-change="item.QtyEdited = true" ng-click="item.editing = true" ng-blur=" item.editing = false; item.QtyInvalid = validateInput(item.Qty  );  item.QtyEdited = !item.QtyInvalid" onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editing" ng-model="item.Qty"  />
             </div>
             </td>
 
@@ -268,7 +268,7 @@ require '_header.php'
                     <span class="input-group-addon">
                         <span class="fa fa-inr"></span>
                     </span>
-                    <input type="text" class="form-control amount currency" maskedFormat="10,2" name="AmountPaid" placeholder="0.00" value="<?php  if(isset($serviceRecord['AmountPaid'])) echo  $serviceRecord['AmountPaid']; ?>" >
+                    <input type="text" class="form-control amount currency" maskedFormat="10,2" name="AmountPaid" placeholder="0.00" value="{{TotalAmountPaid}}" >
                   </div>
                 </div>
               </div>
@@ -329,7 +329,7 @@ require '_header.php'
     });
   };
   $scope.serviceItem = [];
-  
+  $scope.TotalAmountPaid  = 0.0;
   
 $scope.AddItem = function(ItemId){
        if($filter('getById')($scope.serviceItem, ItemId)== null){
@@ -345,23 +345,43 @@ var obj = {
     };
 
          $scope.serviceItem.push(obj);
-         
+         $scope.CalculateAmount();
        }
       };
       
       $scope.RemoveItem = function($ItemID,$index){
     console.log('itemid' +$ItemID);
     console.log('index' +$index);
-   // if($ItemID == null) {
       console.log("Removing at index : " + $index)
       $scope.serviceItem.splice($index,1);
-    //}
-  //  });
-    
+      $scope.CalculateAmount();
     };
 
+$scope.CalculateAmount = function(){
+   var sum = 0;
+    angular.forEach($scope.serviceItem, function(value){
+         sum += +(value.Qty*value.Price);
+    });
+    $scope.TotalAmountPaid = sum;
+};
   // initial call
   $scope.RefreshView();
+$scope.validateInput = function($inputValue) {
+    if($inputValue === "") {
+      document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
+      alert-danger\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">  \
+      <i class=\"ace-icon fa fa-times\"></i> </button><i class=\"ace-icon fa fa-ban \
+      red\"></i> &nbsp; &nbsp;can not be blank</div>";
+      autoClosingAlert(".alert-block", 2000);
+      return true;
+    }
+    else
+    {
+      $scope.CalculateAmount();
+      return false;
+    }
+  };
+
   })
   
   
