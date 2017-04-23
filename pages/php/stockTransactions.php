@@ -51,11 +51,10 @@ require '_header.php';
           <table id="stockEntryTable" class="table table-striped table-hover" >
             <thead>
               <tr>
-                <th>#</th>
+                <th>Date/Time</th>
                 <th>ProductName</th>
                 <td align="right" style="font-weight:bold">Qty</td>
-                <td align="center" style="font-weight:bold" >Txn Type</td>
-                <th>Date/Time</th>
+                <td align="center" style="font-weight:bold" >Txn Type</td
               </tr>
             </thead>
             <tbody>
@@ -66,11 +65,10 @@ require '_header.php';
                 while ($entry = mysql_fetch_assoc($stockTransactionHistory)) {
                   ?>
                   <tr>
-                    <td><?php echo $i+=1; ?></td>
+                    <td><?php $date= date_create($entry['TimeStamp']); echo date_format($date, 'd-m-Y H:i'); ?></td>
                     <td><?php echo $entry['ProductName']; ?></td>
                     <td align="right"><?php echo $entry['Qty']; ?></td>
                     <td align="center" class="<?php if($entry['TansactionTypeID']=='1') echo 'green'; else if($entry['TansactionTypeID']=='2') echo 'red'; else if($entry['TansactionTypeID']=='3') echo 'blue'; else echo 'purple'?>"><?php echo $entry['TranasactionTypeName'] ?></td>
-                    <td><?php echo $entry['TimeStamp'] ?></td>
                 </tr>
                   <?php
                 }

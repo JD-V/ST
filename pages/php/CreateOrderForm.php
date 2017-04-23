@@ -44,7 +44,10 @@ function saveOrder($FormData) {
   $FormData = json_decode($FormData);
   $order = new Order();
   $order->invoiceNumber = $FormData->InvoiceNo;
-  $order->invoiceDate = $FormData->SalesInvoiceDate;
+  
+  $date = date_create($FormData->SalesInvoiceDate); 
+  $order->invoiceDate = date_format($date, 'Y-m-d H:i');
+
   $order->customerName = $FormData->CustomerName;
   $order->customerPhone = $FormData->CustomerPhone;
   $order->vehicleNumber = $FormData->VehicleNo;
@@ -53,24 +56,29 @@ function saveOrder($FormData) {
   $order->DiscountAmount = $FormData->DiscountAmount;
   $order->amountPaid = $FormData->TotalAmountPaid;
   $order->notes = $FormData->Notes;
-
+  $order->address = $FormData->Address;
   chromephp::log($order);
   if(AddNewSalesItem($order)) {
   $i = 0;
 
   foreach($FormData->Products as $product) {
-    $ProductInventory = new ProductInventory();
-    $ProductInventory->productID = $product->ProductID;
-    $ProductInventory->productName = $product->ProductName;
-    $ProductInventory->qty = $product->Qty;
-    $ProductInventory->costPrice = $product->CostPrice;
-    $ProductInventory->sellingPrice = $product->SellingPrice;
-    
+      $ProductInventory = new ProductInventory();
+      $ProductInventory->productID = $product->ProductID;
+      $ProductInventory->productName = $product->ProductName;
+      $ProductInventory->qty = $product->Qty;
+      $ProductInventory->costPrice = $product->CostPrice;
+      $ProductInventory->sellingPrice = $product->SellingPrice;
+      
       $i += AddProductToSalesInvoice($ProductInventory,$order->invoiceNumber);
       chromephp::log($product); 
-  }
 
-  print $i;
+      $stock = new Stock();
+      $stock->ProductID = $product->ProductID;
+      $stock->Qty= -$product->Qty;
+      $stock->TansactionTypeID = 4; //4=>Sale
+      AddStockEntry($stock);
+    }
+    print $i;  
   }
   else print '';
 }

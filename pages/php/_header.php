@@ -110,7 +110,7 @@
       <!-- mini logo for sidebar mini 50x50 pixels -->
       <span class="logo-mini"><b>IMS</b></span>
       <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>Inventory</b></span>
+      <span class="logo-lg"><b>Pikes <i>Ace</i></b></span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
@@ -127,41 +127,59 @@
           </li> -->
 
           <!-- Notifications: style can be found in dropdown.less -->
+  <script type="text/javascript">
+    $.ajax({
+      dataType: "json",
+      type: "GET",
+      url: "AddUpdateRetriveStokcs.php?action=Retrive",
+      success: function(result) {
+        var count =0;
+        var StockArray= result;
+        //console.log(StockArray);
+        $.each(StockArray, function( key, value ) {
+          var Qty= parseInt(value.Qty)
+          if(Qty != NaN && Qty>9) 
+            console.log( value.ProductName + " : green : " + value.Qty );
+          else if(Qty != NaN && Qty>0) {
+            count++;
+            console.log( value.ProductName + " : yellow : " + value.Qty );
+            $('.notifications').append(
+              $('<li/>').append(
+                $('<a/>', {'href': 'manageStock.php?product='+value.ProductName}).append(
+                  $('<i/>', {'class': 'fa fa-warning text-yellow'})
+                ).append(value.ProductName +' has only ' + value.Qty + ' Nos Left')
+              )
+           );             
+          }
+          else {
+            count++;
+            console.log( value.ProductName + " : red : " + value.Qty );
+             $('.notifications').append(
+              $('<li/>').append(
+                $('<a/>', {'href': 'manageStock.php?product='+value.ProductName}).append(
+                  $('<i/>', {'class': 'fa fa-ban text-red'})
+                ).append(value.ProductName +' is out of stock')
+              )
+           );    
+          }
+        });
+
+        $('.notification-count-message').html('You have ' + count + ' notificaitons');
+        $('.notification-count').html(count);
+      }
+    });
+          
+  </script>
 <li class="dropdown notifications-menu">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">
     <i class="fa fa-bell-o"></i>
-    <span class="label label-warning">10</span>
+    <span class="label label-warning notification-count">10</span>
   </a>
-  <ul class="dropdown-menu">
-    <li class="header">You have 5  notifications</li>
+  <ul class="dropdown-menu" style="width:400px">
+    <li class="header notification-count-message">You have 5  notifications</li>
     <li>
       <!-- inner menu: contains the actual data -->
-      <ul class="menu">
-        <li>
-          <a href="#">
-            <i class="fa fa-users text-aqua"></i> 3 new tires from MRF added today
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            <i class="fa fa-warning text-yellow"></i> Product A has only 2 pices left
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            <i class="fa fa-ban text-red"></i> Product B is out of stock
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            <i class="fa fa-shopping-cart text-green"></i> 25 tyres sold today
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            <i class="fa fa-user text-red"></i> 1 new user has been added today
-          </a>
-        </li>
+      <ul class="menu notifications">
       </ul>
     </li>
     <li class="footer"><a href="#">View all</a></li>
@@ -212,7 +230,7 @@
           $isActiveTV = "";
           if($userRoleID ==1 )  // Admin role 1
           {
-            if($CDATA['PAGE_NAME'] == 'MNUSER' || $CDATA['PAGE_NAME'] == 'MNGLOC' || $CDATA['PAGE_NAME'] == 'MNSRVS' ) {
+            if($CDATA['PAGE_NAME'] == 'MNUSER' || $CDATA['PAGE_NAME'] == 'MNGLOC' || $CDATA['PAGE_NAME'] == 'MNSRVS' || $CDATA['PAGE_NAME']   == 'MNGBRAND') {
               $isActiveTV =  'active';
             } else {
               $isActiveTV = "";
@@ -260,7 +278,7 @@
 
               echo "<li class=\"hover " . $isActive . " \">
                       <a href=\"ManageBrand.php\" >
-                        <i class=\"fa fa-location-arrow\"></i>
+                        <i class=\"fa fa-tags\"></i>
                         <span>Brands</span>
                         <span class=\"pull-right-container\">
                         <i class=\"fa fa-angle-right pull-right\"></i>
@@ -346,7 +364,7 @@
           $isActiveTV = "";
           if($userRoleID ==1 )  // Admin role 1
           {
-            if($CDATA['PAGE_NAME'] == 'ADDPRD' || $CDATA['PAGE_NAME'] == 'PRDS') {
+            if($CDATA['PAGE_NAME'] == 'ADDPRD' || $CDATA['PAGE_NAME'] == 'INVPRDS') {
               $isActiveTV =  'active';
             } else {
               $isActiveTV = "";
@@ -465,7 +483,7 @@
           $isActiveTV = "";
           if($userRoleID ==1 )  // Admin role 1
           {
-            if($CDATA['PAGE_NAME'] == 'MNORDER' || $CDATA['PAGE_NAME'] == 'ORDERS') {
+            if($CDATA['PAGE_NAME'] == 'ADSLSREC' || $CDATA['PAGE_NAME'] == 'ORDERS') {
               $isActiveTV =  'active';
             } else {
               $isActiveTV = "";
@@ -485,7 +503,7 @@
           <?php
 
            $isActive = "";
-           if($CDATA['PAGE_NAME'] == 'MNORDER') { $isActive =  'active'; }
+           if($CDATA['PAGE_NAME'] == 'ADSLSREC') { $isActive =  'active'; }
           
            echo "<li class=\"hover " . $isActive . " \">
                     <a href=\"addneworder.php\" >
@@ -619,9 +637,21 @@
                   </a>
                 </li>";
           ?>
-
+        
           </ul>
         </li>
+      <?php } ?>
+        <?php
+          //$userRoleID = getUserRoleID();
+          $isActiveTV = "";
+          if($userRoleID ==1 )  // Admin role 1
+          {
+            if($CDATA['PAGE_NAME'] == 'SUPPLIER' || $CDATA['PAGE_NAME'] == 'ADDSUPPLIER' ) {
+              $isActiveTV =  'active';
+            } else {
+              $isActiveTV = "";
+            }
+          ?>
 
         <li class="treeview <?php echo $isActiveTV ?>" >
             <a href="#">

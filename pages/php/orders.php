@@ -84,7 +84,7 @@ window.open("DisplaySaleInvoice.php?id="+InvoiceID);
       </div>
       <div class="box-body">
       <div class="table-responsive col-sm-12" >
-          <table id="serviceTable" class="table table-striped table-hover" >
+          <table id="salesTable" class="table table-striped table-hover" >
             <thead>
               <tr>
                 <th>#</th>
@@ -100,6 +100,7 @@ window.open("DisplaySaleInvoice.php?id="+InvoiceID);
                 <th>Discount</th>
 
                 <th>Amount Paid</th>
+                <th>Address</th>
                 <th>Notes</th>
                 <!--<th><i class="fa fa-pencil" aria-hidden="true"></i></th>-->
                 <th>Invoice</i></th>
@@ -125,6 +126,7 @@ window.open("DisplaySaleInvoice.php?id="+InvoiceID);
                     <td><?php echo $order['Discount']; ?></td>
 
                     <td><?php echo $order['AmountPaid']; ?></td>
+                    <td><?php echo $order['Address']; ?></td>
                     <td><?php echo $order['Notes']; ?></td>
                     <td><?php echo '<input type="button" class="btn btn-sm btn-info" value="Invoice" onclick = "DisplayInvoice('.$order['InvoiceNumber'].');" />'; ?></td>
                   </tr>

@@ -98,6 +98,7 @@ window.open("DisplayServiceInvoice.php?id="+InvoiceID);
                 <th>Vehicle No</th>
 
                 <th>Amount Paid</th>
+                <th>Address</th>
                 <th>Notes</th>
                 <!--<th><i class="fa fa-pencil" aria-hidden="true"></i></th>-->
                 <th>Invoice</i></th>
@@ -119,8 +120,9 @@ window.open("DisplayServiceInvoice.php?id="+InvoiceID);
                     <td><?php echo $service['VehicleNumber']; ?></td>
 
                     <td><?php echo $service['AmountPaid']; ?></td>
+                    <td><?php echo $service['Address']; ?></td>
                     <td><?php echo $service['Note']; ?></td>
-                    <!--<td><?php echo '<a href="addservicerecord.php?id='.$service['InvoiceNumber'].'"  onclick="return DelConfirm();" class=""><i class="fa fa-pencil" aria-hidden="true"></i></a>'; ?></td>-->
+                    
                     <td><?php echo '<input type="button" class="btn btn-sm btn-info" value="Invoice" onclick = "DisplayInvoice('.$service['InvoiceNumber'].');" />'; ?></td>
                   </tr>
                   <?php
