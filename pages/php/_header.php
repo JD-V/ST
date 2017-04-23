@@ -257,6 +257,21 @@
                       </a>
                     </li>";
 
+                     $isActive = "";
+           if($CDATA['PAGE_NAME'] == 'MNGBRAND') { $isActive =  'active';  }
+           ChromePhp::log('isa active '. $CDATA['PAGE_NAME'] );
+
+              echo "<li class=\"hover " . $isActive . " \">
+                      <a href=\"ManageBrand.php\" >
+                        <i class=\"fa fa-location-arrow\"></i>
+                        <span>Brands</span>
+                        <span class=\"pull-right-container\">
+                        <i class=\"fa fa-angle-right pull-right\"></i>
+                        </span>
+                      </a>
+                    </li>";
+
+
             $isActive = "";
            if($CDATA['PAGE_NAME'] == 'MNSRVS') { $isActive =  'active';  }
            ChromePhp::log('isa active '. $CDATA['PAGE_NAME'] );
@@ -551,6 +566,48 @@
 
           </ul>
         </li>
+
+        <li class="treeview <?php echo $isActiveTV ?>" >
+            <a href="#">
+              <i class="fa fa-industry"></i>
+              <span>Suppliers</span>
+              <span class="pull-right-container">
+              <i class="fa fa-angle-down pull-right"></i>
+              </span>
+            </a>
+            <ul class="treeview-menu">
+            <?php
+            
+            $isActive = "";
+            if($CDATA['PAGE_NAME'] == 'SUPPLIER'){ $isActive =  'active'; }
+
+            echo "<li class=\"hover " . $isActive . " \">
+                    <a href=\"supplier.php\" >
+                      <i class=\"fa fa-list\"></i>
+                      <span>Supplier</span>
+                      <span class=\"pull-right-container\">
+                      <i class=\"fa fa-angle-right pull-right\"></i>
+                      </span>
+                    </a>
+                  </li>";
+            
+            $isActive = "";
+            if($CDATA['PAGE_NAME'] == 'ADDSUPPLIER'){ $isActive =  'active'; }
+            echo "<li class=\"hover " . $isActive . " \">
+                    <a href=\"addsupplier.php\" >
+                      <i class=\"fa fa-plus-square\"></i>
+                      <span>Add Supplier</span>
+                      <span class=\"pull-right-container\">
+                      <i class=\"fa fa-angle-right pull-right\"></i>
+                      </span>
+                    </a>
+                  </li>";
+                
+          ?>
+
+          </ul>
+        </li>
+
         <?php } ?>
 
         <li class="header">REPORTS</li>
