@@ -26,7 +26,7 @@ $(document).ready(function() {
 $('#stockEntryTable').DataTable({
     "paging":   false,
     "info":     false,
-    "order": [[ 0, "asc" ]],
+    "order": [[ 0, "desc" ]],
     "columnDefs": [{ "orderable": false, "targets": [2] }]
   });
 

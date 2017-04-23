@@ -31,98 +31,7 @@ require '_header.php'
   <!-- Main content -->
   <section class="content">
     <div id ="messages">
-
-    <?php
-    //$_SESSION['AUTH_KEY'] = mt_rand(100000000,999999999);
-    ChromePhp::log("form");
-    ChromePhp::log("UKEY" . @$_POST['UKey']);
-    if(@$_POST['UKey'] == '2')
-    {
-      ChromePhp::log("AKEY" . $_POST['akey']);
-      if(@$_POST['akey'] == $_SESSION['AUTH_KEY'])
-      {
-        if( isset($_POST['InvoiceNo']) && !empty($_POST['InvoiceNo']) &&
-            isset($_POST['ServiceInvoiceDate']) && !empty($_POST['ServiceInvoiceDate']) &&
-            isset($_POST['CustomerName']) && !empty($_POST['CustomerName']) &&
-            isset($_POST['CustomerPhone']) && !empty($_POST['CustomerPhone']) &&
-            isset($_POST['VehicleNo']) && !empty($_POST['VehicleNo']) &&
-            isset($_POST['AmountPaid']) && !empty($_POST['AmountPaid']) )
-          {
-
-            $ServiceRecord = new ServiceRecord();
-
-            $ServiceRecord->invoiceNumber = mysql_real_escape_string(trim($_POST['InvoiceNo']));
-
-            $dateStr = mysql_real_escape_string(trim($_POST['ServiceInvoiceDate']));
-            $date = DateTime::createFromFormat('d-m-Y H:i', $dateStr);
-            $ServiceRecord->invoiceDate = $date->format('Y-m-d H:i:s');
-
-            $ServiceRecord->customerName = mysql_real_escape_string(trim($_POST['CustomerName']));
-            $ServiceRecord->customerPhone = mysql_real_escape_string(trim($_POST['CustomerPhone']));
-            $ServiceRecord->vehicleNumber = mysql_real_escape_string(trim($_POST['VehicleNo']));
-            $ServiceRecord->amountPaid = mysql_real_escape_string(trim($_POST['AmountPaid']));
-            
-            if(isset($_POST['Notes']))
-              $ServiceRecord->notes = mysql_real_escape_string(trim($_POST['Notes']));
-            
-            $Msg = "";
-            if(isset($_POST['InvoiceNumberForUpdate']) && !empty($_POST['InvoiceNumberForUpdate'])) {
-              $Result = UpdateServicerecord($ServiceRecord);
-              $Msg = "Service Record has been saved successfully!";
-            } else {
-              $Result = Addservicerecord($ServiceRecord);
-              $Msg = "Service Record has been updated successfully!";
-            }
-
-            if($Result)
-            {
-                  echo '<div class="alert alert-block alert-success">
-                          <button type="button" class="close" data-dismiss="alert">
-                            <i class="ace-icon fa fa-times"></i>
-                          </button>
-                          <i class="ace-icon fa fa-check green"></i>'. $Msg .'</div>';
-            }
-            else
-            {
-              echo '<div class="alert alert-block alert-danger">
-                      <button type="button" class="close" data-dismiss="alert">
-                        <i class="ace-icon fa fa-times"></i>
-                      </button>
-                      <i class="ace-icon fa fa-ban red"></i>
-                      Something went wrong, try again.
-                    </div>';
-            }
-          }
-          else
-          {
-            echo '<div class="alert alert-block alert-danger">
-                    <button type="button" class="close" data-dismiss="alert">
-                      <i class="ace-icon fa fa-times"></i>
-                    </button>
-                    <i class="ace-icon fa fa-ban red"></i>
-                    Please enter all the details.
-                  </div>';
-          }
-          /* codefellas Security Robot for re-submission of form */
-          $_SESSION['AUTH_KEY'] = mt_rand(100000000,999999999);
-          ChromePhp::log($_SESSION['AUTH_KEY']);
-          /* END */
-        }
-        else
-        {
-
-          echo '<div class="alert alert-block alert-danger">
-                  <button type="button" class="close" data-dismiss="alert">
-                    <i class="ace-icon fa fa-times"></i>
-                  </button>
-                  <i class="ace-icon fa fa-android red"></i>
-                  Our Security Robot has detected re-submission of same data or hack attempt. Please try later.
-                </div>';
-        }
-    }
-
-      ?>
-  </div>
+     </div>
     <!-- Default box -->
     <div class="box">
       <div class="box-header with-border">
@@ -146,37 +55,31 @@ require '_header.php'
       </div>
       <div class="box-body">
 
-      <div id="AddOrUpdateServiceRecord" ng-app="serviceApp" ng-controller="serviceCtrl">
-          <form class="form-horizontal"  name="Service" id="Service" action="addservicerecord.php?_auth=<?php echo $_SESSION['AUTH_KEY']; ?>" method="post">
+      <div ng-app="serviceApp" ng-controller="serviceCtrl" ng-controller="ScrollController">
+          <form class="form-horizontal" name="serviceForm" valid-submit="sendForm()" novalidate >
               <input type="hidden" value="<?php echo $_SESSION['AUTH_KEY']; ?>" name="akey" id="ID_akey" >
 
               <div class="form-group">
                 <label for="InvoiceNo" class="control-label col-sm-3 lables">Invoice No<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" readonly="readonly" name="InvoiceNo" value="<?php  if(isset($serviceRecord['InvoiceNumber'])) echo  $serviceRecord['InvoiceNumber'];  else echo GetMaxServiceInoviceNumber()+1;?>" >
+                  <input type="text" class="form-control" readonly="readonly" name="InvoiceNo" ng-model = "InvoiceNo"  required>
                 </div>
               </div>
 
               <div class="form-group">
                 <label for="ServiceInvoiceDate" class="control-label col-sm-3 lables">Invoice Date<span class="mandatoryLabel">*</span></label>
                 <div class='col-sm-4'>
-                <?php
-                    $dateVal = "";
-                    if(isset($serviceRecord['InvoiceDateTime'])) {
-                      $dateStr = $serviceRecord['InvoiceDateTime']; 
-                      $date = DateTime::createFromFormat('Y-m-d H:i:s', $dateStr); 
-                      $dateVal =   $date->format('d-m-Y H:i'); 
-                    }
-                  ?>
-                  <input type="text" class="form-control" name="ServiceInvoiceDate" value = "<?php echo $dateVal ?>"/>
+                  <input type="text" class="form-control sales-invoice-date" name="ServiceInvoiceDate" ng-model = "ServiceInvoiceDate" required/>
                 </div>
+                <div ng-show = "serviceForm.ServiceInvoiceDate.$dirty && serviceForm.ServiceInvoiceDate.$invalid" class="errorMessage">Date is required</div>
               </div>
 
               <div class="form-group">
                 <label for="CustomerName" class="control-label col-sm-3 lables">Customer Name<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" name="CustomerName" placeholder="Cutomer Name"  value="<?php  if(isset($serviceRecord['CustomerName'])) echo  $serviceRecord['CustomerName']; ?>" >
+                  <input type="text" class="form-control" name="CustomerName" ng-model = "CustomerName" placeholder="Cutomer Name" ng-model = "CustomerName" required>
                 </div>
+                <div  ng-show="serviceForm.$submitted && serviceForm.CustomerName.$error.required" class="errorMessage">customer name is required</div>
               </div>
 
               <div class="form-group">
@@ -186,80 +89,109 @@ require '_header.php'
                     <span class="input-group-addon">
                         <span class="fa fa-mobile"></span>
                     </span>
-                    <input type="text" class="form-control phone" maxlength="10" name="CustomerPhone" placeholder="Phone Number" onkeypress="return isNumberKey(event)"  value="<?php  if(isset($serviceRecord['CustomerPhone'])) echo  $serviceRecord['CustomerPhone']; ?>" >
+                    <input type="text" class="form-control phone" maxlength="10" ng-minlength="10" ng-maxlength="10" name="CustomerPhone" placeholder="Phone Number" ng-model="CustomerPhone" onkeypress="return isNumberKey(event)" required>
                   </div>
                 </div>
+                <div ng-show="serviceForm.$submitted && serviceForm.CustomerPhone.$error.required" class="errorMessage">Please enter phone numnber</div>
+                <div class="errorMessage" ng-show="((serviceForm.CustomerPhone.$error.minlength || serviceForm.CustomerPhone.$error.maxlength) &&  serviceForm.CustomerPhone.$dirty) ">phone number should be 10 digits</div>
               </div>
 
               <div class="form-group">
                 <label for="VehicleNo" class="control-label col-sm-3 lables">Vehicle Number<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" name="VehicleNo" placeholder="Vehicle Number"  value="<?php  if(isset($serviceRecord['VehicleNumber'])) echo  $serviceRecord['VehicleNumber']; ?>" >
+                  <input type="text" class="form-control" name="VehicleNo" placeholder="Vehicle Number" ng-model="VehicleNo" required >
                 </div>
+                <div ng-show="serviceForm.$submitted && serviceForm.VehicleNo.$error.required" class="errorMessage">Please enter Vehicle numnber</div>
               </div>
 
             <div class="form-group">
             <label for="addItems" class="control-label col-sm-3 lables">Add Items<span class="mandatoryLabel">*</span></label>
               <div class="col-sm-4" >
                 <div class="dropdown">
-                  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Add serviceables&nbsp;&nbsp;&nbsp;&nbsp;<span class="caret"></span></button>
-                  <ul class="dropdown-menu">
+                  <button style="width:100%" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Add serviceables&nbsp;&nbsp;&nbsp;&nbsp;<span class="caret"></span></button>
+                  <ul style="width:100%" class="dropdown-menu">
                     <li ng-repeat="item in serviceable"><a href="#" ng-click="AddItem(item.ItemID)">{{item.Item}}&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;{{item.Price}}</a></li>
                   </ul>
                 </div>
               </div>
-            </div>     
+              <div ng-show = "serviceForm.$submitted  && (serviceItem.length==0)" class="errorMessage">Please select atleast one item</div>
+            </div>   
 
             <fieldset class="col-sm-9 col-xs-offset-1">
-                <legend>Serviceable<span class="mandatoryLabel">*</span></legend>
-                <div class="box-body">
-      <div class="table-responsive col-sm-12" id= "OrganizerList" >
-        <table id="OrgTable" class="table table-striped table-hover" >
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Price</th>
-              <th>Qty</th>
-              <th>Amount</th>
+              <legend>Serviceable<span class="mandatoryLabel">*</span></legend>
+              <div class="box-body">
+              <div class="table-responsive col-sm-12" id= "OrganizerList" >
+                <table id="OrgTable" class="table table-striped table-hover" >
+                  <thead>
+                    <tr>
+                      <th>Item</th>
+                      <th>Price</th>
+                      <th>Qty</th>
+                      <th>Amount</th>
 
-              <th><i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp;&nbsp;&nbsp;<i class="fa fa-times" aria-hidden="true"></i></th>
-            </tr>
-          </thead>
-          <tr ng-repeat="item in serviceItem">
-            <td>
-            <div ng-class="{'edited': item.itemEdited, 'error' : item.itemInvalid }">
-              <label ng-hide="item.editing" >{{item.Item}}</label>
-                <input ng-change="item.itemEdited = true;" ng-click="item.editing = true" ng-blur="item.editing = false; item.itemInvalid = validateInput(item.Item); item.itemEdited = !item.itemInvalid" type="text" ng-show="item.editing" ng-model="item.Item;"  />
-            </div>
-            </td>
-            <td>
-            <div ng-class="{'edited': item.priceEdited, 'error' : item.priceInvalid}">
-              <label  ng-hide="item.editing" >{{item.Price}}</label>
-                <input ng-change="item.priceEdited = true" ng-click="item.editing = true" ng-blur=" item.editing = false; item.priceInvalid = validateInput(item.Price  ); item.priceEdited = !item.priceInvalid" onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editing" ng-model="item.Price"  />
-            </div>
-            </td>
-            <td>
-            <div ng-class="{'edited': item.QtyEdited, 'error' : item.QtyInvalid}">
-              <label  ng-hide="item.editing" >{{item.Qty}}</label>
-              <input ng-change="item.QtyEdited = true" ng-click="item.editing = true" ng-blur=" item.editing = false; item.QtyInvalid = validateInput(item.Qty  );  item.QtyEdited = !item.QtyInvalid" onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editing" ng-model="item.Qty"  />
-            </div>
-            </td>
+                      <th><i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp;&nbsp;&nbsp;<i class="fa fa-times" aria-hidden="true"></i></th>
+                    </tr>
+                  </thead>
+                  <tr ng-repeat="item in serviceItem">
+                    <td>
+                    <div ng-class="{'edited': item.itemEdited, 'error' : item.itemInvalid }">
+                      <label ng-hide="item.editing" >{{item.Item}}</label>
+                        <input ng-change="item.itemEdited = true;" ng-click="item.editing = true" ng-blur="item.editing = false; item.itemInvalid = validateInput(item.Item); item.itemEdited = !item.itemInvalid" type="text" ng-show="item.editing" ng-model="item.Item;"  />
+                    </div>
+                    </td>
+                    <td>
+                    <div ng-class="{'edited': item.priceEdited, 'error' : item.priceInvalid}">
+                      <label  ng-hide="item.editing" >{{item.Price}}</label>
+                        <input ng-change="item.priceEdited = true" ng-click="item.editing = true" ng-blur=" item.editing = false; item.priceInvalid = validateInput(item.Price  ); item.priceEdited = !item.priceInvalid" onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editing" ng-model="item.Price"  />
+                    </div>
+                    </td>
+                    <td>
+                    <div ng-class="{'edited': item.QtyEdited, 'error' : item.QtyInvalid}">
+                      <label  ng-hide="item.editing" >{{item.Qty}}</label>
+                      <input ng-change="item.QtyEdited = true" ng-click="item.editing = true" ng-blur=" item.editing = false; item.QtyInvalid = validateInput(item.Qty  );  item.QtyEdited = !item.QtyInvalid" onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editing" ng-model="item.Qty"  />
+                    </div>
+                    </td>
 
-            <td>
-            <div>
-              <label  ng-model="item.Amount" >{{item.Qty*item.Price}}</label>
-            </div>
-            </td>
+                    <td>
+                    <div>
+                      <label  ng-model="item.Amount" >{{item.Qty*item.Price}}</label>
+                    </div>
+                    </td>
 
-            <td>
-            <a href="#" ng-click="item.editing = !item.editing;" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>&nbsp;&nbsp;&nbsp;
-            <a href="#" ng-click="RemoveItem(item.ItemID, $index);" ><i class="fa fa-times" aria-hidden="true"></i></a>
-            </td>
-          </tr>
-        </table>
-      </div>
-      </div>
-           </fieldset>    
+                    <td>
+                    <a ng-click="item.editing = !item.editing;" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>&nbsp;&nbsp;&nbsp;
+                    <a ng-click="RemoveItem(item.ItemID, $index);" ><i class="fa fa-times" aria-hidden="true"></i></a>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              </div>
+            </fieldset>
+
+              <div class="form-group">
+                <label for="SubTotal" class="control-label col-sm-3 lables">SubTotal<span class="mandatoryLabel">*</span></label>
+                <div class="col-sm-4">
+                  <div class='input-group'>
+                    <span class="input-group-addon">
+                        <span class="fa fa-inr"></span>
+                    </span>
+                    <input type="text" disabled class="form-control amount"   name="subTotal" placeholder="0.00" ng-model="SubTotal" required>
+                  </div>
+                </div>
+                <div  ng-show="serviceForm.$submitted && serviceForm.subTotal.$error.required" class="errorMessage"></div>
+              </div>
+
+              <div class="form-group">
+                <label for="DiscountAmount" class="control-label col-sm-3 lables">Discount</label>
+                <div class="col-sm-4">
+                  <div class='input-group'>
+                    <span class="input-group-addon">
+                        <span class="fa fa-inr"></span>
+                    </span>
+                    <input type="text" class="form-control amount" name="DiscountAmount" placeholder="0.00" onkeypress='return event.charCode >= 48 && event.charCode <= 57' ng-model="DiscountAmount" ng-blur="updateTotalAmountPaid()" >
+                  </div>
+                </div>
+              </div>
 
               <div class="form-group">
                 <label for="AmountPaid" class="control-label col-sm-3 lables">Amount paid<span class="mandatoryLabel">*</span></label>
@@ -268,26 +200,33 @@ require '_header.php'
                     <span class="input-group-addon">
                         <span class="fa fa-inr"></span>
                     </span>
-                    <input type="text" class="form-control amount currency" maskedFormat="10,2" name="AmountPaid" placeholder="0.00" value="{{TotalAmountPaid}}" >
+                    <input type="text" class="form-control amount" onkeypress='return event.charCode >= 48 && event.charCode <= 57' name="TotalAmountPaid" placeholder="0.00" ng-model="TotalAmountPaid" required>
                   </div>
+                </div>
+                <div ng-show = "serviceForm.TotalAmountPaid.$dirty && ( TotalAmountPaid == undefined || TotalAmountPaid <= 0 )" class="errorMessage">Please enter Total Amount Paid</div>
+              </div>
+
+              <div class="form-group">
+                <label for="Address" class="control-label col-sm-3 lables">Address</label>
+                <div class="col-sm-4">
+                  <textarea  class="form-control" name="Address" placeholder="Address" ng-model="Address" ></textarea>
                 </div>
               </div>
 
               <div class="form-group">
                 <label for="Notes" class="control-label col-sm-3 lables">Notes</label>
                 <div class="col-sm-4">
-                  <textarea  class="form-control" name="Notes" placeholder="Notes"><?php  if(isset($serviceRecord['Note'])) echo  $serviceRecord['Note']; ?></textarea>
+                  <textarea  class="form-control" name="Notes" placeholder="Notes" ng-model="Notes" ></textarea>
                 </div>
               </div>
 
               <div class="form-group">
                 <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> </label>
 
-                <div class="col-sm-9">
-                  <input type="submit" name="nc_submit" value="submit" id="ID_Sub" class="btn btn-sm btn-success" style="<?php if(isset($serviceRecord['InvoiceNumber'])) echo 'margin-left:90px'; else echo 'margin-left:50px'; ?>" />
-                  <input type="hidden" name="UKey" value="1" id="ID_UKey" />
-                  <input type="hidden" name="InvoiceNumberForUpdate" value="<?php if(isset($serviceRecord['InvoiceNumber'])) echo $serviceRecord['InvoiceNumber'] ?>" /> 
-                  <button type="reset" class="btn btn-sm btn-default" style="visibility:<?php if(isset($serviceRecord['InvoiceNumber'])) echo 'hidden'; else 'visible'?> ">Clear</button>
+                <div class="col-sm-9" >
+                  <button ng-click="gotoBottom()" type="submit" class="btn btn-sm btn-success">Submit!</button>
+                  <input type="hidden" name="UKey" value="1" id="ID_UKey"  />
+                  <button class="btn btn-sm btn-default" ng-click = "reset()" >Clear</button>
                 </div>
               </div>
 
@@ -307,6 +246,38 @@ require '_header.php'
 
 <script type="text/javascript">
 
+var ValidSubmit = ['$parse', function ($parse) {
+        return {
+            compile: function compile(tElement, tAttrs, transclude) {
+                return {
+                    post: function postLink(scope, element, iAttrs, controller) {
+                        var form = element.controller('form');
+                        form.$submitted = false;
+                        var fn = $parse(iAttrs.validSubmit);
+                        element.on('submit', function(event) {
+                            scope.$apply(function() {
+                                element.addClass('ng-submitted');
+                                form.$submitted = true;
+                                if(form.$valid) {
+                                    fn(scope, {$event:event});
+                                }
+                            });
+                        });
+                        scope.$watch(function() { return form.$valid}, function(isValid) {
+                            if(form.$submitted == false) return;
+                            if(isValid) {
+                                element.removeClass('has-error').addClass('has-success');
+                            } else {
+                                element.removeClass('has-success');
+                                element.addClass('has-error');
+                            }
+                        });
+                    }
+                }
+            }
+        }
+    }];
+
   angular.module('serviceApp', [])
   .filter('getById', function() {
   return function(input, id) {
@@ -325,24 +296,26 @@ require '_header.php'
   $scope.RefreshView = function() {
     dataService.getServiceable(function(response) {
       console.log(response.data);
+      //$scope.serviceableActual = angular.copy(response.data);
       $scope.serviceable = response.data;
     });
   };
-  $scope.serviceItem = [];
-  $scope.TotalAmountPaid  = 0.0;
-  
+   //$scope.serviceItem = [];
+  // $scope.TotalAmountPaid  = 0.0;
+
 $scope.AddItem = function(ItemId){
+
        if($filter('getById')($scope.serviceItem, ItemId)== null){
        
-       var found = $filter('getById')($scope.serviceable, ItemId);
-         console.log(found);
-var obj = {
-      'ItemID': found.ItemID,
-      'Item' : found.Item,
-      'Price' : found.Price,
-      'Qty' :1,
-      'Amount': found.Price
-    };
+        var found = $filter('getById')($scope.serviceable, ItemId);
+        console.log(found);
+        var obj = {
+          'ItemID': found.ItemID,
+          'Item' : found.Item,
+          'Price' : found.Price,
+          'Qty' :1,
+          'Amount': found.Price
+        };
 
          $scope.serviceItem.push(obj);
          $scope.CalculateAmount();
@@ -350,23 +323,26 @@ var obj = {
       };
       
       $scope.RemoveItem = function($ItemID,$index){
-    console.log('itemid' +$ItemID);
-    console.log('index' +$index);
-      console.log("Removing at index : " + $index)
-      $scope.serviceItem.splice($index,1);
-      $scope.CalculateAmount();
+        $scope.serviceItem.splice($index,1);
+        $scope.CalculateAmount();
     };
 
-$scope.CalculateAmount = function(){
-   var sum = 0;
-    angular.forEach($scope.serviceItem, function(value){
-         sum += +(value.Qty*value.Price);
-    });
-    $scope.TotalAmountPaid = sum;
-};
-  // initial call
-  $scope.RefreshView();
-$scope.validateInput = function($inputValue) {
+  $scope.updateTotalAmountPaid = function() {
+    $scope.TotalAmountPaid = $scope.SubTotal;
+    if($scope.DiscountAmount != undefined && $scope.DiscountAmount != 0)
+      $scope.TotalAmountPaid -=  +$scope.DiscountAmount;
+  };    
+
+  $scope.CalculateAmount = function(){
+    var sum = 0;
+      angular.forEach($scope.serviceItem, function(value){
+          sum += +(value.Qty*value.Price);
+      });
+      $scope.SubTotal = sum;
+      $scope.TotalAmountPaid = $scope.SubTotal;
+  };
+
+  $scope.validateInput = function($inputValue) {
     if($inputValue === "") {
       document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
       alert-danger\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">  \
@@ -381,6 +357,86 @@ $scope.validateInput = function($inputValue) {
       return false;
     }
   };
+  $scope.reset = function(){
+      $scope.CustomerName  = "";
+      $scope.ServiceInvoiceDate = '<?php echo date("d-m-Y H:i") ?>';
+      dataService.getMaxServiceInvoiceNumber(function(response) {
+        console.log(response.data);
+        $scope.InvoiceNo = parseInt(response.data) +  +1;
+      });
+        $scope.serviceItem = [];
+        $scope.SubTotal = 0;
+        $scope.TotalAmountPaid = 0;
+        $scope.VehicleNo = '';
+        $scope.CustomerPhone = '';
+        $scope.DiscountAmount = 0;
+        $scope.Notes = '';
+        $scope.Address = '';
+   }
+
+  $scope.reset();
+  $scope.sendForm = function() {
+    if($scope.SubTotal == 0) {
+      document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
+        alert-danger\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">  \
+        <i class=\"ace-icon fa fa-times\"></i> </button><i class=\"ace-icon fa fa-ban \
+        red\"></i> &nbsp; &nbsp;please correct all the errors</div>";
+        autoClosingAlert(".alert-block", 2000);
+    } else {
+      var FormData = {
+        Products: []
+      };
+      for (var i = 0; i < $scope.serviceItem.length; i++) {
+
+        if( ($scope.serviceItem[i].hasOwnProperty('itemInvalid') && $scope.serviceItem[i].itemInvalid ) ||
+            ($scope.serviceItem[i].hasOwnProperty('priceInvalid') && $scope.serviceItem[i].priceInvalid ) ||
+            ($scope.serviceItem[i].hasOwnProperty('QtyInvalid') && $scope.serviceItem[i].QtyInvalid )  )
+            {
+              document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
+              alert-warning\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\"> \
+              <i class=\"ace-icon fa fa-times\"></i></button><i class=\"ace-icon fa fa-hand-paper-o\"> \
+              </i>&nbsp;&nbsp; Please correct the errors.</div>";
+              autoClosingAlert(".alert-block", 2000);
+              return;
+            } else FormData.Products.push($scope.serviceItem[i]);
+      }
+      FormData.InvoiceNo = $scope.InvoiceNo;
+      FormData.CustomerName= $scope.CustomerName;
+      FormData.ServiceInvoiceDate = $scope.ServiceInvoiceDate;
+      FormData.CustomerPhone = $scope.CustomerPhone;
+      FormData.VehicleNo = $scope.VehicleNo;
+      FormData.SubTotal = $scope.SubTotal;
+      FormData.DiscountAmount =  $scope.DiscountAmount;
+      FormData.TotalAmountPaid =  $scope.TotalAmountPaid;
+      FormData.Address = $scope.Address;
+      FormData.Notes = $scope.Notes;
+      console.log(JSON.stringify(FormData));
+
+      dataService.submitServiceRecord(FormData, function(response) {
+          if(parseInt(response.data, 10)) {
+            document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
+              alert-success\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\"> \
+              <i class=\"ace-icon fa fa-times\"></i></button><i class=\"ace-icon fa fa-check \
+              green\"></i>&nbsp;&nbsp;Sales Invoice has been added with " + response.data +" product(s).</div>";
+              $scope.reset();
+              autoClosingAlert(".alert-block", 4000);
+          }
+          else {
+              document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
+              alert-danger\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">  \
+              <i class=\"ace-icon fa fa-times\"></i> </button><i class=\"ace-icon fa fa-ban \
+              red\"></i> &nbsp; &nbsp;" + response.data + " </div>";
+              autoClosingAlert(".alert-block", 4000);
+          }
+      });
+    }
+  };
+  $scope.getClass = function(b) {
+    return b.toString();
+  }
+  // initial call
+  $scope.RefreshView();
+
 
   })
   
@@ -389,34 +445,30 @@ $scope.validateInput = function($inputValue) {
 
     //get Location Service
     this.getServiceable = function(callback) {
-      console.log("Get Locations"); 
       $http({
         method : "GET",
         url : "AddUpdateRetriveServiceable.php?action=Retrive",
       }).then(callback)
     };
 
-    //Delete Location Service
-    this.deleteServiceable = function(ItemId,callback) {
-      console.log("delete Location");
-      $http({
-        method : "GET",
-        url : "AddUpdateRetriveServiceable.php?action=Remove&ItemID=" + ItemId,
-      }).then(callback)
-    };
-
-    //Save Location Service
-    this.saveAll = function(ItemArray,callback) {
+  this.getMaxServiceInvoiceNumber = function(callback) {
+        
+        $http({
+          method : "GET",
+          url : "CreateServiceRecordForm.php?action=Retrive&item=MaxServiceInvoice",
+        }).then(callback)
+      };
+    //Save Service
+    this.submitServiceRecord = function(FormData,callback) {
       
-      console.log("Save All Locations");
       $http({
         method : 'GET',
-        url : "AddUpdateRetriveServiceable.php?action=save",
-        params:{ItemArr : JSON.stringify(ItemArray)},
+        url : "CreateServiceRecordForm.php?action=save",
+        params:{FormData : JSON.stringify(FormData)},
       }).then(callback)
     };
 
-  });
+  }).directive('validSubmit', ValidSubmit);
 </script>
 
 

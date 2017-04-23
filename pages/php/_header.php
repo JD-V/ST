@@ -110,7 +110,7 @@
       <!-- mini logo for sidebar mini 50x50 pixels -->
       <span class="logo-mini"><b>IMS</b></span>
       <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>Inventory</b></span>
+      <span class="logo-lg"><b>Pikes <i>Ace</i></b></span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
@@ -260,7 +260,7 @@
 
               echo "<li class=\"hover " . $isActive . " \">
                       <a href=\"ManageBrand.php\" >
-                        <i class=\"fa fa-location-arrow\"></i>
+                        <i class=\"fa fa-tags\"></i>
                         <span>Brands</span>
                         <span class=\"pull-right-container\">
                         <i class=\"fa fa-angle-right pull-right\"></i>
@@ -465,7 +465,7 @@
           $isActiveTV = "";
           if($userRoleID ==1 )  // Admin role 1
           {
-            if($CDATA['PAGE_NAME'] == 'MNORDER' || $CDATA['PAGE_NAME'] == 'ORDERS') {
+            if($CDATA['PAGE_NAME'] == 'ADSLSREC' || $CDATA['PAGE_NAME'] == 'ORDERS') {
               $isActiveTV =  'active';
             } else {
               $isActiveTV = "";
@@ -485,7 +485,7 @@
           <?php
 
            $isActive = "";
-           if($CDATA['PAGE_NAME'] == 'MNORDER') { $isActive =  'active'; }
+           if($CDATA['PAGE_NAME'] == 'ADSLSREC') { $isActive =  'active'; }
           
            echo "<li class=\"hover " . $isActive . " \">
                     <a href=\"addneworder.php\" >
@@ -619,9 +619,21 @@
                   </a>
                 </li>";
           ?>
-
+        
           </ul>
         </li>
+      <?php } ?>
+        <?php
+          //$userRoleID = getUserRoleID();
+          $isActiveTV = "";
+          if($userRoleID ==1 )  // Admin role 1
+          {
+            if($CDATA['PAGE_NAME'] == 'SUPPLIER' || $CDATA['PAGE_NAME'] == 'ADDSUPPLIER' ) {
+              $isActiveTV =  'active';
+            } else {
+              $isActiveTV = "";
+            }
+          ?>
 
         <li class="treeview <?php echo $isActiveTV ?>" >
             <a href="#">

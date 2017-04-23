@@ -2,7 +2,7 @@
 require '_connect.php';
 require '_core.php';
 
-$CDATA['PAGE_NAME'] = 'ADSRVREC';
+$CDATA['PAGE_NAME'] = 'ADSLSREC';
 if(isLogin() && isAdmin())
 {
 require '_header.php'
@@ -349,6 +349,13 @@ require '_header.php'
               </div>
 
               <div class="form-group">
+                <label for="Address" class="control-label col-sm-3 lables">Address</label>
+                <div class="col-sm-4">
+                  <textarea  class="form-control" name="Address" placeholder="Address" ng-model="Address" ></textarea>
+                </div>
+              </div>
+
+              <div class="form-group">
                 <label for="Notes" class="control-label col-sm-3 lables">Notes</label>
                 <div class="col-sm-4">
                   <textarea  class="form-control" name="Notes" placeholder="Notes" ng-model="Notes" ></textarea>
@@ -359,9 +366,6 @@ require '_header.php'
                 <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> </label>
 
                 <div class="col-sm-9">
-                  <!--<input type="submit" ng-click="salesForm.CustomerName.$setDirty(); salesForm.SalesInvoiceDate.$setDirty(); 
-                  salesForm.CustomerPhone.$setDirty(); salesForm.VehicleNo.$setDirty(); dislayProductError= true; 
-                  salesForm.TotalAmountPaid.$setDirty(); submitForm();" name="nc_submit" value="submit" id="ID_Sub" class="btn btn-sm btn-success" />-->
                   <button type="submit" class="btn btn-sm btn-success">Submit!</button>
                   <input type="hidden" name="UKey" value="1" id="ID_UKey"  />
                   <button class="btn btn-sm btn-default" ng-click = "reset()" >Clear</button>
@@ -518,6 +522,7 @@ var ValidSubmit = ['$parse', function ($parse) {
         $scope.CustomerPhone = '';
         $scope.DiscountAmount = 0;
         $scope.Notes = '';
+        $scope.Address = '';
    }
   
   $scope.reset();
@@ -557,6 +562,8 @@ var ValidSubmit = ['$parse', function ($parse) {
       FormData.DiscountAmount =  $scope.DiscountAmount;
       FormData.TotalAmountPaid =  $scope.TotalAmountPaid;
       FormData.Notes = $scope.Notes;
+      FormData.Address = $scope.Address;
+
       console.log(JSON.stringify(FormData));
 
       dataService.submitOrder(FormData, function(response) {

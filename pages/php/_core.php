@@ -870,10 +870,12 @@ function GetStockTransactionHistory() {
 
 function AddNewSalesItem($order) {
 
-  $AddOrder = mysql_query("INSERT INTO `sales` (`InvoiceNumber`, `InvoiceDateTime`, `CustomerName`, `CustomerPhone`, `VehicleNumber`, `SubTotal`, `Discount`, `Vat`, `AmountPaid`, `Notes` ) VALUES 
+  $AddOrder = mysql_query("INSERT INTO `sales` 
+    (`InvoiceNumber`, `InvoiceDateTime`, `CustomerName`, `CustomerPhone`, `VehicleNumber`, 
+    `SubTotal`, `Discount`, `Vat`, `AmountPaid`,`Address`, `Notes` ) VALUES 
     (  '$order->invoiceNumber', '$order->invoiceDate', '$order->customerName',  '$order->customerPhone',
        '$order->vehicleNumber', '$order->subTotal',  '$order->discount', 
-       '$order->vatAmount', '$order->amountPaid',  '$order->notes' )" );
+       '$order->vatAmount', '$order->amountPaid', '$order->address','$order->notes' )" );
 
   if($AddOrder)
     return 1;
@@ -895,6 +897,38 @@ function AddProductToSalesInvoice($product,$invoiceNumber) {
     return 0;
 }
 
+
+function AddNewSeriveRecord($service) {
+
+  $AddOrder = mysql_query("INSERT INTO `service` 
+    (`InvoiceNumber`, `InvoiceDateTime`, `CustomerName`, `CustomerPhone`, `VehicleNumber`,
+     `SubTotal`, `Discount`, `AmountPaid`, `Address`,`Note` ) VALUES 
+     ( '$service->invoiceNumber', '$service->invoiceDate', '$service->customerName',  '$service->customerPhone',
+       '$service->vehicleNumber', '$service->subTotal',  '$service->discountAmount', 
+       '$service->amountPaid', '$service->address',  '$service->notes' )" );
+
+  if($AddOrder)
+    return 1;
+  else
+    echo mysql_error();
+    return 0;
+}
+
+function AddItemToServiceInvoice($serviceable,$invoiceNumber) {
+
+  $AddProductToInvoice = mysql_query("INSERT INTO `serviceitems` 
+    (`ServiceableID`, `InvoiceNumber`, `ServiceableDispName`, `Qty`, `Price` ) VALUES 
+    ( '$serviceable->serviceableID', '$invoiceNumber', '$serviceable->serviceableName',
+      '$serviceable->qty', '$serviceable->price' )" );
+
+  if($AddProductToInvoice)
+    return 1;
+  else
+    echo mysql_error();
+    return 0;
+}
+
+
 class Order
 {
   public $invoiceNumber;
@@ -907,6 +941,7 @@ class Order
   public $vatAmount=0.00;
   public $amountPaid=0.00;
   public $notes="";
+  public $address="";
 }
 
  class Product
@@ -964,10 +999,26 @@ class ServiceRecord
   public $customerName;
   public $customerPhone;
   public $vehicleNumber;
+  public $subTotal;
+  public $discountAmount;
   public $amountPaid=0.00;
+  public $address="";
   public $notes="";
-  
 }
 
+class serviceable
+{
+  public $serviceableID;
+  public $serviceableName;
+  public $qty;
+  public $price;
+}
+
+class Stock 
+{
+  public $ProductID;
+  public $Qty;
+  public $TansactionTypeID;
+}
 
 ?>
