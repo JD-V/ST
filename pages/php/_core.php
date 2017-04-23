@@ -337,6 +337,19 @@ function RemoveLocation($LocationId) {
     print 1;
 }
 
+function RemoveBrand($BrandID) {
+
+  ChromePhp::log("Brand ID : " .$BrandID);
+  $RemoveBrand =  mysql_query("DELETE FROM `Brands` WHERE `BrandID` = $BrandID ");
+  $result = mysql_affected_rows();
+  if($result == -1)
+    print 'can not delete.!!  Room is Already Occupied.';
+  else if ($result == 0)
+    print 'Something went wrong. Try after refreshing page once.';
+  else
+    print 1;
+}
+
 function AddLocation($Location) {
   ChromePhp::log("LocName : " .$Location->LocName);
 
@@ -348,12 +361,38 @@ function AddLocation($Location) {
     return 1;
   else
     return 0;
+}
 
+function AddBrand($Brand) {
+  ChromePhp::log("BrandName : " .$Brand->BrandName);
+
+  $addBrand = mysql_query(" INSERT INTO `Brands` (`BrandName`) VALUES ( '$Brand->BrandName')" );
+
+  ChromePhp::log("ADD LOC qrY : " .$addBrand);
+
+  if($addBrand)
+  {
+    return 1;
+  }
+  else
+  {
+    return 0;
+  }
 }
 
 function UpdateLocation($Location) {
 
   $updateLocation = mysql_query(" UPDATE `location` SET `LocationName` = '$Location->LocName' WHERE `LocationID` = $Location->LocId " );
+
+   if(-1 == mysql_affected_rows())
+       return 0;
+     else
+       return 1;
+}
+
+function UpdateBrand($Brand) {
+
+  $updateBrand = mysql_query(" UPDATE `brands` SET `BrandName` = '$Brand->BrandName' WHERE `BrandID` = '$Brand->BrandID' " );
 
    if(-1 == mysql_affected_rows())
        return 0;
@@ -679,7 +718,7 @@ function AddServiceable($srv) {
 function GetBrands() {
   
   if($getBrands = mysql_query("SELECT * FROM brands")) {
-    ChromePhp::log("true");
+    ChromePhp::log("core -GetBrands - true");
     if(mysql_num_rows($getBrands) >= 1) {
       return $getBrands;
     }

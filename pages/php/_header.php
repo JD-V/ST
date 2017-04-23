@@ -257,6 +257,21 @@
                       </a>
                     </li>";
 
+                     $isActive = "";
+           if($CDATA['PAGE_NAME'] == 'MNGBRAND') { $isActive =  'active';  }
+           ChromePhp::log('isa active '. $CDATA['PAGE_NAME'] );
+
+              echo "<li class=\"hover " . $isActive . " \">
+                      <a href=\"ManageBrand.php\" >
+                        <i class=\"fa fa-location-arrow\"></i>
+                        <span>Brands</span>
+                        <span class=\"pull-right-container\">
+                        <i class=\"fa fa-angle-right pull-right\"></i>
+                        </span>
+                      </a>
+                    </li>";
+
+
             $isActive = "";
            if($CDATA['PAGE_NAME'] == 'MNSRVS') { $isActive =  'active';  }
            ChromePhp::log('isa active '. $CDATA['PAGE_NAME'] );
