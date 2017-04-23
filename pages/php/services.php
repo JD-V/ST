@@ -8,6 +8,15 @@ if(isLogin() && isAdmin())
 require '_header.php';
 ?>
 
+<script type = "text/javascript">
+
+function DisplayInvoice(InvoiceID){
+
+window.open("DisplayServiceInvoice.php?id="+InvoiceID);
+
+}
+</script>
+
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
   <!-- Content Header (Page header) -->
@@ -45,7 +54,7 @@ require '_header.php';
                   <i class="ace-icon fa fa-times"></i>
                 </button>
                 <i class="ace-icon fa fa-tick red"></i>
-                Event deleted successfully.
+                Service deleted successfully.
               </div>';
           }
           else
@@ -90,7 +99,7 @@ require '_header.php';
 
                 <th>Amount Paid</th>
                 <th>Notes</th>
-                <th><i class="fa fa-pencil" aria-hidden="true"></i></th>
+                <!--<th><i class="fa fa-pencil" aria-hidden="true"></i></th>-->
                 <th>Invoice</i></th>
               </tr>
             </thead>
@@ -111,8 +120,8 @@ require '_header.php';
 
                     <td><?php echo $service['AmountPaid']; ?></td>
                     <td><?php echo $service['Note']; ?></td>
-                    <td><?php echo '<a href="addservicerecord.php?id='.$service['InvoiceNumber'].'"  onclick="return DelConfirm();" class=""><i class="fa fa-pencil" aria-hidden="true"></i></a>'; ?></td>
-                    <td><?php echo '<input type="button" class="btn btn-sm btn-info" value="Invoice" />'; ?></td>
+                    <!--<td><?php echo '<a href="addservicerecord.php?id='.$service['InvoiceNumber'].'"  onclick="return DelConfirm();" class=""><i class="fa fa-pencil" aria-hidden="true"></i></a>'; ?></td>-->
+                    <td><?php echo '<input type="button" class="btn btn-sm btn-info" value="Invoice" onclick = "DisplayInvoice('.$service['InvoiceNumber'].');" />'; ?></td>
                   </tr>
                   <?php
                 }

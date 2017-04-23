@@ -156,6 +156,24 @@ function GetServices() {
   }
 }
 
+
+function GetOrders() {
+
+  if($getServiceList = mysql_query("SELECT * FROM sales"))
+  {
+    ChromePhp::log("true");
+    if(mysql_num_rows($getServiceList) >= 1)
+    {
+      ChromePhp::log("true1");
+      return $getServiceList;
+    }
+  }
+  else
+  {
+    return false;
+  }
+}
+
 function GetMaxServiceInoviceNumber()
 {
   if($maxInvoiceNumber = mysql_query("SELECT MAX(InvoiceNumber) as InvoiceNumber FROM service"))
@@ -218,6 +236,27 @@ function GetServiceRecord($InvoiceNumber) {
   else {
     return false;
   }
+}
+
+
+function GetOrderRecord($InvoiceNumber) {
+
+  if($GetRecordInformation = mysql_query("SELECT * FROM `sales` WHERE InvoiceNumber = '$InvoiceNumber' ") ) {
+    if(mysql_num_rows($GetRecordInformation) == 1) {
+      return $GetRecordInformation;
+    }
+  }
+  else {
+    return false;
+  }
+}
+
+function GetOrderRecordProducts($InvoiceNumber) {
+
+  return  mysql_query("SELECT sp.*, pt.ProductTypeName FROM salesproducts sp 
+    JOIN productinvetory pi ON sp.ProductID = pi.ProductID JOIN producttype pt ON pt.ProductTypeID 
+    = pi.ProductTypeID WHERE sp.InvoiceNumber='$InvoiceNumber' ");
+    
 }
 
 function generateRandomString($length = 30) {
