@@ -309,6 +309,21 @@ function GetNonBillableRecord($Record_id) {
   }
 }
 
+function GetSuppliersRecords($SupplierID) {
+
+  if($GetRecordInformation = mysql_query("SELECT * FROM `supplier` WHERE SupplierID = '$SupplierID' ") )
+  {
+    if(mysql_num_rows($GetRecordInformation) == 1)
+    {
+      return $GetRecordInformation;
+    }
+  }
+  else
+  {
+    return false;
+  }
+}
+
 function GetMaxAllocID() {
 
   if($maxAllocID = mysql_query("SELECT MAX(AllocID) as maxAllocID FROM roomsalloc"))
@@ -339,6 +354,19 @@ function RemoveLocation($LocationId) {
     print 1;
 }
 
+function RemoveBrand($BrandID) {
+
+  ChromePhp::log("Brand ID : " .$BrandID);
+  $RemoveBrand =  mysql_query("DELETE FROM `Brands` WHERE `BrandID` = $BrandID ");
+  $result = mysql_affected_rows();
+  if($result == -1)
+    print 'can not delete.!!  Room is Already Occupied.';
+  else if ($result == 0)
+    print 'Something went wrong. Try after refreshing page once.';
+  else
+    print 1;
+}
+
 function AddLocation($Location) {
   ChromePhp::log("LocName : " .$Location->LocName);
 
@@ -350,12 +378,38 @@ function AddLocation($Location) {
     return 1;
   else
     return 0;
+}
 
+function AddBrand($Brand) {
+  ChromePhp::log("BrandName : " .$Brand->BrandName);
+
+  $addBrand = mysql_query(" INSERT INTO `Brands` (`BrandName`) VALUES ( '$Brand->BrandName')" );
+
+  ChromePhp::log("ADD LOC qrY : " .$addBrand);
+
+  if($addBrand)
+  {
+    return 1;
+  }
+  else
+  {
+    return 0;
+  }
 }
 
 function UpdateLocation($Location) {
 
   $updateLocation = mysql_query(" UPDATE `location` SET `LocationName` = '$Location->LocName' WHERE `LocationID` = $Location->LocId " );
+
+   if(-1 == mysql_affected_rows())
+       return 0;
+     else
+       return 1;
+}
+
+function UpdateBrand($Brand) {
+
+  $updateBrand = mysql_query(" UPDATE `brands` SET `BrandName` = '$Brand->BrandName' WHERE `BrandID` = '$Brand->BrandID' " );
 
    if(-1 == mysql_affected_rows())
        return 0;
@@ -416,6 +470,47 @@ function AddNonBillable($RecDate,$Perticulars,$AmountPaid,$Notes){
       }  ChromePhp::log(' not inserted'); return false;}
 
 }
+
+function AddSupplier($Name,$TinNum,$MobileNum,$Email,$Address,$ContactPerson){
+    if($result = mysql_query("INSERT INTO supplier (SupplierName, TinNumber, Mobile, Email,Address, ContactPerson)
+                        VALUES ('$Name', '$TinNum','$MobileNum','$Email', '$Address', '$ContactPerson')" ) )
+      {ChromePhp::log('inserted'); return true;}
+    else
+      {
+        if (false === $result) {
+      }  ChromePhp::log(' not inserted'); return false;
+      }
+
+}
+
+
+function GetSuppliers() {
+  if ($suppliers=mysql_query("SELECT * FROM `supplier`")) {
+    ChromePhp::log("true");
+    if (mysql_num_rows($suppliers) >=1) {
+      ChromePhp::log("true1");
+      return $suppliers;
+    }
+  }
+  else {
+    return false;
+  }
+}
+
+function UpdateSupplier($SupplierID, $SupplierName, $TinNum, $MobileNum, $Email, $Address, $ContactPerson)
+{
+  if($updateKey = mysql_query("UPDATE supplier SET SupplierName   = '$SupplierName' , TinNumber = '$TinNum', Mobile = '$MobileNum',
+   Email = '$Email', Address = '$Address', ContactPerson = '$ContactPerson' WHERE SupplierID='$SupplierID'"))
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+
 
 function UpdateNonBillable($RecordId,$RecDate,$Perticulars,$AmountPaid,$Notes){
 
@@ -640,7 +735,7 @@ function AddServiceable($srv) {
 function GetBrands() {
   
   if($getBrands = mysql_query("SELECT * FROM brands")) {
-    ChromePhp::log("true");
+    ChromePhp::log("core -GetBrands - true");
     if(mysql_num_rows($getBrands) >= 1) {
       return $getBrands;
     }
@@ -650,21 +745,8 @@ function GetBrands() {
   }
 }
 
-function GetSuppliers() {
-
-  if($getSuppliers = mysql_query("SELECT * FROM supplier")) {
-    ChromePhp::log("true got supps");
-    if(mysql_num_rows($getSuppliers) >= 1) {
-      return $getSuppliers;
-    }
-  }
-  else {
-    return false;
-  }
-}
 
 function GetProdcutTypes(){
-  
   if($getProductTypes = mysql_query("SELECT * FROM producttype")) {
     ChromePhp::log("true got supps");
     if(mysql_num_rows($getProductTypes) >= 1) {
