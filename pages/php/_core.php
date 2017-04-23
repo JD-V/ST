@@ -190,6 +190,22 @@ function GetMaxServiceInoviceNumber()
     }
 }
 
+function GetMaxProductInventoryID()
+{
+  if($maxProductID = mysql_query("SELECT MAX(ProductID) as ProductID FROM productinvetory"))
+    {
+      if(mysql_num_rows($maxProductID) >= 1) {
+
+        $ShowData = mysql_fetch_assoc($maxProductID);
+        return $ShowData['ProductID'];
+      }
+    }
+    else
+    {
+      return false;
+    }
+}
+
 
 function GetMaxSalesInoviceNumber()
 {
@@ -228,7 +244,7 @@ function GetNonBillables() {
 
 function GetServiceRecord($InvoiceNumber) {
 
-  if($GetRecordInformation = mysql_query("SELECT * FROM `service` WHERE InvoiceNumber = '$InvoiceNumber' ") ) {
+  if($GetRecordInformation = mysql_query("SELECT * FROM `service` WHERE `InvoiceNumber` = '$InvoiceNumber' ") ) {
     if(mysql_num_rows($GetRecordInformation) == 1) {
       return $GetRecordInformation;
     }
@@ -236,6 +252,10 @@ function GetServiceRecord($InvoiceNumber) {
   else {
     return false;
   }
+}
+
+function GetServiceRecordItems($InvoiceNumber) {
+return  mysql_query("SELECT * FROM `serviceitems` WHERE InvoiceNumber='$InvoiceNumber' ");
 }
 
 

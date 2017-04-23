@@ -26,8 +26,6 @@ require '_header.php'
     </ol> -->
   </section>
 
-
-
   <!-- Main content -->
   <section class="content">
     <div id ="messages">
@@ -209,14 +207,14 @@ require '_header.php'
               <div class="form-group">
                 <label for="Address" class="control-label col-sm-3 lables">Address</label>
                 <div class="col-sm-4">
-                  <textarea  class="form-control" name="Address" placeholder="Address" ng-model="Address" ></textarea>
+                  <textarea  class="form-control" id="Address" name="Address" cols="30" rows="3" placeholder="Address" ng-model="Address" ></textarea>
                 </div>
               </div>
 
               <div class="form-group">
                 <label for="Notes" class="control-label col-sm-3 lables">Notes</label>
                 <div class="col-sm-4">
-                  <textarea  class="form-control" name="Notes" placeholder="Notes" ng-model="Notes" ></textarea>
+                  <textarea  class="form-control" name="Notes" cols="30" rows="3" placeholder="Notes" ng-model="Notes" ></textarea>
                 </div>
               </div>
 

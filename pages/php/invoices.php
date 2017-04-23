@@ -1,5 +1,5 @@
 <?php
-$CDATA['PAGE_NAME'] = 'invoices';
+$CDATA['PAGE_NAME'] = 'INVOICE';
 require '_connect.php';
 require '_core.php';
 

@@ -52,7 +52,7 @@ require '_header.php'
             $ProductInventory->productName = mysql_real_escape_string(trim($_POST['ProductName']));
             $ProductInventory->costPrice = mysql_real_escape_string(trim($_POST['CostPrice']));
             $ProductInventory->sellingPrice = mysql_real_escape_string(trim($_POST['SellingPrice']));
-            
+            $Qty = 0;
             
             if(isset($_POST['minStockAlert']) && !empty($_POST['minStockAlert']) )
                $ProductInventory->minStockAlert = 1;
@@ -62,6 +62,9 @@ require '_header.php'
             if(isset($_POST['ProductNotes']) && !empty($_POST['ProductNotes']) )
                $ProductInventory->productNotes = mysql_real_escape_string(trim($_POST['ProductNotes']));
 
+            if(isset($_POST['Qty']) && !empty($_POST['Qty']) )
+              $Qty = (int)$_POST['Qty'];
+            
             $result = false;
             $msg = '';
             if(isset($_POST['ProductID']) && !empty($_POST['ProductID'])) {
@@ -74,7 +77,16 @@ require '_header.php'
                 $msg = 'Product added successfully!';
             }
 
-            if($result) {          
+            if($result) {
+               
+               if($Qty>0) {
+                 $stock = new Stock();
+                 $stock->ProductID= GetMaxProductInventoryID();
+                 $stock->Qty=$Qty;
+                 $stock->TansactionTypeID = 3;  //3=>purchase
+                 if(AddStockEntry($stock))
+                  $msg .= " And Stock entry created with type PURCHASE";
+                 }
                   echo '<div class="alert alert-block alert-success">
                           <button type="button" class="close" data-dismiss="alert">
                             <i class="ace-icon fa fa-times"></i>
@@ -232,7 +244,7 @@ require '_header.php'
                     <input type="text" class="form-control rate currency" name="SellingPrice" maskedFormat="10,2" placeholder="0.00" value="<?php if(isset($Product['SellingPrice'])) echo $Product['SellingPrice']; ?>" >
                   </div>
                 </div>
-              </div>                    
+              </div>
 
             <div class="form-group">
                 <label for="ProductNotes" class="control-label col-sm-3 lables">Notes</label>
@@ -250,7 +262,19 @@ require '_header.php'
                         </label>
                     </div>    
                 </div>
-              </div>               
+            </div>     
+
+          <div class="form-group">        
+            <hr class="col-md-offset-2 col-sm-6">
+          </div>
+
+          <div class="form-group" <?php if(isset($Product['ProductID'])) echo 'hidden'; ?> >
+            <label for="Qty" class="control-label col-sm-3 lables">Qty</label>
+            <div class="col-sm-4">    
+              <input type="text" class="form-control" name="Qty" onkeypress='return event.charCode >= 48 && event.charCode <= 57' >
+              <span class="blue">Note : Adding Quantity here will create stock entry immediately.<br/>you can leave this balnk as well if you don't want to create stock entry</span>
+            </div>
+          </div>
 
           <div class="form-group">
             <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> </label>

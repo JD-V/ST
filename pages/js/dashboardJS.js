@@ -30,7 +30,20 @@ $('#stockEntryTable').DataTable({
     "columnDefs": [{ "orderable": false, "targets": [2] }]
   });
 
- 
+$('#salesTable').DataTable({
+    "paging":   false,
+    "info":     false,
+    "order": [[ 1, "desc" ]],
+    "columnDefs": [{ "orderable": false, "targets": [3,4,5,6,7,8,9,10,11,12] }]
+  });
+
+  $('#serviceTable').DataTable({
+    "paging":   false,
+    "info":     false,
+    "order": [[ 1, "desc" ]],
+    "columnDefs": [{ "orderable": false, "targets": [3,4,5,6,7,8,9] }]
+  });
+  
 
   $('*[name=RecDate]').appendDtpicker({"dateFormat":'DD-MM-YYYY hh:mm'});
   $('*[name=InvoiceDate]').appendDtpicker({"dateOnly": true, "dateFormat":'DD-MM-YYYY' });

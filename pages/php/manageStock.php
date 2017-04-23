@@ -144,7 +144,7 @@ require '_header.php';
   .controller('stockCtrl', function($scope,$filter, dataService) {
   $scope.sortType     = 'ProductName'; // set the default sort type
   $scope.sortReverse  = false;  // set the default sort order
-  $scope.serchProduct   = '';     // set the default search/filter term
+  $scope.serchProduct   = '<?php if(isset($_GET['product'])) echo $_GET['product'] ?>';     // set the default search/filter term
 
   // refreshing data in the table
   $scope.RefreshView = function() {
