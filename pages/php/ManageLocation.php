@@ -70,8 +70,8 @@ require '_header.php';
         </div>
       </div>
       <div class="box-body">
-      <div class="table-responsive col-sm-12" id= "OrganizerList" >
-        <table id="OrgTable" class="table table-striped table-hover" >
+      <div class="table-responsive col-sm-12">
+        <table class="table table-striped table-hover" >
           <thead>
             <tr>
               <th>Location</th>
@@ -277,11 +277,6 @@ require '_header.php';
   //         }
   //     }
   // }]);
-
-  function autoClosingAlert(selector, delay) {
-   var alert = $(selector).alert();
-   window.setTimeout(function() { alert.alert('close') }, delay);
-  }
 
 </script>
 <?php
