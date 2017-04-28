@@ -44,62 +44,10 @@
 <!--  loads mdp -->
 <script type="text/javascript" src="../../plugins/MultiDatesPicker/jquery-ui.multidatespicker.js"></script>
 
-
-<script type="text/javascript">
-
-
-  // function DispalayEventHeader()
-  // {
-  //   var xhttp = new XMLHttpRequest();
-  //       xhttp.onreadystatechange = function() {
-  //        if (this.readyState == 4 && this.status == 200)
-  //         document.getElementById("MainEventInfo").innerHTML  = this.responseText;
-  //       };
-  //        xhttp.open("GET", "storeOrGetCurrentEventId.php?for=Pages", true);
-  //        xhttp.send();
-  // }
-
-  // window.addEventListener('load',DispalayEventHeader());
-
-
-</script>
-
-  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-  <!--[if lt IE 9]>
-  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-  <![endif]-->
 </head>
 <!-- ADD THE CLASS fixed TO GET A FIXED HEADER AND SIDEBAR LAYOUT -->
 <!-- the fixed layout is not compatible with sidebar-mini -->
 <body class="hold-transition fixed sidebar-mini">
-
-  <!-- attend now modal -->
-  <!-- <div class="modal fade" id="attendNowModal" tabindex="-1" role="dialog" aria-labelledby="attendNowModalLabel">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="attendNowModalLabel">Attend Now</h4>
-        </div>
-
-        <div class="modal-body">
-          <form class='attendNow'>
-            <div class="form-group">
-              <label for="eventCode" class="control-label">Event Code</label>
-              <input type="text" class="form-control" id="eventCode" name="eventCode" placeholder="Event Code"
-                required="true" maxlength="10" />
-            </div>
-          </form>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id='attendNowSubmit'>Submit</button>
-        </div>
-      </div>
-    </div>
-  </div> -->
 
 <!-- Site wrapper -->
 <div class="wrapper">
@@ -182,7 +130,7 @@
       <ul class="menu notifications">
       </ul>
     </li>
-    <li class="footer"><a href="#">View all</a></li>
+    <li class="footer"><a href="notifications.php">View all</a></li>
   </ul>
 </li>
 
