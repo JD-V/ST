@@ -17,7 +17,7 @@ if(isLogin() && isAdmin())
   }
   $invoice = new phpinvoice();
   /* Header Settings */
-  $invoice->setLogo("../res/sample1.jpg");
+  $invoice->setLogo("../res/shankar_logo.jpg");
   $invoice->setColor("#007fff");
   $invoice->setType("SERVICE INVOICE");
   $invoice->setReference($ServiceRecord['InvoiceNumber']); // get it from db

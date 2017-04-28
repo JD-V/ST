@@ -77,7 +77,7 @@ require '_header.php';
       </div>
       <div class="box-body">
       <div class="table-responsive col-sm-12" >
-          <table id="serviceTable" class="table table-striped table-hover" >
+          <table id="supplierTable" class="table table-striped table-hover" >
             <thead>
               <tr>
                 <th>#</th>

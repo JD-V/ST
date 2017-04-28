@@ -17,7 +17,7 @@ include('./phpinvoice.php');
   }
   $invoice = new phpinvoice();
   /* Header Settings */
-  $invoice->setLogo("../res/sample1.jpg");
+  $invoice->setLogo("../res/shankar_logo.jpg");
   $invoice->setColor("#007fff");
   $invoice->setType("SALES INVOICE");
   $invoice->setReference($OrderRecord['InvoiceNumber']); // get it from db
