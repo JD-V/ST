@@ -28,7 +28,15 @@ function RetriveStocks() {
   if($stockdata) {
     if(mysql_num_rows($stockdata) >= 1) {
       while($stock = mysql_fetch_assoc($stockdata)) {
-        $stockdata_array[] = array('ProductID' => $stock['ProductID'] ,'ProductName' => $stock['ProductName'] , 'Qty' => $stock['Qty'] == NULL ? 0 : $stock['Qty'] );
+        $stockdata_array[] = array(
+         'ProductID' => $stock['ProductID'] ,
+         'ProductBrand' => $stock['BrandName'] ,
+         'ProductSize' => $stock['ProductSize'] ,
+         'ProductDisplay' =>$stock['BrandName'] . ' '. $stock['ProductSize'] .' ' .$stock['ProductPattern'] ,
+         'ProductPattern' => $stock['ProductPattern'] ,
+         'Qty' => $stock['Qty'] == NULL ? 0 : $stock['Qty'] ,
+         'MinSellPrice' => $stock['MinSellPrice'] ,
+         'MaxSellPrice' => $stock['MaxSellPrice'] );
       }
     }
   }

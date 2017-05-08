@@ -19,15 +19,15 @@ $(document).ready(function() {
   $('#productInventoryTable').DataTable({
     "paging":   false,
     "info":     false,
-    "order": [[ 0, "asc" ]],
-    "columnDefs": [{ "orderable": false, "targets": [ 5,6,7,8,9,10] }]
+    "order": [[ 11, "desc" ]],
+    "columnDefs": [{ "orderable": false, "targets": [ 6,7,8,9,10,12 ] }]
   });
 
 $('#stockEntryTable').DataTable({
     "paging":   false,
     "info":     false,
     "order": [[ 0, "desc" ]],
-    "columnDefs": [{ "orderable": false, "targets": [2] }]
+    "columnDefs": [{ "orderable": false, "targets": [4] }]
   });
 
 $('#salesTable').DataTable({

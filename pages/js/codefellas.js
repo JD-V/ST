@@ -244,47 +244,61 @@ $(document).ready(function () {
 $("#AddorUpdateProduct").submit(function (e) {}).validate({
 
   rules: {
-    BrandName: {
+    SupplierID: {
+      required: true,
+    },    
+    BrandID: {
       required: true,
     },
-    SupplierName: {
+    ProductSize: {
       required: true,
     },
-    ProductType: {
+    ProductPattern: {
       required: true,
     },
-    ProductName: {
+    ProductTypeID: {
       required: true,
     },
     CostPrice: {
       required: true,
       number: true,
     },
-    SellingPrice: {
+    MinSellingPrice: {
       required: true,
       number: true,
-    }
+    },
+    MaxSellingPrice: {
+      required: true,
+      number: true,
+    }    
   },
   // Specify the validation error messages
   messages: {
-    BrandName: {
-      required: "Please select brand ",
-    },
-    SupplierName: {
+    SupplierID: {
       required: "Please select supplier ",
     },
-    ProductType: {
-      required: "Please select product type ",
+    BrandID: {
+      required: "Please select brand ",
     },
-    ProductName: {
-      required: "Please Enter Product name",
+    ProductSize: {
+      required: "Please provide product size",
+    },
+    ProductPattern: {
+      required: "Please Provide product pattern",
+    },    
+    ProductTypeID: {
+      required: "Please select product type ",
     },
     CostPrice: {
       required: "Please Enter a valid Price",
       number: "Numreric values accepted only",
     },
-    SellingPrice: {
-      required: "Please Enter a valid Duration",
+    MinSellingPrice: {
+      required: "Please Enter a valid Price",
+      number: "Numreric values accepted only",
+    },
+    MaxSellingPrice: {
+      required: "Please Enter a valid Price",
       number: "Numreric values accepted only",
     }
   },
@@ -570,3 +584,18 @@ function isNumberKey(evt) {
    var alert = $(selector).alert();
    window.setTimeout(function() { alert.alert('close') }, delay);
   }
+
+function MessageTemplate(MessageType, text) {
+
+  if(MessageType == 0) {
+    return "<div class=\"alert alert-block \
+            alert-success\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\"> \
+            <i class=\"ace-icon fa fa-times\"></i></button><i class=\"ace-icon fa fa-check \
+            green\"></i>&nbsp;&nbsp;" + text +"</div>";
+  } else if(MessageType ==1) {
+    return "<div class=\"alert alert-block \
+            alert-danger\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">  \
+            <i class=\"ace-icon fa fa-times\"></i> </button><i class=\"ace-icon fa fa-ban \
+            red\"></i>&nbsp;&nbsp;" + text + " </div>";
+  }
+}

@@ -82,7 +82,7 @@ require '_header.php';
               <tr>
                 <th>#</th>
                 <th>Date Time</th>
-                <th>Perticulars</th>
+                <th>Particulars</th>
                 <th>Amount Paid</th>
                 <th>Notes</th>
                 <th><i class="fa fa-pencil" aria-hidden="true"></i></th>

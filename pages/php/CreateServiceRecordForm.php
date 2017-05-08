@@ -46,6 +46,7 @@ function saveSeriveRecord($FormData) {
   $ServiceRecord->invoiceDate = date_format($date, 'Y-m-d H:i');
   $ServiceRecord->customerName = $FormData->CustomerName;
   $ServiceRecord->customerPhone = $FormData->CustomerPhone;
+  $ServiceRecord->vehicleMileage = $FormData->VehicleMileage;
   $ServiceRecord->vehicleNumber = $FormData->VehicleNo;
   $ServiceRecord->subTotal = $FormData->SubTotal;
   $ServiceRecord->discountAmount = $FormData->DiscountAmount;

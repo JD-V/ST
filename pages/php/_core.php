@@ -1,6 +1,6 @@
 <?php
 date_default_timezone_set('Asia/Kolkata');
-
+$_SESSION['VatFactor'] = 14.5;
 include 'ChromePhp.php';
 
 ob_start();
@@ -154,6 +154,35 @@ function GetServices() {
   {
     return false;
   }
+}
+
+function GetServices2() {
+  $SRArray = array();
+  if($getServiceList = mysql_query("SELECT * FROM service"))
+  {
+    ChromePhp::log("true");
+    if(mysql_num_rows($getServiceList) >= 1)
+    {
+      while ($service = mysql_fetch_assoc($getServiceList)) {
+        $ServiceRecord = new ServiceRecord();
+        $ServiceRecord->invoiceNumber = $service['InvoiceNumber'];
+        $date = date_create($service['InvoiceDateTime']);
+        $ServiceRecord->invoiceDate = date_format($date, 'd-m-Y H:i');
+        $ServiceRecord->customerName = $service['CustomerName'];
+        $ServiceRecord->customerPhone = $service['CustomerPhone'];
+        $ServiceRecord->vehicleNumber = $service['VehicleNumber'];
+        $ServiceRecord->vehicleMileage = $service['VehicleMileage'];
+        $ServiceRecord->subTotal = $service['SubTotal'];
+        $ServiceRecord->discountAmount = $service['Discount'];
+        $ServiceRecord->amountPaid = $service['AmountPaid'];
+        $ServiceRecord->address = $service['Address'];
+        $ServiceRecord->notes = $service['Note'];
+
+        $SRArray[] = $ServiceRecord;
+      }
+    }
+  }
+  return $SRArray; 
 }
 
 
@@ -819,11 +848,12 @@ function GetProdcutTypes(){
 
 function AddProductInventory($ProductInventory) {
 
-  $addProductInventory = mysql_query("INSERT INTO `productinvetory` (`ProductName`, `BrandID`, `SupplierID`, 
-    `ProductTypeID`, `CostPrice`, `SellingPrice`, `ProductNotes`, `MinStockAlert`, `dateOfEntry` ) VALUES 
-    ( '$ProductInventory->productName', '$ProductInventory->brandID',  '$ProductInventory->supplierID', 
-      '$ProductInventory->productTypeID', '$ProductInventory->costPrice', '$ProductInventory->sellingPrice',
-      '$ProductInventory->productNotes', '$ProductInventory->minStockAlert','$ProductInventory->dateOfEntry'  )" );
+  $addProductInventory = mysql_query("INSERT INTO `productinvetory` (`ProductID`, `BrandID`, `ProductSize`, `ProductPattern`, `SupplierID`, 
+    `ProductTypeID`, `CostPrice`, `MinSellPrice`, `MaxSellPrice`, `ProductNotes`, `MinStockAlert` ) VALUES 
+    ( '$ProductInventory->productID', '$ProductInventory->brandID', '$ProductInventory->productSize',
+      '$ProductInventory->productPattern', '$ProductInventory->supplierID', '$ProductInventory->productTypeID',
+      '$ProductInventory->costPrice', '$ProductInventory->minSellingPrice', '$ProductInventory->maxSellingPrice',
+      '$ProductInventory->productNotes', '$ProductInventory->minStockAlert' )" );
 
   if($addProductInventory)
     return 1;
@@ -835,9 +865,10 @@ function AddProductInventory($ProductInventory) {
 function UpdateProductInventory($ProductInventory) {
 
   $updateProductInventory = mysql_query("UPDATE `productinvetory` SET 
-    `ProductName` = '$ProductInventory->productName', `BrandID` = '$ProductInventory->brandID', 
-    `SupplierID` = '$ProductInventory->supplierID', `ProductTypeID`= '$ProductInventory->productTypeID', 
-    `CostPrice` = '$ProductInventory->costPrice', `SellingPrice` = '$ProductInventory->sellingPrice', 
+    `BrandID` = '$ProductInventory->brandID', `ProductSize` = '$ProductInventory->productSize', 
+    `ProductPattern` = '$ProductInventory->productPattern', `SupplierID` = '$ProductInventory->supplierID',
+    `ProductTypeID`= '$ProductInventory->productTypeID', `CostPrice` = '$ProductInventory->costPrice', 
+    `MinSellPrice` = '$ProductInventory->minSellingPrice', `MaxSellPrice` = '$ProductInventory->maxSellingPrice', 
     `ProductNotes` = '$ProductInventory->productNotes', `MinStockAlert` = '$ProductInventory->minStockAlert',
     `dateOfEntry` = '$ProductInventory->dateOfEntry' WHERE `ProductID` =  '$ProductInventory->productID' " );
 
@@ -861,6 +892,74 @@ function GetProductInventory(){
   }
 }
 
+/*
+This Method retruns Array of productInvenytory Objects
+*/
+function GetProductInventory2(){
+  
+  $ProductInventoryArray = array();
+
+  if($getProductInventory = mysql_query("select p.*, pt.ProductTypeName, b.BrandName, s.SupplierName from productinvetory p JOIN brands b ON p.BrandID = b.BrandID JOIN supplier s ON p.SupplierID = s.SupplierID JOIN producttype pt ON p.ProductTypeID = pt.ProductTypeID")) {
+    ChromePhp::log("true got supps");
+    if(mysql_num_rows($getProductInventory) >= 1) {
+      while ($product = mysql_fetch_assoc($getProductInventory)) {
+        $ProductInventory = new ProductInventory();
+        $ProductInventory->productID = $product['ProductID'];
+        $ProductInventory->supplierID = $product['SupplierID'];
+        $ProductInventory->supplierName = $product['SupplierName'];
+        $ProductInventory->brandID = $product['BrandID'];
+        $ProductInventory->brandName = $product['BrandName'];
+        $ProductInventory->productSize = $product['ProductSize'];
+        $ProductInventory->productPattern = $product['ProductPattern'];
+        $ProductInventory->productTypeID = $product['ProductTypeID'];
+        $ProductInventory->productTypeName = $product['ProductTypeName'];        
+        $ProductInventory->costPrice = $product['CostPrice'];
+        $ProductInventory->minSellingPrice = $product['MinSellPrice'];
+        $ProductInventory->maxSellingPrice = $product['MaxSellPrice'];
+        $ProductInventory->productNotes = $product['ProductNotes'];
+        $ProductInventory->minStockAlert = $product['MinStockAlert'];
+        $ProductInventory->dateOfEntry = $product['DateOfEntry'];
+        $ProductInventory->lastModified = $product['LastModified'];
+        $ProductInventoryArray[] = $ProductInventory;
+      }
+    }
+  }
+  return $ProductInventoryArray;
+}
+
+/*
+This Method retruns productInvenytory Object
+*/
+function GetProductInventoryByID2($productID){
+  $ProductInventory = new ProductInventory();
+  
+  if($getProductInventory = mysql_query("select p.*, pt.ProductTypeName, b.BrandName, s.SupplierName from productinvetory p JOIN brands b ON p.BrandID = b.BrandID JOIN supplier s ON p.SupplierID = s.SupplierID JOIN producttype pt ON p.ProductTypeID = pt.ProductTypeID WHERE p.ProductID = '$productID' ")) {
+    if(mysql_num_rows($getProductInventory) >= 1) {
+      while ($product = mysql_fetch_assoc($getProductInventory)) {
+        $ProductInventory->productID = $product['ProductID'];
+        $ProductInventory->supplierID = $product['SupplierID'];
+        $ProductInventory->supplierName = $product['SupplierName'];
+        $ProductInventory->brandID = $product['BrandID'];
+        $ProductInventory->brandName = $product['BrandName'];
+        $ProductInventory->productSize = $product['ProductSize'];
+        $ProductInventory->productPattern = $product['ProductPattern'];
+        $ProductInventory->productTypeID = $product['ProductTypeID'];
+        $ProductInventory->productTypeName = $product['ProductTypeName'];        
+        $ProductInventory->costPrice = $product['CostPrice'];
+        $ProductInventory->minSellingPrice = $product['MinSellPrice'];
+        $ProductInventory->maxSellingPrice = $product['MaxSellPrice'];
+        $ProductInventory->productNotes = $product['ProductNotes'];
+        $ProductInventory->minStockAlert = $product['MinStockAlert'];
+        $ProductInventory->dateOfEntry = $product['DateOfEntry'];
+        $ProductInventory->lastModified = $product['LastModified'];
+      }
+      return $ProductInventory;
+    }
+  }
+
+  return NULL;
+}
+
 function GetProductInventoryByID($productID){
   
   if($getProductInventory = mysql_query("select p.*, pt.ProductTypeName, b.BrandName, s.SupplierName from productinvetory p JOIN brands b ON p.BrandID = b.BrandID JOIN supplier s ON p.SupplierID = s.SupplierID JOIN producttype pt ON p.ProductTypeID = pt.ProductTypeID WHERE p.ProductID = '$productID' ")) {
@@ -876,7 +975,7 @@ function GetProductInventoryByID($productID){
 
 function GetProductStocks() {
 
-  if($getProductInventory = mysql_query("SELECT pr.ProductID, pr.ProductName , SUM(st.Qty) AS Qty FROM productinvetory pr LEFT JOIN stockentries st ON pr.ProductID = st.ProductID GROUP BY ProductID ")) {
+  if($getProductInventory = mysql_query("SELECT pr.ProductID, br.BrandName, pr.ProductSize, pr.ProductPattern ,SUM(st.Qty) AS Qty, pr.MinSellPrice,pr.MaxSellPrice FROM productinvetory pr LEFT JOIN stockentries st ON pr.ProductID = st.ProductID JOIN brands br ON br.BrandID = pr.BrandID GROUP BY ProductID")) {
     ChromePhp::log("true got supps");
     if(mysql_num_rows($getProductInventory) >= 1) {
       return $getProductInventory;
@@ -887,12 +986,12 @@ function GetProductStocks() {
   }
 }
 
-function getProductWithStocks() {
+function getProductWithStocks($BrandID) {
   
-  if($getProductInventory = mysql_query("SELECT pr.ProductID, pr.ProductName, pr.ProductTypeID,pt.ProductTypeName,
-     pr.CostPrice, pr.SellingPrice, br.BrandName, SUM(st.Qty) AS Qty FROM productinvetory pr LEFT JOIN stockentries st 
+  if($getProductInventory = mysql_query("SELECT pr.ProductID, pr.ProductSize, pr.ProductPattern, pr.BrandID, pr.ProductTypeID,pt.ProductTypeName,
+     pr.CostPrice, pr.MinSellPrice, pr.MaxSellPrice, br.BrandName, SUM(st.Qty) AS Qty FROM productinvetory pr LEFT JOIN stockentries st 
      ON pr.ProductID = st.ProductID JOIN producttype pt ON pt.ProductTypeID = pr.ProductTypeID JOIN brands br ON 
-     pr.BrandID = br.BrandID GROUP BY ProductID ")) {
+     pr.BrandID = br.BrandID WHERE pr.BrandID = '$BrandID' GROUP BY ProductID ")) {
     ChromePhp::log("true got supps");
     if(mysql_num_rows($getProductInventory) >= 1) {
       return $getProductInventory;
@@ -916,7 +1015,7 @@ function AddStockEntry($stock) {
 
 function GetStockTransactionHistory() {
   
-  if($getStockTransactionHistory = mysql_query("select pi.ProductName, pi.ProductID, se.Qty, se.TansactionTypeID, tt.TranasactionTypeName, se.TimeStamp FROM stockentries se JOIN productinvetory pi ON se.ProductID = pi.ProductID JOIN tranasactiontype tt ON se.TansactionTypeID = tt.TansactionTypeID")) {
+  if($getStockTransactionHistory = mysql_query("select br.BrandName, pi.ProductSize, pi.ProductPattern, pi.ProductID, se.Qty, se.TansactionTypeID, tt.TranasactionTypeName, se.TimeStamp FROM stockentries se JOIN productinvetory pi ON se.ProductID = pi.ProductID JOIN tranasactiontype tt ON se.TansactionTypeID = tt.TansactionTypeID JOIN brands br ON pi.BrandID = br.BrandID")) {
     
     if(mysql_num_rows($getStockTransactionHistory) >= 1) {
       return $getStockTransactionHistory;
@@ -959,17 +1058,17 @@ function AddProductToSalesInvoice($product,$invoiceNumber) {
 
 function AddNewSeriveRecord($service) {
 
-  $AddOrder = mysql_query("INSERT INTO `service` 
-    (`InvoiceNumber`, `InvoiceDateTime`, `CustomerName`, `CustomerPhone`, `VehicleNumber`,
-     `SubTotal`, `Discount`, `AmountPaid`, `Address`,`Note` ) VALUES 
-     ( '$service->invoiceNumber', '$service->invoiceDate', '$service->customerName',  '$service->customerPhone',
-       '$service->vehicleNumber', '$service->subTotal',  '$service->discountAmount', 
+  $AddSR = mysql_query("INSERT INTO `service` 
+    ( `InvoiceNumber`, `InvoiceDateTime`, `CustomerName`, `CustomerPhone`, `VehicleNumber`, 
+      `VehicleMileage`, `SubTotal`, `Discount`, `AmountPaid`, `Address`,`Note` ) VALUES 
+      ('$service->invoiceNumber', '$service->invoiceDate', '$service->customerName',  '$service->customerPhone',
+       '$service->vehicleNumber', '$service->vehicleMileage', '$service->subTotal',  '$service->discountAmount', 
        '$service->amountPaid', '$service->address',  '$service->notes' )" );
 
-  if($AddOrder)
+  if($AddSR)
     return 1;
   else
-    echo mysql_error();
+    //echo mysql_error();
     return 0;
 }
 
@@ -987,6 +1086,25 @@ function AddItemToServiceInvoice($serviceable,$invoiceNumber) {
     return 0;
 }
 
+function FilterInput($inputString) {
+  return mysql_real_escape_string(trim($inputString));
+}
+
+
+function MessageTemplate($MessageType, $text) {
+
+  if($MessageType == MessageType::Success) {
+    return "<div class=\"alert alert-block \
+            alert-success\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\"> \
+            <i class=\"ace-icon fa fa-times\"></i></button><i class=\"ace-icon fa fa-check \
+            green\"></i>&nbsp;&nbsp;" + $text +"</div>";
+  } else if($MessageType == MessageType::Failure) {
+    return "<div class=\"alert alert-block \
+            alert-danger\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">  \
+            <i class=\"ace-icon fa fa-times\"></i> </button><i class=\"ace-icon fa fa-ban \
+            red\"></i>&nbsp;&nbsp;" + $text + " </div>";
+  }
+}
 
 class Order
 {
@@ -1026,12 +1144,15 @@ class Order
    public $supplierID;
    public $productType;
    public $productTypeID;
-   public $productName;
+   public $productSize;
+   public $productPattern;
    public $costPrice;
-   public $sellingPrice;
+   public $minSellingPrice;
+   public $maxSellingPrice;
    public $productNotes= "";
    public $minStockAlert = 0;
    public $dateOfEntry;
+   public $lastModified;
    public $qty;
  }
 
@@ -1058,6 +1179,7 @@ class ServiceRecord
   public $customerName;
   public $customerPhone;
   public $vehicleNumber;
+  public $vehicleMileage;
   public $subTotal;
   public $discountAmount;
   public $amountPaid=0.00;
@@ -1078,6 +1200,14 @@ class Stock
   public $ProductID;
   public $Qty;
   public $TansactionTypeID;
+}
+
+abstract class MessageType
+{
+    const Success = 0;
+    const Failure = 1;
+    const Warning = 2;
+    // etc.
 }
 
 ?>

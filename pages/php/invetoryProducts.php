@@ -81,12 +81,14 @@ require '_header.php';
             <thead>
               <tr>
                 <th>#</th>
-                <th>Brand</th>
                 <th>supplier</th>
+                <th>Brand</th>
+                <th>Size</th>
+                <th>Pattern</th>
                 <th>Type</th>
-                <th>Product</th>
                 <td align="right" style="font-weight:bold">Cost Price</td>
-                <td align="right" style="font-weight:bold">Selling Price</td>
+                <td align="right" style="font-weight:bold">Min Sell Price</td>
+                <td align="right" style="font-weight:bold">Max Sell Price</td>
                 <th>Stock Alert</th>
                 <th>Notes</th>
                 <th>Last Modified</th>                
@@ -96,22 +98,23 @@ require '_header.php';
             <tbody>
               <?php
                 $i = 0;
-
-                $productInventory = GetProductInventory();
-                while ($product = mysql_fetch_assoc($productInventory)) {
+                $productInventory = GetProductInventory2();
+                foreach ($productInventory as $product) {
                   ?>
                   <tr>
-                    <td><?php echo '<a href="addproduct.php?id='. $product['ProductID'].'">' . $i+=1  . '</a>'; ?></td>
-                    <td><?php echo $product['BrandName']; ?></td>
-                    <td><?php echo $product['SupplierName']; ?></td>
-                    <td><?php echo $product['ProductTypeName'] ?></td>
-                    <td><?php echo $product['ProductName'] ?></td>
-                    <td align="right"><?php echo $product['CostPrice'] ?></td>
-                    <td align="right"><?php echo $product['SellingPrice']; ?></td>
-                    <td align="center"><?php if($product['MinStockAlert']) echo '<i class="fa fa-check green" aria-hidden="true"></i>'; else echo '<i class="fa fa-times red" aria-hidden="true" ></i>'; ?></td>
-                    <td><?php echo $product['ProductNotes']; ?></td>
-                    <td><?php echo $product['LastModified']; ?></td>
-                    <td><?php echo '<a href="addproduct.php?id='.$product['ProductID'].'"  class=""><i class="fa fa-pencil" aria-hidden="true"></i></a>'; ?></td>
+                    <td><?php echo '<a href="addproduct.php?id='. $product->productID.'">' . $i+=1  . '</a>'; ?></td>
+                    <td><?php echo $product->supplierID ?></td>
+                    <td><?php echo $product->brandName; ?></td>                    
+                    <td><?php echo $product->productSize ?></td>
+                    <td><?php echo $product->productPattern ?></td>
+                    <td><?php echo $product->productTypeName ?></td>
+                    <td align="right"><?php echo $product->costPrice ?></td>
+                    <td align="right"><?php echo $product->minSellingPrice; ?></td>
+                    <td align="right"><?php echo $product->maxSellingPrice; ?></td>
+                    <td align="center"><?php if($product->minStockAlert) echo '<i class="fa fa-check green" aria-hidden="true"></i>'; else echo '<i class="fa fa-times red" aria-hidden="true" ></i>'; ?></td>
+                    <td><?php echo $product->productNotes; ?></td>
+                    <td><?php echo $product->lastModified; ?></td>
+                    <td><?php echo '<a href="addproduct.php?id='.$product->productID.'"  class=""><i class="fa fa-pencil" aria-hidden="true"></i></a>'; ?></td>
                   </tr>
                   <?php
                 }

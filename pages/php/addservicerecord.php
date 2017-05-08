@@ -60,7 +60,7 @@ require '_header.php'
               <div class="form-group">
                 <label for="InvoiceNo" class="control-label col-sm-3 lables">Invoice No<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" readonly="readonly" name="InvoiceNo" ng-model = "InvoiceNo"  required>
+                  <input type="text" class="form-control" name="InvoiceNo" ng-model = "InvoiceNo"  required>
                 </div>
               </div>
 
@@ -103,12 +103,28 @@ require '_header.php'
               </div>
 
             <div class="form-group">
+              <label for="VehicleMileage" class="control-label col-sm-3 lables">Vehicle Mileage<span class="mandatoryLabel">*</span></label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control" name="VehicleMileage" placeholder="Vehicle Mileage" ng-model="VehicleMileage" required >
+              </div>
+              <div ng-show="serviceForm.$submitted && serviceForm.VehicleMileage.$error.required" class="errorMessage">Please enter Vehicle Mileage</div>
+            </div>              
+
+            <div class="form-group">
+              <label for="Address" class="control-label col-sm-3 lables">Address<span class="mandatoryLabel">*</span></label>
+              <div class="col-sm-4">
+                <textarea  class="form-control" id="Address" name="Address" cols="30" rows="3" placeholder="Address" ng-model="Address" required></textarea>
+              </div>
+              <div ng-show="serviceForm.$submitted && serviceForm.Address.$error.required" class="errorMessage">Please provide valid address</div>
+            </div>
+
+            <div class="form-group">
             <label for="addItems" class="control-label col-sm-3 lables">Add Items<span class="mandatoryLabel">*</span></label>
               <div class="col-sm-4" >
                 <div class="dropdown">
                   <button style="width:100%" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Add serviceables&nbsp;&nbsp;&nbsp;&nbsp;<span class="caret"></span></button>
                   <ul style="width:100%" class="dropdown-menu">
-                    <li ng-repeat="item in serviceable"><a href="#" ng-click="AddItem(item.ItemID)">{{item.Item}}&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;{{item.Price}}</a></li>
+                    <li ng-repeat="item in serviceable"><a ng-click="AddItem(item.ItemID)">{{item.Item}}&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;{{item.Price}}</a></li>
                   </ul>
                 </div>
               </div>
@@ -122,7 +138,7 @@ require '_header.php'
                 <table id="OrgTable" class="table table-striped table-hover" >
                   <thead>
                     <tr>
-                      <th>Item</th>
+                      <th>Particulars</th>
                       <th>Price</th>
                       <th>Qty</th>
                       <th>Amount</th>
@@ -202,13 +218,6 @@ require '_header.php'
                   </div>
                 </div>
                 <div ng-show = "serviceForm.TotalAmountPaid.$dirty && ( TotalAmountPaid == undefined || TotalAmountPaid <= 0 )" class="errorMessage">Please enter Total Amount Paid</div>
-              </div>
-
-              <div class="form-group">
-                <label for="Address" class="control-label col-sm-3 lables">Address</label>
-                <div class="col-sm-4">
-                  <textarea  class="form-control" id="Address" name="Address" cols="30" rows="3" placeholder="Address" ng-model="Address" ></textarea>
-                </div>
               </div>
 
               <div class="form-group">
@@ -366,6 +375,7 @@ $scope.AddItem = function(ItemId){
         $scope.SubTotal = 0;
         $scope.TotalAmountPaid = 0;
         $scope.VehicleNo = '';
+        $scope.VehicleMileage = '';
         $scope.CustomerPhone = '';
         $scope.DiscountAmount = 0;
         $scope.Notes = '';
@@ -403,6 +413,7 @@ $scope.AddItem = function(ItemId){
       FormData.ServiceInvoiceDate = $scope.ServiceInvoiceDate;
       FormData.CustomerPhone = $scope.CustomerPhone;
       FormData.VehicleNo = $scope.VehicleNo;
+      FormData.VehicleMileage = $scope.VehicleMileage;
       FormData.SubTotal = $scope.SubTotal;
       FormData.DiscountAmount =  $scope.DiscountAmount;
       FormData.TotalAmountPaid =  $scope.TotalAmountPaid;
@@ -412,18 +423,18 @@ $scope.AddItem = function(ItemId){
 
       dataService.submitServiceRecord(FormData, function(response) {
           if(parseInt(response.data, 10)) {
-            document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
-              alert-success\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\"> \
-              <i class=\"ace-icon fa fa-times\"></i></button><i class=\"ace-icon fa fa-check \
-              green\"></i>&nbsp;&nbsp;Sales Invoice has been added with " + response.data +" product(s).</div>";
+            document.getElementById("messages").innerHTML = 
+              MessageTemplate(0, "Service Invoice has been added with " + response.data +" item(s)");
+              scrollTo(0,0);
               $scope.reset();
+              $scope.serviceForm.$setPristine();
+              $scope.serviceForm.$setUntouched();
+              $scope.serviceForm.$submitted = false;
               autoClosingAlert(".alert-block", 4000);
           }
           else {
-              document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
-              alert-danger\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">  \
-              <i class=\"ace-icon fa fa-times\"></i> </button><i class=\"ace-icon fa fa-ban \
-              red\"></i> &nbsp; &nbsp;" + response.data + " </div>";
+              document.getElementById("messages").innerHTML =
+              MessageTemplate(1, response.data);
               autoClosingAlert(".alert-block", 4000);
           }
       });

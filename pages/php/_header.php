@@ -86,27 +86,28 @@
         //console.log(StockArray);
         $.each(StockArray, function( key, value ) {
           var Qty= parseInt(value.Qty)
-          if(Qty != NaN && Qty>9) 
-            console.log( value.ProductName + " : green : " + value.Qty );
+          if(Qty != NaN && Qty>9) { 
+            //console.log( value.ProductName + " : green : " + value.Qty );
+          }
           else if(Qty != NaN && Qty>0) {
             count++;
-            console.log( value.ProductName + " : yellow : " + value.Qty );
+            // console.log( value.ProductName + " : yellow : " + value.Qty );
             $('.notifications').append(
               $('<li/>').append(
-                $('<a/>', {'href': 'manageStock.php?product='+value.ProductName}).append(
+                $('<a/>', {'href': 'manageStock.php?product='+value.ProductDisplay}).append(
                   $('<i/>', {'class': 'fa fa-warning text-yellow'})
-                ).append(value.ProductName +' has only ' + value.Qty + ' Nos Left')
+                ).append(value.ProductDisplay+' has only ' + value.Qty + ' Nos Left')
               )
            );             
           }
           else {
             count++;
-            console.log( value.ProductName + " : red : " + value.Qty );
+            // console.log( value.ProductName + " : red : " + value.Qty );
              $('.notifications').append(
               $('<li/>').append(
-                $('<a/>', {'href': 'manageStock.php?product='+value.ProductName}).append(
+                $('<a/>', {'href': 'manageStock.php?product='+value.ProductDisplay}).append(
                   $('<i/>', {'class': 'fa fa-ban text-red'})
-                ).append(value.ProductName +' is out of stock')
+                ).append(value.ProductDisplay +' is out of stock')
               )
            );    
           }
