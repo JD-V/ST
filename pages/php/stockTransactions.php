@@ -52,7 +52,9 @@ require '_header.php';
             <thead>
               <tr>
                 <th>Date/Time</th>
-                <th>ProductName</th>
+                <th>Brand</th>
+                <th>Size</th>
+                <th>Pattern</th>
                 <td align="right" style="font-weight:bold">Qty</td>
                 <td align="center" style="font-weight:bold" >Txn Type</td
               </tr>
@@ -66,7 +68,9 @@ require '_header.php';
                   ?>
                   <tr>
                     <td><?php $date= date_create($entry['TimeStamp']); echo date_format($date, 'd-m-Y H:i'); ?></td>
-                    <td><?php echo $entry['ProductName']; ?></td>
+                    <td><?php echo $entry['BrandName']; ?></td>
+                    <td><?php echo $entry['ProductSize']; ?></td>
+                    <td><?php echo $entry['ProductPattern']; ?></td>
                     <td align="right"><?php echo $entry['Qty']; ?></td>
                     <td align="center" class="<?php if($entry['TansactionTypeID']=='1') echo 'green'; else if($entry['TansactionTypeID']=='2') echo 'red'; else if($entry['TansactionTypeID']=='3') echo 'blue'; else echo 'purple'?>"><?php echo $entry['TranasactionTypeName'] ?></td>
                 </tr>

@@ -163,7 +163,7 @@ require '_header.php'
               </div>
 
               <div class="form-group">
-                <label for="Perticulars" class="control-label col-sm-3 lables">Perticulars</label>
+                <label for="Perticulars" class="control-label col-sm-3 lables">Particulars</label>
                 <div class="col-sm-4">
                   <textarea  class="form-control" name="Perticulars" placeholder="Perticulars"><?php  if(isset($Record['Perticulars'])) echo  $Record['Perticulars']; ?></textarea>
                 </div>

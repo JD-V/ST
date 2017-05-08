@@ -83,12 +83,26 @@ require '_header.php';
           <thead>
             <tr>
               <th>
-                <a href="#" ng-click="sortType = 'ProductName'; sortReverse = !sortReverse">
-                Product
-                <span ng-show="sortType == 'ProductName' && !sortReverse" class="fa fa-caret-down"></span>
-                <span ng-show="sortType == 'ProductName' && sortReverse" class="fa fa-caret-up"></span>
+                <a href="#" ng-click="sortType = 'ProductBrand'; sortReverse = !sortReverse">
+                Product Brand
+                <span ng-show="sortType == 'ProductBrand' && !sortReverse" class="fa fa-caret-down"></span>
+                <span ng-show="sortType == 'ProductBrand' && sortReverse" class="fa fa-caret-up"></span>
                 </a>
               </th>
+              <th>
+                <a href="#" ng-click="sortType = 'ProductSize'; sortReverse = !sortReverse">
+                Product Size
+                <span ng-show="sortType == 'ProductSize' && !sortReverse" class="fa fa-caret-down"></span>
+                <span ng-show="sortType == 'ProductSize' && sortReverse" class="fa fa-caret-up"></span>
+                </a>
+              </th>  
+              <th>
+                <a href="#" ng-click="sortType = 'ProductPattern'; sortReverse = !sortReverse">
+                Product Pattern
+                <span ng-show="sortType == 'ProductPattern' && !sortReverse" class="fa fa-caret-down"></span>
+                <span ng-show="sortType == 'ProductPattern' && sortReverse" class="fa fa-caret-up"></span>
+                </a>
+              </th>                            
               <th>
                 <a href="#" ng-click="sortType = 'Qty'; sortReverse = !sortReverse">
                   Quantity
@@ -96,13 +110,37 @@ require '_header.php';
                   <span ng-show="sortType == 'Qty' && sortReverse" class="fa fa-caret-up"></span>
               </a>
             </th>
+            <th>
+                <a href="#" ng-click="sortType = 'MinSellPrice'; sortReverse = !sortReverse">
+                  Min Sell Price
+                  <span ng-show="sortType == 'MinSellPrice' && !sortReverse" class="fa fa-caret-down"></span>
+                  <span ng-show="sortType == 'MinSellPrice' && sortReverse" class="fa fa-caret-up"></span>
+              </a>
+            </th>
+            <th>
+                <a href="#" ng-click="sortType = 'MaxSellPrice'; sortReverse = !sortReverse">
+                  Max Sell Price
+                  <span ng-show="sortType == 'MaxSellPrice' && !sortReverse" class="fa fa-caret-down"></span>
+                  <span ng-show="sortType == 'MaxSellPrice' && sortReverse" class="fa fa-caret-up"></span>
+              </a>
+            </th>            
               <th><i class="fa fa-pencil-square-o" aria-hidden="true"></i></th>
             </tr>
           </thead>
           <tr ng-repeat="item in stocks | orderBy:sortType:sortReverse | filter:serchProduct ">
             <td>
             <div>
-              <label>{{item.ProductName}}</label>
+              <label>{{item.ProductBrand}}</label>
+            </div>
+            </td>
+            <td>
+            <div>
+              <label>{{item.ProductSize}}</label>
+            </div>
+            </td>
+            <td>
+            <div>
+              <label>{{item.ProductPattern}}</label>
             </div>
             </td>
             <td>
@@ -111,6 +149,17 @@ require '_header.php';
                 <input id="someid" ng-change="item.qtyEdited = true" ng-click="item.editing = true" ng-blur=" item.editing = false; item.qtyInvalid = validateInput(item.Qty); item.qtyEdited = !item.qtyInvalid" onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editing" auto-focus="{{ item.editing }}" ng-model="item.Qty"  />
             </div>
             </td>
+            <td align:right>
+            <div>
+              <label>{{item.MinSellPrice}}</label>
+            </div>
+            </td>
+            <td align:right>
+            <div>
+              <label>{{item.MaxSellPrice}}</label>
+            </div>
+            </td>
+                    
             <td>
             <a href="#" ng-click="item.editing = !item.editing; angular.element('#someid').focus()" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>&nbsp;&nbsp;&nbsp;
             </td>

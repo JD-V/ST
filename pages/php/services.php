@@ -75,7 +75,7 @@ window.open("DisplayServiceInvoice.php?id="+InvoiceID);
 
     <div class="box">
       <div class="box-header with-border">
-        <h3 class="box-title">records</h3>
+        <h3 class="box-title">Records</h3>
 
         <div class="box-tools pull-right">
 <!--           <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
@@ -96,6 +96,7 @@ window.open("DisplayServiceInvoice.php?id="+InvoiceID);
                 <th>Customer</th>
                 <th>Phone</th>
                 <th>Vehicle No</th>
+                <th>Mileage</th>
 
                 <th>Amount Paid</th>
                 <th>Address</th>
@@ -107,23 +108,24 @@ window.open("DisplayServiceInvoice.php?id="+InvoiceID);
             <tbody>
               <?php
                 $i = 0;
-                $services = GetServices();
-                while ($service = mysql_fetch_assoc($services)) {
+                $services = GetServices2();
+                foreach ($services as $service) {
                   ?>
                   <tr>
-                    <th><?php echo '<a href="addservicerecord.php?id='.$service['InvoiceNumber'].'">' . $i+=1  . '</a>'; ?></th>
-                    <td><?php echo $service['InvoiceNumber']; ?></td>
-                    <td><?php $date = date_create($service['InvoiceDateTime']); echo date_format($date, 'd-m-Y H:i'); ?></td>
+                    <th><?php echo '<a href="addservicerecord.php?id='. $service->invoiceNumber.'">' . $i+=1  . '</a>'; ?></th>
+                    <td><?php echo $service->invoiceNumber; ?></td>
+                    <td><?php echo $service->invoiceDate; ?></td>
 
-                    <td><?php echo $service['CustomerName']; ?></td>
-                    <td><?php echo $service['CustomerPhone'] ?></td>
-                    <td><?php echo $service['VehicleNumber']; ?></td>
+                    <td><?php echo $service->customerName; ?></td>
+                    <td><?php echo $service->customerPhone ?></td>
+                    <td><?php echo $service->vehicleNumber; ?></td>
+                    <td><?php echo $service->vehicleMileage; ?></td>
 
-                    <td><?php echo $service['AmountPaid']; ?></td>
-                    <td><?php echo $service['Address']; ?></td>
-                    <td><?php echo $service['Note']; ?></td>
+                    <td><?php echo $service->amountPaid; ?></td>
+                    <td><?php echo $service->address; ?></td>
+                    <td><?php echo $service->notes; ?></td>
                     
-                    <td><?php echo '<input type="button" class="btn btn-sm btn-info" value="Invoice" onclick = "DisplayInvoice('.$service['InvoiceNumber'].');" />'; ?></td>
+                    <td><?php echo '<input type="button" class="btn btn-sm btn-info" value="Invoice" onclick = "DisplayInvoice('.$service->invoiceNumber.');" />'; ?></td>
                   </tr>
                   <?php
                 }

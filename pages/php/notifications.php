@@ -20,30 +20,31 @@ require '_header.php';
         //console.log(StockArray);
         $.each(StockArray, function( key, value ) {
           var Qty= parseInt(value.Qty)
-          if(Qty != NaN && Qty>9) 
-            console.log( value.ProductName + " : green : " + value.Qty );
+          if(Qty != NaN && Qty>9) {
+            // console.log( value.ProductName + " : green : " + value.Qty );
+          }
           else if(Qty != NaN && Qty>0) {
             count++;
-            console.log( value.ProductName + " : yellow : " + value.Qty );
+            // console.log( value.ProductName + " : yellow : " + value.Qty );
             $('.notifications-table-body    ').append(
               $('<tr/>').append(
                   $('<td/>').append(
-                    $('<a/>', {'href': 'manageStock.php?product='+value.ProductName}).append(
+                    $('<a/>', {'href': 'manageStock.php?product='+value.ProductDisplay }).append(
                         $('<i/>', {'class': 'fa fa-warning text-yellow'})
-                    ).append("&nbsp;&nbsp;&nbsp;&nbsp;" +value.ProductName +' has only ' + value.Qty + ' Nos Left')
+                    ).append("&nbsp;&nbsp;&nbsp;&nbsp;" +value.ProductDisplay  +' has only ' + value.Qty + ' Nos Left')
                   )
               )
            );             
           }
           else {
             count++;
-            console.log( value.ProductName + " : red : " + value.Qty );
+            // console.log( value.ProductName + " : red : " + value.Qty );
              $('.notifications-table-body').append(
               $('<tr/>').append(
                 $('<td/>').append(
-                    $('<a/>', {'href': 'manageStock.php?product='+value.ProductName}).append(
+                    $('<a/>', {'href': 'manageStock.php?product='+value.ProductDisplay}).append(
                         $('<i/>', {'class': 'fa fa-ban text-red'})
-                    ).append("&nbsp;&nbsp;&nbsp;&nbsp;" +value.ProductName +' is out of stock')
+                    ).append("&nbsp;&nbsp;&nbsp;&nbsp;" +value.ProductDisplay  +' is out of stock')
                 )
               )
            );    

@@ -187,7 +187,7 @@ require '_header.php'
               <div class="form-group">
                 <label for="InvoiceNo" class="control-label col-sm-3 lables">Invoice No<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" readonly="readonly" name="InvoiceNo" ng-model = "InvoiceNo"  required >
+                  <input type="text" class="form-control" name="InvoiceNo" ng-model = "InvoiceNo"  required >
                 </div>
               </div>
 
@@ -221,30 +221,75 @@ require '_header.php'
                 <div class="errorMessage" ng-show="((salesForm.CustomerPhone.$error.minlength || salesForm.CustomerPhone.$error.maxlength) &&  salesForm.CustomerPhone.$dirty) ">phone number should be 10 digits</div>
               </div>
 
-              <div class="form-group">
-                <label for="VehicleNo" class="control-label col-sm-3 lables">Vehicle Number<span class="mandatoryLabel">*</span></label>
-                <div class="col-sm-4">
-                  <input type="text" class="form-control" name="VehicleNo" placeholder="Vehicle Number" ng-model="VehicleNo" required >
-                </div>
-                <div ng-show="salesForm.$submitted && salesForm.VehicleNo.$error.required" class="errorMessage">Please enter Vehicle numnber</div>
+            <div class="form-group">
+              <label for="VehicleNo" class="control-label col-sm-3 lables">Vehicle Number<span class="mandatoryLabel">*</span></label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control" name="VehicleNo" placeholder="Vehicle Number" ng-model="VehicleNo" required >
               </div>
+              <div ng-show="salesForm.$submitted && salesForm.VehicleNo.$error.required" class="errorMessage">Please enter Vehicle numnber</div>
+            </div>
 
             <div class="form-group">
-                <label for="addItems" class="control-label col-sm-3 lables">Add Products<span class="mandatoryLabel">*</span></label>
-                <div class="col-sm-4" >
-                    <div id="notebooks">
-                        <input type="text" id="query" ng-model="query"/>
-                        <ul class="ul-style" id="notebook_ul">
-                            <li ng-class="{'li-style-red': (product.Qty == undefined), 'li-style-green': (product.Qty > 9), 'li-style-yellow': (product.Qty < 9 && product.Qty>0)}"  ng-repeat="product in products | filter:query | orderBy: product.ProductName" ng-click="AddProduct(product.ProductID)">
-                            Product: {{product.ProductName}}<br/>
-                            Type: {{product.ProductTypeName}}<br/>
-                            Available: {{product.Qty == undefined ? 0: product.Qty}}<br/>
-                            <div class="right top">{{product.SellingPrice}}</div>
-                            </li>
-                        </ul>
-                    </div>
+              <label for="VehicleMileage" class="control-label col-sm-3 lables">Vehicle Mileage<span class="mandatoryLabel">*</span></label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control" name="VehicleMileage" placeholder="Vehicle Mileage" ng-model="VehicleMileage" required >
+              </div>
+              <div ng-show="serviceForm.$submitted && serviceForm.VehicleMileage.$error.required" class="errorMessage">Please enter Vehicle Mileage</div>
+            </div>
+
+            <div class="form-group">
+              <label for="Address" class="control-label col-sm-3 lables">Address<span class="mandatoryLabel">*</span></label>
+              <div class="col-sm-4">
+                <textarea  class="form-control" name="Address" placeholder="Address" ng-model="Address" ></textarea>
+              </div>
+            </div>
+
+            <div class="form-group">
+                <label for="BrandID" class="control-label col-sm-3 lables">Brand<span class="mandatoryLabel">*</span></label>
+                <div class="col-sm-4">
+                    <select class="form-control" name="BrandID" id="BrandID" ng-model="Brand" ng-change="GetProducts()" >
+                    <option selected="true" disabled="disabled" style="display: none" value="default">Select Brand</option>
+                    <?php
+                        $brands = GetBrands();
+                        if(mysql_num_rows($brands)!=0) {
+                            while($brand = mysql_fetch_assoc($brands)) {
+                              echo '<option value="' . $brand['BrandID'] . '">' . $brand['BrandName'] . '</option>';
+                            }
+                        }
+                    ?>
+                    </select>
                 </div>
-                <div ng-show = "salesForm.$submitted  && (addedProducts.length==0)" class="errorMessage">Please select atleast one product</div>
+            </div>
+
+            <div class="form-group">
+              <label for="ProductSize" class="control-label col-sm-3 lables">Product Size<span class="mandatoryLabel">*</span></label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control" name="ProductSize" placeholder="Product Size"  >
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="ProductPattern" class="control-label col-sm-3 lables">Product Pattern<span class="mandatoryLabel">*</span></label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control" name="ProductPattern" placeholder="Product Pattern" >
+              </div>
+            </div> 
+
+            <div class="form-group">
+              <label for="addItems" class="control-label col-sm-3 lables">Add Products<span class="mandatoryLabel">*</span></label>
+              <div class="col-sm-4" >
+                  <div id="notebooks">
+                    <input type="text" id="query" ng-model="query"/>
+                    <ul class="ul-style" id="notebook_ul">
+                      <li ng-class="{'li-style-red': (product.Qty == undefined), 'li-style-green': (product.Qty > 9), 'li-style-yellow': (product.Qty < 9 && product.Qty>0)}"  ng-repeat="product in products | filter:query | orderBy: product.ProductName" ng-click="AddProduct(product.ProductID)">
+                      Size: {{product.ProductDisplay}}<br/>
+                      Type: {{product.ProductTypeName}}<br/>
+                      <div class="right top">{{product.MaxSellPrice}}</div>
+                      </li>
+                    </ul>
+                  </div>
+              </div>
+              <div ng-show = "salesForm.$submitted  && (addedProducts.length==0)" class="errorMessage">Please select atleast one product</div>
             </div>
               
             <fieldset class="col-sm-9 col-xs-offset-1">
@@ -253,7 +298,9 @@ require '_header.php'
               <table id="OrgTable" class="table table-striped table-hover" >
                 <thead>
                   <tr>
-                    <th>Item</th>
+                    <th>Brand</th>
+                    <th>Size</th>
+                    <th>Pattern</th>
                     <th>Type</th>
                     <th>Sell Price</th>
                     <th>Qty</th>
@@ -263,17 +310,14 @@ require '_header.php'
                   </tr>
                 </thead>
                 <tr ng-repeat="item in addedProducts">
-                  <td>
-                  <div ng-class="{'edited': item.itemEdited, 'error' : item.itemInvalid }">
-                    <label ng-hide="item.editing" >{{item.ProductName}}</label>
-                      <input ng-change="item.itemEdited = true;" ng-click="item.editing = true" ng-blur="item.editing = false; item.itemInvalid = validateInput(item.Item); item.itemEdited = !item.itemInvalid" type="text" ng-show="item.editing" ng-model="item.ProductName;"  />
-                  </div>
-                  </td>
-                  <td><label>{{item.ProductTypeName}}</label></td>            
+                  <td>{{item.BrandName}}</td>
+                  <td>{{item.ProductSize}}</td>
+                  <td>{{item.ProductPattern}}</td>
+                  <td>{{item.ProductTypeName}}</td>
                   <td>
                   <div ng-class="{'edited': item.priceEdited, 'error' : item.priceInvalid}">
-                    <label  ng-hide="item.editing" >{{item.SellingPrice}}</label>
-                      <input ng-change="item.priceEdited = true" ng-click="item.editing = true" ng-blur=" item.editing = false; item.priceInvalid = validateInput(item.Price  ); item.priceEdited = !item.priceInvalid" onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editing" ng-model="item.SellingPrice"  />
+                    <label  ng-hide="item.editing" >{{item.MaxSellPrice}}</label>
+                      <input ng-change="item.priceEdited = true" ng-click="item.editing = true" ng-blur=" item.editing = false; item.priceInvalid = validateInput(item.Price  ); item.priceEdited = !item.priceInvalid" onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editing" ng-model="item.MaxSellPrice"  />
                   </div>
                   </td>
                   <td>
@@ -285,7 +329,7 @@ require '_header.php'
 
                   <td>
                   <div>
-                    <label  ng-model="item.Amount" >{{item.Qty*item.SellingPrice}}</label>
+                    <label  ng-model="item.Amount" >{{item.Qty*item.MaxSellPrice}}</label>
                   </div>
                   </td>
 
@@ -299,26 +343,26 @@ require '_header.php'
           </fieldset>    
 
             <div class="form-group">
-                <label for="SubTotal" class="control-label col-sm-3 lables">SubTotal<span class="mandatoryLabel">*</span></label>
+                <label for="SubTotal" class="control-label col-sm-3 lables">Basic<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
                   <div class='input-group'>
                     <span class="input-group-addon">
                         <span class="fa fa-inr"></span>
                     </span>
-                    <input type="text" disabled class="form-control amount"   name="subTotal" placeholder="0.00" ng-model="SubTotal" required>
+                    <input type="text" readonly="readonly" class="form-control amount" name="subTotal" placeholder="0.00" ng-model="SubTotal" required>
                   </div>
                 </div>
                 <div  ng-show="salesForm.$submitted && salesForm.subTotal.$error.required" class="errorMessage"></div>
               </div>
 
                <div class="form-group">
-                <label for="VatAmount" class="control-label col-sm-3 lables">Vat (14.5%)</label>
+                <label for="VatAmount" class="control-label col-sm-3 lables">Vat (<?php echo $_SESSION['VatFactor']; ?>%)</label>
                 <div class="col-sm-4">
                   <div class='input-group'>
                     <span class="input-group-addon">
                         <span class="fa fa-inr"></span>
                     </span>
-                    <input type="text" class="form-control amount" name="VatAmount" placeholder="0.00" ng-model="VatAmount" ng-blur="updateTotalAmountPaid()" >
+                    <input type="text" readonly="readonly" class="form-control amount" name="VatAmount" placeholder="0.00" ng-model="VatAmount" ng-blur="updateTotalAmountPaid()" >
                   </div>
                 </div>
               </div>
@@ -336,7 +380,7 @@ require '_header.php'
               </div>
 
               <div class="form-group">
-                <label for="AmountPaid" class="control-label col-sm-3 lables">Amount paid<span class="mandatoryLabel">*</span></label>
+                <label for="AmountPaid" class="control-label col-sm-3 lables">Total<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
                   <div class='input-group'>
                     <span class="input-group-addon">
@@ -346,13 +390,6 @@ require '_header.php'
                   </div>
                 </div>
                 <div ng-show = "salesForm.TotalAmountPaid.$dirty && ( TotalAmountPaid == undefined || TotalAmountPaid <= 0 )" class="errorMessage">Please enter Total Amount Paid</div>
-              </div>
-
-              <div class="form-group">
-                <label for="Address" class="control-label col-sm-3 lables">Address</label>
-                <div class="col-sm-4">
-                  <textarea  class="form-control" name="Address" placeholder="Address" ng-model="Address" ></textarea>
-                </div>
               </div>
 
               <div class="form-group">
@@ -436,9 +473,15 @@ var ValidSubmit = ['$parse', function ($parse) {
   
   // refreshing data in the table
   $scope.RefreshView = function() {
-    dataService.getProdcuts(function(response) {
+    $scope.VatFactor = <?php echo $_SESSION['VatFactor']; ?>
+  };
+
+  $scope.GetProducts = function() {
+    var BrandID = $('#BrandID').val();
+    console.log("BrandID " + BrandID);
+    dataService.getProducts(BrandID, function(response) {
       console.log(response.data);
-      $scope.productsActual = angular.copy( response.data);
+      $scope.productsActual = angular.copy(response.data);
       $scope.products = response.data;
     });
   };
@@ -447,7 +490,10 @@ var ValidSubmit = ['$parse', function ($parse) {
     $scope.SalesInvoiceDate = $('.sales-invoice-date').val();
   }
   
-  $scope.AddProduct = function(ProductID){       
+  $scope.AddProduct = function(ProductID){
+
+    if($filter('getById')($scope.addedProducts, ProductID) == null) {
+    
       var found = $filter('getById')($scope.productsActual, ProductID);
 
       if(found.Qty == undefined) {
@@ -460,15 +506,18 @@ var ValidSubmit = ['$parse', function ($parse) {
       }
       var obj = {
         'ProductID': found.ProductID,
-        'ProductName' : found.ProductName,
+        'ProductSize' : found.ProductSize,
+        'ProductPattern' : found.ProductPattern,
         'ProductTypeName' : found.ProductTypeName,
         'BrandName' : found.BrandName,
-        'SellingPrice': found.SellingPrice,
+        'BrandID' : found.BrandName,
+        'MaxSellPrice': found.MaxSellPrice,
         'CostPrice': found.CostPrice,
         'Qty' : 1
       };
       $scope.addedProducts.push(obj);
       $scope.CalculateAmount();
+    }
   };
       
  $scope.RemoveItem = function($ItemID,$index){
@@ -485,11 +534,12 @@ var ValidSubmit = ['$parse', function ($parse) {
   $scope.CalculateAmount = function(){
     var sum = 0;
       angular.forEach($scope.addedProducts, function(value){
-          sum += +(value.Qty*value.SellingPrice);
+          sum += +(value.Qty*value.MaxSellPrice);
       });
-      $scope.SubTotal = sum;
-      $scope.VatAmount = Math.ceil(sum*0.145 * 100) / 100; 
-      $scope.TotalAmountPaid = $scope.SubTotal+ $scope.VatAmount;
+      $scope.VatAmount = Math.ceil(sum * $scope.VatFactor) / 100;
+      $scope.SubTotal = sum-$scope.VatAmount;
+      
+      $scope.TotalAmountPaid = sum;
   };
 
   $scope.validateInput = function($inputValue) {
@@ -514,6 +564,7 @@ var ValidSubmit = ['$parse', function ($parse) {
         console.log(response.data);
         $scope.InvoiceNo = parseInt(response.data) +  +1;
       });
+        $scope.Brand = 0;
         $scope.addedProducts = [];
         $scope.SubTotal = 0;
         $scope.VatAmount = 0;
@@ -593,14 +644,14 @@ var ValidSubmit = ['$parse', function ($parse) {
   $scope.RefreshView();
   })  
   .service('dataService', function($http) {
-    this.getProdcuts = function(callback) {
+
+    this.getProducts = function(BrandID,callback) {
       
       $http({
         method : "GET",
-        url : "CreateOrderForm.php?action=Retrive",
+        url : "CreateOrderForm.php?action=Retrive&BrandID="+BrandID,
       }).then(callback)
     };
-
 
   this.getMaxSalesInvoiceNumber = function(callback) {
         

@@ -9,10 +9,12 @@ if(isLogin() && isAdmin() ) {
     $action = mysql_real_escape_string($_GET['action']);
 
     if($action == 'Retrive') {
-      if(isset($_GET['item']) && $_GET['item'] == "MaxSalesInvoice")
+      if(isset($_GET['item']) && $_GET['item'] == "MaxSalesInvoice") {
         print GetMaxSalesInoviceNumber();
-      else
-        RetriveProducts();
+      }
+      else if ( isset($_GET['BrandID'])) {
+          RetriveProducts($_GET['BrandID']);
+      }
     } else if($action == 'save') {
       if(isset($_GET["FormData"])) {
         saveOrder($_GET["FormData"]);
@@ -24,15 +26,15 @@ if(isLogin() && isAdmin() ) {
   }
 }
 
-function RetriveProducts() {
-  $products = getProductWithStocks();
+function RetriveProducts($BrandID) {
+  $products = getProductWithStocks($BrandID);
   $product_array = array();
   if($products) {
     if(mysql_num_rows($products) >= 1) {
       while($product= mysql_fetch_assoc($products)) {
-        $product_array[] = array('ProductID' => $product['ProductID'] ,'ProductName' => $product['ProductName'],
-        'ProductTypeName' => $product['ProductTypeName'],'BrandName' => $product['BrandName'], 'CostPrice' => $product['CostPrice'],
-        'Qty' => $product['Qty'],'SellingPrice' => $product['SellingPrice'] );
+        $product_array[] = array('ProductID' => $product['ProductID'] ,'ProductSize' => $product['ProductSize'], 'ProductPattern' => $product['ProductPattern'], 
+        'ProductDisplay'=> $product['ProductSize'] . ' ' . $product['ProductPattern'], 'ProductTypeName' => $product['ProductTypeName'],'BrandName' => $product['BrandName'], 'CostPrice' => $product['CostPrice'],
+        'Qty' => $product['Qty'],'MinSellPrice' => $product['MinSellPrice'], 'MaxSellPrice' => $product['MaxSellPrice'] );
       }
     }
   }
@@ -64,7 +66,9 @@ function saveOrder($FormData) {
   foreach($FormData->Products as $product) {
       $ProductInventory = new ProductInventory();
       $ProductInventory->productID = $product->ProductID;
-      $ProductInventory->productName = $product->ProductName;
+      $ProductInventory->brandName = $product->BrandName;
+      $ProductInventory->productSize = $product->ProductSize;
+      $ProductInventory->productPattern = $product->ProductPattern;
       $ProductInventory->qty = $product->Qty;
       $ProductInventory->costPrice = $product->CostPrice;
       $ProductInventory->sellingPrice = $product->SellingPrice;
