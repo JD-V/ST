@@ -62,12 +62,13 @@ require '_header.php'
                 <div class="col-sm-4">
                   <input type="text" class="form-control" name="InvoiceNo" ng-model = "InvoiceNo"  required>
                 </div>
+                <div ng-show = "serviceForm.$submitted && serviceForm.InvoiceNo.$invalid" class="errorMessage">Invoice No is required</div>
               </div>
 
               <div class="form-group">
-                <label for="ServiceInvoiceDate" class="control-label col-sm-3 lables">Invoice Date<span class="mandatoryLabel">*</span></label>
+                <label for="ServiceInvoiceDate" class="control-label col-sm-3 lables ">Invoice Date<span class="mandatoryLabel">*</span></label>
                 <div class='col-sm-4'>
-                  <input type="text" class="form-control sales-invoice-date" name="ServiceInvoiceDate" ng-model = "ServiceInvoiceDate" required/>
+                  <input type="text" class="form-control service-invoice-date" name="ServiceInvoiceDate" ng-model = "ServiceInvoiceDate" required/>
                 </div>
                 <div ng-show = "serviceForm.ServiceInvoiceDate.$dirty && serviceForm.ServiceInvoiceDate.$invalid" class="errorMessage">Date is required</div>
               </div>
@@ -351,10 +352,7 @@ $scope.AddItem = function(ItemId){
 
   $scope.validateInput = function($inputValue) {
     if($inputValue === "") {
-      document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
-      alert-danger\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">  \
-      <i class=\"ace-icon fa fa-times\"></i> </button><i class=\"ace-icon fa fa-ban \
-      red\"></i> &nbsp; &nbsp;can not be blank</div>";
+      document.getElementById("messages").innerHTML = MessageTemplate(1, "can not be blank.");
       autoClosingAlert(".alert-block", 2000);
       return true;
     }
@@ -384,11 +382,10 @@ $scope.AddItem = function(ItemId){
 
   $scope.reset();
   $scope.sendForm = function() {
-    if($scope.SubTotal == 0) {
-      document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
-        alert-danger\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">  \
-        <i class=\"ace-icon fa fa-times\"></i> </button><i class=\"ace-icon fa fa-ban \
-        red\"></i> &nbsp; &nbsp;please correct all the errors</div>";
+    var serviceInvoiceDateVal = $('.service-invoice-date').val();
+
+    if($scope.SubTotal == 0 || serviceInvoiceDateVal == '') {
+      document.getElementById("messages").innerHTML = MessageTemplate(1, "Please correct all the errors.");
         autoClosingAlert(".alert-block", 2000);
     } else {
       var FormData = {
@@ -400,16 +397,14 @@ $scope.AddItem = function(ItemId){
             ($scope.serviceItem[i].hasOwnProperty('priceInvalid') && $scope.serviceItem[i].priceInvalid ) ||
             ($scope.serviceItem[i].hasOwnProperty('QtyInvalid') && $scope.serviceItem[i].QtyInvalid )  )
             {
-              document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
-              alert-warning\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\"> \
-              <i class=\"ace-icon fa fa-times\"></i></button><i class=\"ace-icon fa fa-hand-paper-o\"> \
-              </i>&nbsp;&nbsp; Please correct the errors.</div>";
+              document.getElementById("messages").innerHTML =MessageTemplate(1, "Please correct the errors.");
               autoClosingAlert(".alert-block", 2000);
               return;
             } else FormData.Products.push($scope.serviceItem[i]);
       }
       FormData.InvoiceNo = $scope.InvoiceNo;
       FormData.CustomerName= $scope.CustomerName;
+      $scope.ServiceInvoiceDate = serviceInvoiceDateVal;
       FormData.ServiceInvoiceDate = $scope.ServiceInvoiceDate;
       FormData.CustomerPhone = $scope.CustomerPhone;
       FormData.VehicleNo = $scope.VehicleNo;
@@ -425,18 +420,16 @@ $scope.AddItem = function(ItemId){
           if(parseInt(response.data, 10)) {
             document.getElementById("messages").innerHTML = 
               MessageTemplate(0, "Service Invoice has been added with " + response.data +" item(s)");
-              scrollTo(0,0);
               $scope.reset();
               $scope.serviceForm.$setPristine();
               $scope.serviceForm.$setUntouched();
               $scope.serviceForm.$submitted = false;
-              autoClosingAlert(".alert-block", 4000);
           }
           else {
-              document.getElementById("messages").innerHTML =
-              MessageTemplate(1, response.data);
-              autoClosingAlert(".alert-block", 4000);
+              document.getElementById("messages").innerHTML =  MessageTemplate(1, response.data);
           }
+          autoClosingAlert(".alert-block", 4000);
+          scrollTo(0,0);
       });
     }
   };
@@ -445,11 +438,7 @@ $scope.AddItem = function(ItemId){
   }
   // initial call
   $scope.RefreshView();
-
-
-  })
-  
-  
+  })  
   .service('dataService', function($http) {
 
     //get Location Service

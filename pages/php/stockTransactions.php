@@ -67,7 +67,7 @@ require '_header.php';
                 while ($entry = mysql_fetch_assoc($stockTransactionHistory)) {
                   ?>
                   <tr>
-                    <td><?php $date= date_create($entry['TimeStamp']); echo date_format($date, 'd-m-Y H:i'); ?></td>
+                    <td><span style="display:none"><?php echo $entry['TimeStamp']?></span><?php $date= date_create($entry['TimeStamp']); echo date_format($date, 'd-m-Y H:i'); ?></td>
                     <td><?php echo $entry['BrandName']; ?></td>
                     <td><?php echo $entry['ProductSize']; ?></td>
                     <td><?php echo $entry['ProductPattern']; ?></td>

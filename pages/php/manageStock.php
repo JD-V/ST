@@ -104,28 +104,28 @@ require '_header.php';
                 </a>
               </th>                            
               <th>
-                <a href="#" ng-click="sortType = 'Qty'; sortReverse = !sortReverse">
-                  Quantity
-                  <span ng-show="sortType == 'Qty' && !sortReverse" class="fa fa-caret-down"></span>
-                  <span ng-show="sortType == 'Qty' && sortReverse" class="fa fa-caret-up"></span>
+              <a href="#" ng-click="sortType = 'Qty'; sortReverse = !sortReverse">
+                Quantity
+                <span ng-show="sortType == 'Qty' && !sortReverse" class="fa fa-caret-down"></span>
+                <span ng-show="sortType == 'Qty' && sortReverse" class="fa fa-caret-up"></span>
               </a>
             </th>
             <th>
-                <a href="#" ng-click="sortType = 'MinSellPrice'; sortReverse = !sortReverse">
-                  Min Sell Price
-                  <span ng-show="sortType == 'MinSellPrice' && !sortReverse" class="fa fa-caret-down"></span>
-                  <span ng-show="sortType == 'MinSellPrice' && sortReverse" class="fa fa-caret-up"></span>
+              <a href="#" ng-click="sortType = 'MinSellPrice'; sortReverse = !sortReverse">
+                Min Sell Price
+                <span ng-show="sortType == 'MinSellPrice' && !sortReverse" class="fa fa-caret-down"></span>
+                <span ng-show="sortType == 'MinSellPrice' && sortReverse" class="fa fa-caret-up"></span>
               </a>
             </th>
             <th>
-                <a href="#" ng-click="sortType = 'MaxSellPrice'; sortReverse = !sortReverse">
-                  Max Sell Price
-                  <span ng-show="sortType == 'MaxSellPrice' && !sortReverse" class="fa fa-caret-down"></span>
-                  <span ng-show="sortType == 'MaxSellPrice' && sortReverse" class="fa fa-caret-up"></span>
+              <a href="#" ng-click="sortType = 'MaxSellPrice'; sortReverse = !sortReverse">
+                Max Sell Price
+                <span ng-show="sortType == 'MaxSellPrice' && !sortReverse" class="fa fa-caret-down"></span>
+                <span ng-show="sortType == 'MaxSellPrice' && sortReverse" class="fa fa-caret-up"></span>
               </a>
-            </th>            
+            <!--</th>            
               <th><i class="fa fa-pencil-square-o" aria-hidden="true"></i></th>
-            </tr>
+            </tr>-->
           </thead>
           <tr ng-repeat="item in stocks | orderBy:sortType:sortReverse | filter:serchProduct ">
             <td>
@@ -160,9 +160,9 @@ require '_header.php';
             </div>
             </td>
                     
-            <td>
+            <!--<td>
             <a href="#" ng-click="item.editing = !item.editing; angular.element('#someid').focus()" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>&nbsp;&nbsp;&nbsp;
-            </td>
+            </td>-->
           </tr>
         </table>
       </div>

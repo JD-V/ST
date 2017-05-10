@@ -53,12 +53,21 @@ function saveOrder($FormData) {
   $order->customerName = $FormData->CustomerName;
   $order->customerPhone = $FormData->CustomerPhone;
   $order->vehicleNumber = $FormData->VehicleNo;
-  $order->subTotal = $FormData->SubTotal;
+  $order->vehicleMileage = $FormData->VehicleMileage;
+  $order->basic = $FormData->BasicAmount;
   $order->vatAmount = $FormData->VatAmount;
-  $order->DiscountAmount = $FormData->DiscountAmount;
+  $order->discount = $FormData->DiscountAmount;
   $order->amountPaid = $FormData->TotalAmountPaid;
+  $order->paymentMethod = $FormData->PaymentMethod;
   $order->notes = $FormData->Notes;
   $order->address = $FormData->Address;
+
+   if( $order->paymentMethod == '3') {
+        $dateC = date_create($FormData->ChequeDate); 
+        $order->chequeDate = date_format($dateC, 'Y-m-d H:i');
+        $order->chequeNo = $FormData->ChequeNo;
+      }
+
   chromephp::log($order);
   if(AddNewSalesItem($order)) {
   $i = 0;
@@ -69,9 +78,10 @@ function saveOrder($FormData) {
       $ProductInventory->brandName = $product->BrandName;
       $ProductInventory->productSize = $product->ProductSize;
       $ProductInventory->productPattern = $product->ProductPattern;
+      $ProductInventory->productType = $product->ProductTypeName;
       $ProductInventory->qty = $product->Qty;
       $ProductInventory->costPrice = $product->CostPrice;
-      $ProductInventory->sellingPrice = $product->SellingPrice;
+      $ProductInventory->maxSellingPrice = $product->SellPrice;
       
       $i += AddProductToSalesInvoice($ProductInventory,$order->invoiceNumber);
       chromephp::log($product); 

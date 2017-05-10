@@ -189,12 +189,13 @@ require '_header.php'
                 <div class="col-sm-4">
                   <input type="text" class="form-control" name="InvoiceNo" ng-model = "InvoiceNo"  required >
                 </div>
+                <div ng-show = "salesForm.InvoiceNo.$dirty && salesForm.InvoiceNo.$invalid" class="errorMessage">Invoice No. is required</div>                
               </div>
 
               <div class="form-group">
                 <label for="ServiceInvoiceDate" class="control-label col-sm-3 lables">Invoice Date<span class="mandatoryLabel">*</span></label>
                 <div class='col-sm-4'>
-                  <input type="text" class="form-control sales-invoice-date" name="SalesInvoiceDate" ng-model = "SalesInvoiceDate" required/>
+                  <input type="text" date-fix class="form-control sales-invoice-date" name="SalesInvoiceDate" ng-model = "SalesInvoiceDate" required/>
                 </div>
                 <div ng-show = "salesForm.SalesInvoiceDate.$dirty && salesForm.SalesInvoiceDate.$invalid" class="errorMessage">Date is required</div>
               </div>
@@ -234,14 +235,15 @@ require '_header.php'
               <div class="col-sm-4">
                 <input type="text" class="form-control" name="VehicleMileage" placeholder="Vehicle Mileage" ng-model="VehicleMileage" required >
               </div>
-              <div ng-show="serviceForm.$submitted && serviceForm.VehicleMileage.$error.required" class="errorMessage">Please enter Vehicle Mileage</div>
+              <div ng-show="salesForm.$submitted  && salesForm.VehicleMileage.$error.required" class="errorMessage">Please enter Vehicle Mileage</div>
             </div>
 
             <div class="form-group">
               <label for="Address" class="control-label col-sm-3 lables">Address<span class="mandatoryLabel">*</span></label>
               <div class="col-sm-4">
-                <textarea  class="form-control" name="Address" placeholder="Address" ng-model="Address" ></textarea>
+                <textarea  class="form-control" name="Address" placeholder="Address" ng-model="Address" required></textarea>
               </div>
+              <div ng-show = "salesForm.$submitted && salesForm.Address.$error.required" class="errorMessage">Please provide customer Address</div>
             </div>
 
             <div class="form-group">
@@ -262,26 +264,12 @@ require '_header.php'
             </div>
 
             <div class="form-group">
-              <label for="ProductSize" class="control-label col-sm-3 lables">Product Size<span class="mandatoryLabel">*</span></label>
-              <div class="col-sm-4">
-                <input type="text" class="form-control" name="ProductSize" placeholder="Product Size"  >
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="ProductPattern" class="control-label col-sm-3 lables">Product Pattern<span class="mandatoryLabel">*</span></label>
-              <div class="col-sm-4">
-                <input type="text" class="form-control" name="ProductPattern" placeholder="Product Pattern" >
-              </div>
-            </div> 
-
-            <div class="form-group">
               <label for="addItems" class="control-label col-sm-3 lables">Add Products<span class="mandatoryLabel">*</span></label>
               <div class="col-sm-4" >
                   <div id="notebooks">
                     <input type="text" id="query" ng-model="query"/>
                     <ul class="ul-style" id="notebook_ul">
-                      <li ng-class="{'li-style-red': (product.Qty == undefined), 'li-style-green': (product.Qty > 9), 'li-style-yellow': (product.Qty < 9 && product.Qty>0)}"  ng-repeat="product in products | filter:query | orderBy: product.ProductName" ng-click="AddProduct(product.ProductID)">
+                      <li ng-class="{'li-style-red': (product.Qty == undefined || product.Qty == 0), 'li-style-green': (product.Qty >= 9), 'li-style-yellow': (product.Qty < 9 && product.Qty>0)}"  ng-repeat="product in products | filter:query | orderBy: product.ProductName" ng-click="AddProduct(product.ProductID)">
                       Size: {{product.ProductDisplay}}<br/>
                       Type: {{product.ProductTypeName}}<br/>
                       <div class="right top">{{product.MaxSellPrice}}</div>
@@ -316,7 +304,7 @@ require '_header.php'
                   <td>{{item.ProductTypeName}}</td>
                   <td>
                   <div ng-class="{'edited': item.priceEdited, 'error' : item.priceInvalid}">
-                    <label  ng-hide="item.editing" >{{item.MaxSellPrice}}</label>
+                    <label  ng-hide="item.editing" >{{item.SellPrice}}</label>
                       <input ng-change="item.priceEdited = true" ng-click="item.editing = true" ng-blur=" item.editing = false; item.priceInvalid = validateInput(item.Price  ); item.priceEdited = !item.priceInvalid" onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editing" ng-model="item.MaxSellPrice"  />
                   </div>
                   </td>
@@ -329,7 +317,7 @@ require '_header.php'
 
                   <td>
                   <div>
-                    <label  ng-model="item.Amount" >{{item.Qty*item.MaxSellPrice}}</label>
+                    <label  ng-model="item.Amount" >{{item.Qty*item.SellPrice}}</label>
                   </div>
                   </td>
 
@@ -343,16 +331,16 @@ require '_header.php'
           </fieldset>    
 
             <div class="form-group">
-                <label for="SubTotal" class="control-label col-sm-3 lables">Basic<span class="mandatoryLabel">*</span></label>
+                <label for="BasicAmount" class="control-label col-sm-3 lables">Basic<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
                   <div class='input-group'>
                     <span class="input-group-addon">
                         <span class="fa fa-inr"></span>
                     </span>
-                    <input type="text" readonly="readonly" class="form-control amount" name="subTotal" placeholder="0.00" ng-model="SubTotal" required>
+                    <input type="text" readonly="readonly" class="form-control amount" name="BasicAmount" placeholder="0.00" ng-model="BasicAmount" required>
                   </div>
                 </div>
-                <div  ng-show="salesForm.$submitted && salesForm.subTotal.$error.required" class="errorMessage"></div>
+                <div  ng-show="salesForm.$submitted && salesForm.BasicAmount.$error.required" class="errorMessage"></div>
               </div>
 
                <div class="form-group">
@@ -389,13 +377,39 @@ require '_header.php'
                     <input type="text" class="form-control amount" onkeypress='return event.charCode >= 48 && event.charCode <= 57' name="TotalAmountPaid" placeholder="0.00" ng-model="TotalAmountPaid" required>
                   </div>
                 </div>
-                <div ng-show = "salesForm.TotalAmountPaid.$dirty && ( TotalAmountPaid == undefined || TotalAmountPaid <= 0 )" class="errorMessage">Please enter Total Amount Paid</div>
+                <div ng-show="salesForm.TotalAmountPaid.$dirty && ( TotalAmountPaid == undefined || TotalAmountPaid <= 0 )" class="errorMessage">Please enter Total Amount Paid</div>
               </div>
+
+              <div class="form-group">
+                <label class="control-label col-sm-3 lables">Payment Type<span class="mandatoryLabel">*</span></label>
+                <div class="col-sm-4">                  
+                  <label class="radio-inline"> <input type="radio" name="paymentType" id="cash" value="1" ng-model="PaymentMethod"> Cash </label>
+                  <label class="radio-inline"> <input type="radio" name="paymentType" id="card" value="2" ng-model="PaymentMethod" > Card </label>
+                  <label class="radio-inline"> <input type="radio" name="paymentType" id="cheque" value="3" ng-model="PaymentMethod" ng-change="AddDatePlugin()" > Cheque </label>
+                </div>
+              </div>
+
+              <div class="form-group" ng-show="PaymentMethod == 3">
+                <label for="ChequeNo" class="control-label col-sm-3 lables">cheque No<span class="mandatoryLabel">*</span></label>
+                <div class="col-sm-4">
+                    <input type="text" ng-required="PaymentMethod == 3" class="form-control cheque-no" onkeypress='return event.charCode >= 48 && event.charCode <= 57' 
+                      name="ChequeNo" ng-model="ChequeNo">
+                </div>
+                <div ng-show="PaymentMethod == 3 && salesForm.$submitted  && salesForm.ChequeNo.$error.required" class="errorMessage">Please enter cheque no.</div>
+              </div>
+
+              <div class="form-group"  ng-show="PaymentMethod == 3">
+                <label for="ChequeDate"  class="control-label col-sm-3 lables">cheque Date<span class="mandatoryLabel">*</span></label>
+                <div class="col-sm-4">
+                    <input type="text" ng-required="PaymentMethod == 3" class="form-control cheque-date" ng-model="ChequeDate" name="ChequeDate">
+                </div>
+                <div ng-show="PaymentMethod == 3 && salesForm.$submitted  && salesForm.ChequeDate.$error.required" class="errorMessage">Please select cheque date</div>
+              </div>              
 
               <div class="form-group">
                 <label for="Notes" class="control-label col-sm-3 lables">Notes</label>
                 <div class="col-sm-4">
-                  <textarea  class="form-control" name="Notes" placeholder="Notes" ng-model="Notes" ></textarea>
+                  <textarea class="form-control" name="Notes" placeholder="Notes" ng-model="Notes" ></textarea>
                 </div>
               </div>
 
@@ -473,7 +487,8 @@ var ValidSubmit = ['$parse', function ($parse) {
   
   // refreshing data in the table
   $scope.RefreshView = function() {
-    $scope.VatFactor = <?php echo $_SESSION['VatFactor']; ?>
+    $scope.VatFactor = <?php echo $_SESSION['VatFactor']; ?>;
+    $scope.PaymentMethod = '1';
   };
 
   $scope.GetProducts = function() {
@@ -486,9 +501,24 @@ var ValidSubmit = ['$parse', function ($parse) {
     });
   };
 
-  $scope.updateSalesDate = function(){
-    $scope.SalesInvoiceDate = $('.sales-invoice-date').val();
-  }
+  // $scope.updateSalesDate = function(){
+  //   $scope.SalesInvoiceDate = $('.sales-invoice-date').val();
+  // }
+
+  // $scope.AddDatePlugin = function() {
+    
+  //   $("input").prop('required',true);
+  // }
+
+  // $scope.$watch('PaymentMethod', function(newValue, oldValue) {
+  //   if( $scope.PaymentMethod == '3') {
+  //     $(".cheque-date").prop('required',true);
+  //     $(".cheque-no").prop('required',true);
+  //   } else {
+  //     $(".cheque-date").prop('required',false);
+  //     $(".cheque-no").prop('required',false);
+  //   } 
+  // });
   
   $scope.AddProduct = function(ProductID){
 
@@ -496,22 +526,20 @@ var ValidSubmit = ['$parse', function ($parse) {
     
       var found = $filter('getById')($scope.productsActual, ProductID);
 
-      if(found.Qty == undefined) {
-        document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
-        alert-danger\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">  \
-        <i class=\"ace-icon fa fa-times\"></i> </button><i class=\"ace-icon fa fa-ban \
-        red\"></i> &nbsp; &nbsp;Product not available in stock</div>";
+      if(found.Qty == undefined || found.Qty == 0) {
+        document.getElementById("messages").innerHTML = 
+        MessageTemplate(1, "Product not available in stock");
+        scrollTo(0,0);
         autoClosingAlert(".alert-block", 2000);
         return;
       }
       var obj = {
         'ProductID': found.ProductID,
+        'BrandName' : found.BrandName,        
         'ProductSize' : found.ProductSize,
         'ProductPattern' : found.ProductPattern,
         'ProductTypeName' : found.ProductTypeName,
-        'BrandName' : found.BrandName,
-        'BrandID' : found.BrandName,
-        'MaxSellPrice': found.MaxSellPrice,
+        'SellPrice': found.MaxSellPrice,
         'CostPrice': found.CostPrice,
         'Qty' : 1
       };
@@ -526,7 +554,7 @@ var ValidSubmit = ['$parse', function ($parse) {
  };
 
  $scope.updateTotalAmountPaid = function() {
-  $scope.TotalAmountPaid = $scope.SubTotal + +$scope.VatAmount;
+  $scope.TotalAmountPaid = $scope.BasicAmount + +$scope.VatAmount;
   if($scope.DiscountAmount != undefined && $scope.DiscountAmount != 0)
     $scope.TotalAmountPaid -=  +$scope.DiscountAmount;
  };
@@ -534,20 +562,19 @@ var ValidSubmit = ['$parse', function ($parse) {
   $scope.CalculateAmount = function(){
     var sum = 0;
       angular.forEach($scope.addedProducts, function(value){
-          sum += +(value.Qty*value.MaxSellPrice);
+          sum += +(value.Qty*value.SellPrice);
       });
       $scope.VatAmount = Math.ceil(sum * $scope.VatFactor) / 100;
-      $scope.SubTotal = sum-$scope.VatAmount;
+      $scope.BasicAmount = sum-$scope.VatAmount;
       
       $scope.TotalAmountPaid = sum;
   };
 
   $scope.validateInput = function($inputValue) {
       if($inputValue === "") {
-        document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
-        alert-danger\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">  \
-        <i class=\"ace-icon fa fa-times\"></i> </button><i class=\"ace-icon fa fa-ban \
-        red\"></i> &nbsp; &nbsp;can not be blank</div>";
+        document.getElementById("messages").innerHTML =
+        MessageTemplate(1, "can not be blank");
+        scrollTo(0,0);
         autoClosingAlert(".alert-block", 2000);
         return true;
       } else{
@@ -566,25 +593,28 @@ var ValidSubmit = ['$parse', function ($parse) {
       });
         $scope.Brand = 0;
         $scope.addedProducts = [];
-        $scope.SubTotal = 0;
+        $scope.BasicAmount = 0;
         $scope.VatAmount = 0;
         $scope.TotalAmountPaid = 0;
         $scope.VehicleNo = '';
+        $scope.VehicleMileage= '';
         $scope.CustomerPhone = '';
         $scope.DiscountAmount = 0;
         $scope.Notes = '';
         $scope.Address = '';
+        $scope.PaymentMethod = 1;
+        $scope.ChequeNo = '';
+        $scope.ChequeDate = '<?php echo date("d-m-Y") ?>';
    }
   
   $scope.reset();
 
   $scope.sendForm = function() {
-    if($scope.SubTotal == 0) {
-      document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
-        alert-danger\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">  \
-        <i class=\"ace-icon fa fa-times\"></i> </button><i class=\"ace-icon fa fa-ban \
-        red\"></i> &nbsp; &nbsp;please correct all the errors</div>";
-        autoClosingAlert(".alert-block", 2000);
+    var salesInvoiceDateVal = $('.sales-invoice-date').val();
+    var chequeDateVal = $('.cheque-date').val();
+    if($scope.BasicAmount == 0 || salesInvoiceDateVal == ''  || chequeDateVal == '' ) {
+      document.getElementById("messages").innerHTML = MessageTemplate(1, "Please correct all the errors.");
+      autoClosingAlert(".alert-block", 4000);
     } else {
       var FormData = {
         Products: []
@@ -595,44 +625,52 @@ var ValidSubmit = ['$parse', function ($parse) {
             ($scope.addedProducts[i].hasOwnProperty('priceInvalid') && $scope.addedProducts[i].priceInvalid ) ||
             ($scope.addedProducts[i].hasOwnProperty('QtyInvalid') && $scope.addedProducts[i].QtyInvalid )  )
             {
-              document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
-              alert-warning\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\"> \
-              <i class=\"ace-icon fa fa-times\"></i></button><i class=\"ace-icon fa fa-hand-paper-o\"> \
-              </i>&nbsp;&nbsp; Please correct the errors.</div>";
-              autoClosingAlert(".alert-block", 2000);
+              document.getElementById("messages").innerHTML = MessageTemplate(1, "Please correct the errors.");
+              autoClosingAlert(".alert-block", 4000);
               return;
             } else FormData.Products.push($scope.addedProducts[i]);
       }
       FormData.InvoiceNo = $scope.InvoiceNo;
       FormData.CustomerName= $scope.CustomerName;
+      $scope.SalesInvoiceDate = salesInvoiceDateVal;
+      FormData.SalesInvoiceDate = $scope.SalesInvoiceDate
       FormData.SalesInvoiceDate = $scope.SalesInvoiceDate;
       FormData.CustomerPhone = $scope.CustomerPhone;
       FormData.VehicleNo = $scope.VehicleNo;
-      FormData.SubTotal = $scope.SubTotal;
+      FormData.VehicleMileage = $scope.VehicleMileage;
+      FormData.BasicAmount = $scope.BasicAmount;
       FormData.VatAmount = $scope.VatAmount;
       FormData.DiscountAmount =  $scope.DiscountAmount;
       FormData.TotalAmountPaid =  $scope.TotalAmountPaid;
       FormData.Notes = $scope.Notes;
       FormData.Address = $scope.Address;
+      FormData.PaymentMethod = $scope.PaymentMethod;
 
+      if($scope.PaymentMethod == '3') {
+        FormData.ChequeNo = $scope.ChequeNo;
+        $scope.ChequeDate = chequeDateVal;
+        FormData.ChequeDate = $scope.ChequeDate;
+        if($scope.ChequeNo == '') {
+          document.getElementById("messages").innerHTML = MessageTemplate(1, "Please proviude the cheque no.");
+          autoClosingAlert(".alert-block", 4000);
+        }
+      }
       console.log(JSON.stringify(FormData));
 
       dataService.submitOrder(FormData, function(response) {
           if(parseInt(response.data, 10)) {
-            document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
-              alert-success\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\"> \
-              <i class=\"ace-icon fa fa-times\"></i></button><i class=\"ace-icon fa fa-check \
-              green\"></i>&nbsp;&nbsp;Sales Invoice has been added with " + response.data +" product(s).</div>";
-              $scope.reset();
-              autoClosingAlert(".alert-block", 4000);
+            document.getElementById("messages").innerHTML = 
+              MessageTemplate(0, "Sales Invoice has been added with " + response.data +" product(s)");
+              $scope.reset();              
+              $scope.salesForm.$setPristine();
+              $scope.salesForm.$setUntouched();
+              $scope.salesForm.$submitted = false;
           }
           else {
-              document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
-              alert-danger\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">  \
-              <i class=\"ace-icon fa fa-times\"></i> </button><i class=\"ace-icon fa fa-ban \
-              red\"></i> &nbsp; &nbsp;" + response.data + " </div>";
-              autoClosingAlert(".alert-block", 4000);
+              document.getElementById("messages").innerHTML = MessageTemplate(1, response.data);
           }
+          autoClosingAlert(".alert-block", 4000);
+          scrollTo(0,0);          
       });
     }
   };
@@ -673,7 +711,8 @@ var ValidSubmit = ['$parse', function ($parse) {
       }).then(callback)
     };
 
-  }).directive('validSubmit', ValidSubmit);
+  })
+  .directive('validSubmit', ValidSubmit);
 
    
 </script>

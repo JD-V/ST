@@ -373,7 +373,7 @@
           $isActiveTV = "";
           if($userRoleID ==1 )  // Admin role 1
           {
-            if($CDATA['PAGE_NAME'] == 'MNSTOCK' || $CDATA['PAGE_NAME'] == 'STOCKENT') {
+            if($CDATA['PAGE_NAME'] == 'MNSTOCK' || $CDATA['PAGE_NAME'] == 'STOCKENT' || $CDATA['PAGE_NAME'] == 'ADDSTOCK') {
               $isActiveTV =  'active';
             } else {
               $isActiveTV = "";
@@ -393,12 +393,12 @@
           <?php $isActive = ""; if($CDATA['PAGE_NAME'] == 'MNSTOCK'){ $isActive =  'active'; }
 
            $isActive = "";
-           if($CDATA['PAGE_NAME'] == 'MNSTOCK') { $isActive =  'active'; ChromePhp::log('isa active '. $CDATA['PAGE_NAME'] );  }
+           if($CDATA['PAGE_NAME'] == 'MNSTOCK') { $isActive =  'active'; }
           
            echo "<li class=\"hover " . $isActive . " \">
                     <a href=\"manageStock.php\" >
                       <i class=\"fa fa-th-large\"></i>
-                      <span>Stock</span>
+                      <span> Available Stock</span>
                       <span class=\"pull-right-container\">
                       <i class=\"fa fa-angle-right pull-right\"></i>
                       </span>
@@ -407,7 +407,6 @@
 
            $isActive = "";
            if($CDATA['PAGE_NAME'] == 'STOCKENT') { $isActive =  'active';  }
-           ChromePhp::log('isa active '. $CDATA['PAGE_NAME'] );
 
               echo "<li class=\"hover " . $isActive . " \">
                       <a href=\"stockTransactions.php\" >
@@ -417,9 +416,20 @@
                         <i class=\"fa fa-angle-right pull-right\"></i>
                         </span>
                       </a>
-                    </li>";      
+                    </li>";
 
-                                  
+          $isActive = "";
+           if($CDATA['PAGE_NAME'] == 'ADDSTOCK') { $isActive =  'active';  }
+
+              echo "<li class=\"hover " . $isActive . " \">
+                      <a href=\"addstock.php\" >
+                        <i class=\"fa fa-plus\"></i>
+                        <span>Add Stock</span>
+                        <span class=\"pull-right-container\">
+                        <i class=\"fa fa-angle-right pull-right\"></i>
+                        </span>
+                      </a>
+                    </li>";
             ?>
 
           </ul>
@@ -476,16 +486,12 @@
                         <i class=\"fa fa-angle-right pull-right\"></i>
                         </span>
                       </a>
-                    </li>";      
-
-                                  
+                    </li>";
             ?>
 
           </ul>
         </li>
         <?php } ?>
-
-
 
         <?php
           //$userRoleID = getUserRoleID();
