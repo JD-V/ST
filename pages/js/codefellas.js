@@ -395,6 +395,70 @@ $("#Supplier").submit(function (e) {}).validate({
 
 
 // this is static form validation you can refer this to validate any static forms
+$("#Userform").submit(function (e) {}).validate({
+
+  rules: {
+    UserName: {
+      required: true,
+      minlength: 3,
+    },
+    UserPhone: {
+      required: true,
+      digits: true,
+      minlength: 10,
+      maxlength: 10,      
+    },
+    UserAddr: {
+      required: true,
+    },
+    UserRole: {
+      required: true,
+    },
+    UserPassword: {
+      required: true,
+      minlength: 6,      
+    },
+    UserStatus: {
+      required: true,
+    }
+  },
+  // Specify the validation error messages
+  messages: {
+    UserName: {
+      required: "Please Enter a valid user name",
+      minlength: "User name should be atleast 3 character long",
+    },
+    UserPhone: {
+      required: "Please enter a valid phone number",
+      digits: "Only digits allowed",
+      minlength: "Enter 10 digit mobile number",
+      maxlength: "Enter 10 digit mobile number",
+    },
+    UserAddr: {
+      required: "Please Enter a valid address",
+    },
+    UserRole: {
+      required: "Please select user role",
+    },
+    UserPassword: {
+      required: "Please enter a valid password",
+      minlength: "Passeword must be atleast 6 character long",      
+    },    
+    UserStatus: {
+      required: "Please select user status",
+    }
+  },
+  errorPlacement: function (error, element) {
+    error.insertAfter($(element).parent()).addClass('errorMessage');
+  },
+  submitHandler: function (form) {
+    $('input[name="UKey"]').val('2');
+    form.submit();
+  }
+});
+
+
+// this is static form validation you can refer this to validate any static forms
 $("#CoursesForm").submit(function (e) {}).validate({
 
   rules: {
@@ -448,6 +512,7 @@ $("#CoursesForm").submit(function (e) {}).validate({
     form.submit();
   }
 });
+
 
 $("#NonBillable").submit(function (e) {}).validate({
 

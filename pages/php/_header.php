@@ -119,23 +119,21 @@
     });
           
   </script>
-<li class="dropdown notifications-menu">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-    <i class="fa fa-bell-o"></i>
-    <span class="label label-warning notification-count">10</span>
-  </a>
-  <ul class="dropdown-menu" style="width:400px">
-    <li class="header notification-count-message">You have 5  notifications</li>
-    <li>
-      <!-- inner menu: contains the actual data -->
-      <ul class="menu notifications">
-      </ul>
-    </li>
-    <li class="footer"><a href="notifications.php">View all</a></li>
-  </ul>
-</li>
-
-
+          <li class="dropdown notifications-menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <i class="fa fa-bell-o"></i>
+              <span class="label label-warning notification-count">10</span>
+            </a>
+            <ul class="dropdown-menu" style="width:400px">
+              <li class="header notification-count-message">You have 5  notifications</li>
+              <li>
+                <!-- inner menu: contains the actual data -->
+                <ul class="menu notifications">
+                </ul>
+              </li>
+              <li class="footer"><a href="notifications.php">View all</a></li>
+            </ul>
+          </li>
           <li>
             <a href="logout.php">
               <i class="glyphicon glyphicon-off" style="margin-right: 2px;" ></i>

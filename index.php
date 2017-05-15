@@ -41,7 +41,7 @@ if(!isLogin())
 
     <form id="loginMain" name="loginMain" action="index.php" method="post">
       <div class="form-group has-feedback">
-        <input type="text" id="email" name="email" class="form-control input-lg" placeholder="Email">
+        <input type="text" id="userName" name="userName" class="form-control input-lg" placeholder="User name">
         <span class="glyphicon glyphicon-user form-control-feedback"></span>
       </div>
       <div class="form-group has-feedback">
@@ -90,25 +90,23 @@ if(!isLogin())
       <?php
       if($_SERVER["REQUEST_METHOD"] == "POST")
       {
-        if(isset($_POST['email']) && !empty($_POST['email']) && isset($_POST['passwd']) && !empty($_POST['passwd']))
+        if(isset($_POST['userName']) && !empty($_POST['userName']) && isset($_POST['passwd']) && !empty($_POST['passwd']))
         {
-          $Email = mysql_real_escape_string($_POST['email']);
+          $userName = mysql_real_escape_string($_POST['userName']);
           $userpwd = mysql_real_escape_string($_POST['passwd']);
 
-            $Res = validateLogin($Email,$userpwd);
+            $Res = validateLogin($userName,$userpwd);
             if($Res == 1)
             {
-              $_SESSION['Email'] = $Email;
+              $_SESSION['userName'] = $userName;
               $_SESSION['AUTH_KEY'] = mt_rand(100000000,999999999);
               header('Location: pages/php/dashboard.php');
               exit;
-            }
-            else if($Res == 2)
-            {
+            } else if($Res == 0) {
+              echo "<p class='alert alert-danger'>Error(014) ! Access denided</p><br/>";
+            } else if($Res == 2) {
               echo "<p class='alert alert-danger'>Error(011) ! Invalid User ID / Password</p><br/>";
-            }
-            else if($Res == 2)
-            {
+            } else if($Res == 2) {
               echo "<p class='alert alert-danger'>Error(012) ! Invalid User ID / Password</p>";
             }
 

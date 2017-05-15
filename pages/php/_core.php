@@ -18,43 +18,39 @@ else
 }
 
 
-function ValidateLogin($Email,$userpwd){
+function ValidateLogin($userName,$userpwd){
 
-  $checklogin = mysql_query("SELECT * FROM `user` WHERE `Email` = '$Email' ");
+  $checklogin = mysql_query("SELECT * FROM `user` WHERE `Name` = '$userName' ");
 
   if(mysql_num_rows($checklogin) == 1) {
-
     $user = mysql_fetch_assoc($checklogin);
 
-    if(password_verify($userpwd, $user['Password']) ) {
+    if($user['Status'] == '0') {
+      return 0;
+    } else if(password_verify($userpwd, $user['Password']) ) {
       return 1;
-    }
-    else
+    } else {
       return 2;
+    }
   }
   else
     return 3;
-
 }
 
 function isLogin() {
 
-  if(isset($_SESSION['Email']) && !empty($_SESSION['Email']))
-  {
+  if(isset($_SESSION['userName']) && !empty($_SESSION['userName'])) {
     return true;
-  }
-  else
-  {
+  } else {
     return false;
   }
 }
 
 function getUserRole() {
 
-  if(isset($_SESSION['Email']) && !empty($_SESSION['Email']))
-  {
-    $Email = $_SESSION['Email'];
-    $GetRoleID = mysql_query("SELECT * FROM user WHERE Email = '$Email' ");
+  if(isset($_SESSION['userName']) && !empty($_SESSION['userName'])) {
+    $userName = $_SESSION['userName'];
+    $GetRoleID = mysql_query("SELECT * FROM user WHERE Name = '$userName' ");
     if(mysql_num_rows($GetRoleID)==1) {
         $ShowData = mysql_fetch_assoc($GetRoleID);
         $RoleID  = $ShowData['RoleID'];
@@ -78,10 +74,9 @@ function getUserRole() {
 
 function getUserRoleID() {
 
-  if(isset($_SESSION['Email']) && !empty($_SESSION['Email']))
-  {
-    $Email = $_SESSION['Email'];
-    $GetRoleID = mysql_query("SELECT * FROM user WHERE Email = '$Email' ");
+  if(isset($_SESSION['userName']) && !empty($_SESSION['userName'])) {
+    $userName = $_SESSION['userName'];
+    $GetRoleID = mysql_query("SELECT * FROM user WHERE Name = '$userName' ");
     if(mysql_num_rows($GetRoleID)==1) {
         $ShowData = mysql_fetch_assoc($GetRoleID);
         $RoleID  = $ShowData['RoleID'];
@@ -98,71 +93,45 @@ function getUserRoleID() {
 
 function getUserName() {
 
-    if(isset($_SESSION['Email']) && !empty($_SESSION['Email']))
-    {
-      $Email = $_SESSION['Email'];
-      $GetName = mysql_query("SELECT * FROM user WHERE Email = '$Email' ");
-      if(mysql_num_rows($GetName)==1) {
-          $ShowData = mysql_fetch_assoc($GetName);
-          echo $ShowData['Name'];
-
-          }
-      }
-      else {
-        echo "null";
-      }
-
+    if(isset($_SESSION['userName']) && !empty($_SESSION['userName'])) {
+      echo $_SESSION['userName'];
+    } else echo 'null';
 }
 
 
 function isAdmin() {
 
-  $Email = $_SESSION['Email'];
-  if($CheckAdmin = mysql_query("SELECT * FROM user WHERE RoleID = '1' AND Email = '$Email' "))
-  {
+  $userName = $_SESSION['userName'];
 
-    if(mysql_num_rows($CheckAdmin) == 1)
-    {
-      ChromePhp::log('is Admin true');
+  if($CheckAdmin = mysql_query("SELECT * FROM user WHERE RoleID = '1' AND Name = '$userName' ")) {
+    if(mysql_num_rows($CheckAdmin) == 1) {
       return true;
-    }
-    else
-    {
+    } else {
       return false;
     }
-
-  }
-  else
-  {
+  } else {
     return false;
   }
-
 }
 
 function GetServices() {
 
-  if($getServiceList = mysql_query("SELECT * FROM service"))
-  {
+  if($getServiceList = mysql_query("SELECT * FROM service")) {
     ChromePhp::log("true");
-    if(mysql_num_rows($getServiceList) >= 1)
-    {
+    if(mysql_num_rows($getServiceList) >= 1) {
       ChromePhp::log("true1");
       return $getServiceList;
     }
-  }
-  else
-  {
+  } else {
     return false;
   }
 }
 
 function GetServices2() {
   $SRArray = array();
-  if($getServiceList = mysql_query("SELECT * FROM service"))
-  {
+  if($getServiceList = mysql_query("SELECT * FROM service")) {
     ChromePhp::log("true");
-    if(mysql_num_rows($getServiceList) >= 1)
-    {
+    if(mysql_num_rows($getServiceList) >= 1) {
       while ($service = mysql_fetch_assoc($getServiceList)) {
         $ServiceRecord = new ServiceRecord();
         $ServiceRecord->invoiceNumber = $service['InvoiceNumber'];
@@ -188,49 +157,33 @@ function GetServices2() {
 
 function GetOrders() {
 
-  if($getServiceList = mysql_query("SELECT * FROM sales"))
-  {
-    ChromePhp::log("true");
-    if(mysql_num_rows($getServiceList) >= 1)
-    {
-      ChromePhp::log("true1");
-      return $getServiceList;
-    }
-  }
-  else
-  {
+  if($getOrdersList = mysql_query("SELECT * FROM sales")) {
+      return $getOrdersList;
+  } else {
     return false;
   }
 }
 
 function GetMaxServiceInoviceNumber()
 {
-  if($maxInvoiceNumber = mysql_query("SELECT MAX(InvoiceNumber) as InvoiceNumber FROM service"))
-    {
+  if($maxInvoiceNumber = mysql_query("SELECT MAX(InvoiceNumber) as InvoiceNumber FROM service")) {
       if(mysql_num_rows($maxInvoiceNumber) >= 1) {
-
         $ShowData = mysql_fetch_assoc($maxInvoiceNumber);
         return $ShowData['InvoiceNumber'];
       }
-    }
-    else
-    {
+    } else {
       return false;
     }
 }
 
 function GetMaxProductInventoryID()
 {
-  if($maxProductID = mysql_query("SELECT MAX(ProductID) as ProductID FROM productinvetory"))
-    {
+  if($maxProductID = mysql_query("SELECT MAX(ProductID) as ProductID FROM productinvetory")) {
       if(mysql_num_rows($maxProductID) >= 1) {
-
         $ShowData = mysql_fetch_assoc($maxProductID);
         return $ShowData['ProductID'];
       }
-    }
-    else
-    {
+    } else {
       return false;
     }
 }
@@ -238,36 +191,25 @@ function GetMaxProductInventoryID()
 
 function GetMaxSalesInoviceNumber()
 {
-  if($maxInvoiceNumber = mysql_query("SELECT MAX(InvoiceNumber) as InvoiceNumber FROM sales"))
-    {
+  if($maxInvoiceNumber = mysql_query("SELECT MAX(InvoiceNumber) as InvoiceNumber FROM sales")) {
       if(mysql_num_rows($maxInvoiceNumber) >= 1) {
-
         $ShowData = mysql_fetch_assoc($maxInvoiceNumber);
         return $ShowData['InvoiceNumber'];
       }
-    }
-    else
-    {
+    } else {
       return false;
     }
 }
 
 function GetNonBillables() {
 
-  if($getNonBillablesList = mysql_query("SELECT * FROM `nonbillable`"))
-  {
-    ChromePhp::log("true");
-    if(mysql_num_rows($getNonBillablesList) >= 1)
-    {
-      ChromePhp::log("true1");
+  if($getNonBillablesList = mysql_query("SELECT * FROM `nonbillable`")) {
+    if(mysql_num_rows($getNonBillablesList) >= 1) {
       return $getNonBillablesList;
     }
-  }
-  else
-  {
+  } else {
     return false;
   }
-
 }
 
 
@@ -284,7 +226,7 @@ function GetServiceRecord($InvoiceNumber) {
 }
 
 function GetServiceRecordItems($InvoiceNumber) {
-return  mysql_query("SELECT * FROM `serviceitems` WHERE InvoiceNumber='$InvoiceNumber' ");
+  return  mysql_query("SELECT * FROM `serviceitems` WHERE InvoiceNumber='$InvoiceNumber' ");
 }
 
 
@@ -320,113 +262,83 @@ function generateRandomString($length = 30) {
 
 function SaveForgotPasswordKey($email,$key) {
 
-  if($updateKey = mysql_query("UPDATE user SET PasswordRecovery = '$key' WHERE Email='$email'"))
-  {
+  if($updateKey = mysql_query("UPDATE user SET PasswordRecovery = '$key' WHERE Email='$email'")) {
     return 1;
-  }
-  else
-  {
+  } else {
     return 0;
   }
-
-
 }
 
 function updatePassword($userID,$password) {
 
   $hashPassword = password_hash($password, PASSWORD_DEFAULT);
 
-  if($updatePassword = mysql_query("UPDATE user SET PasswordRecovery = NULL, Password ='$hashPassword' WHERE UserID='$userID' "))
-    {
-      return 1;
-    }
-    else
-    {
-      return 0;
-    }
-
+  if($updatePassword = mysql_query("UPDATE user SET PasswordRecovery = NULL, Password ='$hashPassword' WHERE UserID='$userID' ")) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
 function checkPasswordRecoveryKey($key) {
-
   return mysql_query("SELECT * FROM `user` WHERE `PasswordRecovery` = '$key'");
 }
 
 function getUserInfo($user_id) {
 
-  if($getUserInformation = mysql_query("SELECT * FROM `user` WHERE UserID = '$user_id' "))
-  {
-    if(mysql_num_rows($getUserInformation) == 1)
-    {
+  if($getUserInformation = mysql_query("SELECT * FROM `user` WHERE UserID = '$user_id' ")) {
+    if(mysql_num_rows($getUserInformation) == 1) {
       return $getUserInformation;
     }
-  }
-  else
-  {
+  } else {
     return false;
   }
 }
 
 function getLocations() {
 
-  if($getLocations = mysql_query("SELECT * FROM location"))
-  {
-    if(mysql_num_rows($getLocations) >= 1)
-    {
+  if($getLocations = mysql_query("SELECT * FROM location")) {
+    if(mysql_num_rows($getLocations) >= 1) {
       return $getLocations;
     }
-  }
-  else
-  {
+  } else {
     return false;
   }
 }
 
 function GetNonBillableRecord($Record_id) {
 
-  if($GetRecordInformation = mysql_query("SELECT * FROM `nonbillable` WHERE RecordID = '$Record_id' ") )
-  {
-    if(mysql_num_rows($GetRecordInformation) == 1)
-    {
+  if($GetRecordInformation = mysql_query("SELECT * FROM `nonbillable` WHERE RecordID = '$Record_id' ") ) {
+    if(mysql_num_rows($GetRecordInformation) == 1) {
       return $GetRecordInformation;
     }
-  }
-  else
-  {
+  } else {
     return false;
   }
 }
 
 function GetSuppliersRecords($SupplierID) {
 
-  if($GetRecordInformation = mysql_query("SELECT * FROM `supplier` WHERE SupplierID = '$SupplierID' ") )
-  {
-    if(mysql_num_rows($GetRecordInformation) == 1)
-    {
+  if($GetRecordInformation = mysql_query("SELECT * FROM `supplier` WHERE SupplierID = '$SupplierID' ") ) {
+    if(mysql_num_rows($GetRecordInformation) == 1) {
       return $GetRecordInformation;
     }
-  }
-  else
-  {
+  } else {
     return false;
   }
 }
 
 function GetMaxAllocID() {
 
-  if($maxAllocID = mysql_query("SELECT MAX(AllocID) as maxAllocID FROM roomsalloc"))
-  {
+  if($maxAllocID = mysql_query("SELECT MAX(AllocID) as maxAllocID FROM roomsalloc")) {
     if(mysql_num_rows($maxAllocID) >= 1) {
 
       $ShowData = mysql_fetch_assoc($maxAllocID);
       return $ShowData['maxAllocID'];
     }
-  }
-  else
-  {
+  } else {
     return false;
   }
-
 }
 
 function RemoveLocation($LocationId) {
@@ -444,7 +356,6 @@ function RemoveLocation($LocationId) {
 
 function RemoveBrand($BrandID) {
 
-  ChromePhp::log("Brand ID : " .$BrandID);
   $RemoveBrand =  mysql_query("DELETE FROM `Brands` WHERE `BrandID` = $BrandID ");
   $result = mysql_affected_rows();
   if($result == -1)
@@ -456,12 +367,7 @@ function RemoveBrand($BrandID) {
 }
 
 function AddLocation($Location) {
-  ChromePhp::log("LocName : " .$Location->LocName);
-
   $addLocaiton = mysql_query(" INSERT INTO `location` (`LocationName`) VALUES ( '$Location->LocName')" );
-
-  ChromePhp::log("ADD LOC qrY : " .$addLocaiton);
-
   if($addLocaiton)
     return 1;
   else
@@ -469,18 +375,12 @@ function AddLocation($Location) {
 }
 
 function AddBrand($Brand) {
-  ChromePhp::log("BrandName : " .$Brand->BrandName);
 
   $addBrand = mysql_query(" INSERT INTO `Brands` (`BrandName`) VALUES ( '$Brand->BrandName')" );
 
-  ChromePhp::log("ADD LOC qrY : " .$addBrand);
-
-  if($addBrand)
-  {
+  if($addBrand) {
     return 1;
-  }
-  else
-  {
+  } else {
     return 0;
   }
 }
@@ -506,81 +406,66 @@ function UpdateBrand($Brand) {
 }
 
  function GetRoles() {
-   if($getRoleList = mysql_query("SELECT * FROM role"))
-   {
-     ChromePhp::log("true");
-     if(mysql_num_rows($getRoleList) >= 1)
-     {
-       ChromePhp::log("true1");
+   if($getRoleList = mysql_query("SELECT * FROM role")) {
+     if(mysql_num_rows($getRoleList) >= 1) {
        return $getRoleList;
      }
-   }
-   else  {
+   } else  {
      return false;
    }
 }
 
-function AddUser($UserName,$UserEmail,$UserPhone,$UserBday,$UserAddr,$UserRole,$Status) {
-
-  ChromePhp::log("name" . $UserName);
-  ChromePhp::log("id " . $UserID);
-  ChromePhp::log("email" . $UserEmail);
-  ChromePhp::log("ph" . $UserPhone);
-  ChromePhp::log("bd" . $UserBday);
-  ChromePhp::log("city" . $UserCity);
-  ChromePhp::log("addr" . $UserAddr);
-  ChromePhp::log("role" . $UserRole);
-  ChromePhp::log("status" . $Status);
-
-  if($result = mysql_query("INSERT INTO user (Email, Name, Password, RoleID, UserPhone, Birthday, Address, Status)
-                        VALUES ('$UserEmail', '$UserName','nu','$UserRole','$UserPhone','$UserBday','$UserAddr' ,'$Status')" ) )
-      {ChromePhp::log('inserted'); return true;}
-    else
-      {if (false === $result) {
-          //echo mysql_error();
-      }  ChromePhp::log(' not inserted'); return false;}
-
+function AddUser($user) { 
+    ChromePhp::log("max user id". GetMaxUserID());
+    $hashPassword = password_hash($user->password, PASSWORD_DEFAULT);
+    ChromePhp::log("user id".$user->userID);
+    if($result = mysql_query("INSERT INTO user (`UserID`, `Name`, `Password`, `RoleID`, `UserPhone`, `Address`, `Status`)
+      VALUES ('$user->userID','$user->userName','$hashPassword','$user->userRoleID','$user->userPhone','$user->userAddr','$user->status')" ) )
+    {
+      return true;
+        ChromePhp::log("Added");
+    } else {
+      if (false === $result) {
+        echo mysql_error();
+      }
+      return false;
+    }
 }
 
 function AddNonBillable($RecDate,$Perticulars,$AmountPaid,$Notes){
 
-  ChromePhp::log("RecDate" . $RecDate);
-  ChromePhp::log("Perticulars " . $Perticulars);
-  ChromePhp::log("AmountPaid" . $AmountPaid);
-  ChromePhp::log("Notes" . $Notes);
-
-  if($result = mysql_query("INSERT INTO nonbillable (RecordDate, Perticulars, AmountPaid, Notes)
+    if($result = mysql_query("INSERT INTO nonbillable (RecordDate, Perticulars, AmountPaid, Notes)
                         VALUES ('$RecDate', '$Perticulars','$AmountPaid','$Notes')" ) )
-      {ChromePhp::log('inserted'); return true;}
-    else
-      {if (false === $result) {
-          //echo mysql_error();
-      }  ChromePhp::log(' not inserted'); return false;}
-
+    {
+      return true;
+    } else { 
+      if (false === $result) {
+        //echo mysql_error();
+      }
+      return false;
+    }
 }
 
 function AddSupplier($Name,$TinNum,$MobileNum,$Email,$Address,$ContactPerson){
     if($result = mysql_query("INSERT INTO supplier (SupplierName, TinNumber, Mobile, Email,Address, ContactPerson)
                         VALUES ('$Name', '$TinNum','$MobileNum','$Email', '$Address', '$ContactPerson')" ) )
-      {ChromePhp::log('inserted'); return true;}
-    else
-      {
-        if (false === $result) {
-      }  ChromePhp::log(' not inserted'); return false;
+    {
+      return true;
+    } else { 
+      if (false === $result) {
+        //echo mysql_error();
       }
-
+      return false;
+    }
 }
 
 
 function GetSuppliers() {
   if ($suppliers=mysql_query("SELECT * FROM `supplier`")) {
-    ChromePhp::log("true");
     if (mysql_num_rows($suppliers) >=1) {
-      ChromePhp::log("true1");
       return $suppliers;
     }
-  }
-  else {
+  } else {
     return false;
   }
 }
@@ -591,9 +476,7 @@ function UpdateSupplier($SupplierID, $SupplierName, $TinNum, $MobileNum, $Email,
    Email = '$Email', Address = '$Address', ContactPerson = '$ContactPerson' WHERE SupplierID='$SupplierID'"))
   {
     return true;
-  }
-  else
-  {
+  } else {
     return false;
   }
 }
@@ -602,19 +485,11 @@ function UpdateSupplier($SupplierID, $SupplierName, $TinNum, $MobileNum, $Email,
 
 function UpdateNonBillable($RecordId,$RecDate,$Perticulars,$AmountPaid,$Notes){
 
-  ChromePhp::log("RecordId" . $RecordId);
-  ChromePhp::log("RecDate" . $RecDate);
-  ChromePhp::log("Perticulars " . $Perticulars);
-  ChromePhp::log("AmountPaid" . $AmountPaid);
-  ChromePhp::log("Notes" . $Notes);
-
   if($updateKey = mysql_query("UPDATE nonbillable SET RecordDate   = '$RecDate' , Perticulars = '$Perticulars', AmountPaid = '$AmountPaid',
    Notes = '$Notes' WHERE RecordID='$RecordId'"))
   {
     return true;
-  }
-  else
-  {
+  } else {
     return false;
   }
 }
@@ -627,9 +502,7 @@ function UpdateServicerecord($ServiceRecord){
    Note='$ServiceRecord->notes' WHERE InvoiceNumber='$ServiceRecord->invoiceNumber' "))
   {
     return true;
-  }
-  else
-  {
+  } else {
     return false;
   }
 }
@@ -639,11 +512,14 @@ function Addservicerecord($ServiceRecord) {
   if($result = mysql_query("INSERT INTO service (InvoiceDateTime,CustomerName,CustomerPhone, VehicleNumber, AmountPaid, Note)
       VALUES ('$ServiceRecord->invoiceDate','$ServiceRecord->customerName','$ServiceRecord->customerPhone',
       '$ServiceRecord->vehicleNumber', '$ServiceRecord->amountPaid', '$ServiceRecord->notes')" ) )
-      {ChromePhp::log('inserted'); return true;}
-    else
-      { if (false === $result) {
-          echo mysql_error();
-      }  ChromePhp::log(' not inserted'); return false;}
+    {
+      return true;
+    } else { 
+      if (false === $result) {
+        //echo mysql_error();
+      }
+      return false;
+    }
 }
 
 function GetMaxInvoiceID() {
@@ -676,17 +552,15 @@ function CheckRoomAvailibility($roomID,$dt1,$dt2){
                 WHERE b.RoomID = '$roomID' AND ( (b.EndDateTime > '$dt1' AND b.StartDateTime < '$dt2' ) OR
                 (b.EndDateTime < '$dt1' AND b.StartDateTime > '$dt2') )" ) )
       {
-        ChromePhp::log("yes query success" );
         if(mysql_num_rows($getLoc)>0) {
-          ChromePhp::log("res 1" );
           echo '1';
         }
         else{
           echo '0';
-          ChromePhp::log("res 0" );
         }
       }
       else {
+        echo '0';
         ChromePhp::log("query failed" );
       }
 
@@ -748,35 +622,23 @@ function AddProduct($Product){
 function GetInvoices(){
 
    if($getInvoices = mysql_query("SELECT * FROM `purchaseinvoice`")) {
-    ChromePhp::log("true");
-    if(mysql_num_rows($getInvoices) >= 1)
-    {
-      ChromePhp::log("true1");
+    if(mysql_num_rows($getInvoices) >= 1) {
       return $getInvoices;
     }
-  }
-  else
-  {
+  } else {
     return false;
   }
-
 }
 
 function GetProducts() {
 
   if($getProducts = mysql_query("SELECT p.*, pi.InvoiceNumber FROM products p JOIN purchaseinvoice pi ON pi.InvoiceID = p.InvoiceID")) {
-    ChromePhp::log("true");
-    if(mysql_num_rows($getProducts) >= 1)
-    {
-      ChromePhp::log("true1");
+    if(mysql_num_rows($getProducts) >= 1) {
       return $getProducts;
     }
-  }
-  else
-  {
+  } else {
     return false;
   }
-
 }
 
 function getServiceable($Depricated = 0) {
@@ -807,11 +669,8 @@ function UpdateServiceable($srv) {
 }
 
 function AddServiceable($srv) {
-  ChromePhp::log("Item : " .$srv->Item);
 
   $addItem = mysql_query(" INSERT INTO `serviceable` (`Item`,`Price`) VALUES ( '$srv->Item', '$srv->Price')" );
-
-  ChromePhp::log("ADD LOC qrY : " .$addItem);
 
   if($addItem)
     return 1;
@@ -823,12 +682,10 @@ function AddServiceable($srv) {
 function GetBrands() {
   
   if($getBrands = mysql_query("SELECT * FROM brands")) {
-    ChromePhp::log("core -GetBrands - true");
     if(mysql_num_rows($getBrands) >= 1) {
       return $getBrands;
     }
-  }
-  else {
+  } else {
     return false;
   }
 }
@@ -836,12 +693,10 @@ function GetBrands() {
 
 function GetProdcutTypes(){
   if($getProductTypes = mysql_query("SELECT * FROM producttype")) {
-    ChromePhp::log("true got supps");
     if(mysql_num_rows($getProductTypes) >= 1) {
       return $getProductTypes;
     }
-  }
-  else {
+  } else {
     return false;
   }
 }
@@ -900,7 +755,6 @@ function GetProductInventory2(){
   $ProductInventoryArray = array();
 
   if($getProductInventory = mysql_query("select p.*, pt.ProductTypeName, b.BrandName, s.SupplierName from productinvetory p JOIN brands b ON p.BrandID = b.BrandID JOIN supplier s ON p.SupplierID = s.SupplierID JOIN producttype pt ON p.ProductTypeID = pt.ProductTypeID")) {
-    ChromePhp::log("true got supps");
     if(mysql_num_rows($getProductInventory) >= 1) {
       while ($product = mysql_fetch_assoc($getProductInventory)) {
         $ProductInventory = new ProductInventory();
@@ -963,7 +817,6 @@ function GetProductInventoryByID2($productID){
 function GetProductInventoryByID($productID){
   
   if($getProductInventory = mysql_query("select p.*, pt.ProductTypeName, b.BrandName, s.SupplierName from productinvetory p JOIN brands b ON p.BrandID = b.BrandID JOIN supplier s ON p.SupplierID = s.SupplierID JOIN producttype pt ON p.ProductTypeID = pt.ProductTypeID WHERE p.ProductID = '$productID' ")) {
-    ChromePhp::log("true got supps");
     if(mysql_num_rows($getProductInventory) >= 1) {
       return $getProductInventory;
     }
@@ -976,7 +829,6 @@ function GetProductInventoryByID($productID){
 function GetProductStocks() {
 
   if($getProductInventory = mysql_query("SELECT pr.ProductID, br.BrandName, pr.ProductSize, pr.ProductPattern ,SUM(st.Qty) AS Qty, pr.MinSellPrice,pr.MaxSellPrice FROM productinvetory pr LEFT JOIN stockentries st ON pr.ProductID = st.ProductID JOIN brands br ON br.BrandID = pr.BrandID GROUP BY ProductID")) {
-    ChromePhp::log("true got supps");
     if(mysql_num_rows($getProductInventory) >= 1) {
       return $getProductInventory;
     }
@@ -992,7 +844,6 @@ function getProductWithStocks($BrandID) {
      pr.CostPrice, pr.MinSellPrice, pr.MaxSellPrice, br.BrandName, SUM(st.Qty) AS Qty FROM productinvetory pr LEFT JOIN stockentries st 
      ON pr.ProductID = st.ProductID JOIN producttype pt ON pt.ProductTypeID = pr.ProductTypeID JOIN brands br ON 
      pr.BrandID = br.BrandID WHERE pr.BrandID = '$BrandID' GROUP BY ProductID ")) {
-    ChromePhp::log("true got supps");
     if(mysql_num_rows($getProductInventory) >= 1) {
       return $getProductInventory;
     }
@@ -1072,6 +923,17 @@ function AddNewSeriveRecord($service) {
     return 0;
 }
 
+function GetMaxUserID() {
+  
+    $getMaxUserID = mysql_query("SELECT MAX(UserID) as UserID FROM user");
+    if(mysql_num_rows($getMaxUserID)>=1) {
+        $ShowData = mysql_fetch_assoc($getMaxUserID);
+        return $ShowData['UserID'];       
+    } else {
+      return 0;
+    }
+}
+
 function AddItemToServiceInvoice($serviceable,$invoiceNumber) {
 
   $AddProductToInvoice = mysql_query("INSERT INTO `serviceitems` 
@@ -1092,17 +954,28 @@ function FilterInput($inputString) {
 
 
 function MessageTemplate($MessageType, $text) {
-
+  
   if($MessageType == MessageType::Success) {
-    return "<div class=\"alert alert-block \
-            alert-success\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\"> \
-            <i class=\"ace-icon fa fa-times\"></i></button><i class=\"ace-icon fa fa-check \
-            green\"></i>&nbsp;&nbsp;" + $text +"</div>";
+    ChromePhp::log("success");
+    return "<div class=\"alert alert-block alert-success\">
+            <button type=\"button\" class=\"close\" data-dismiss=\"alert\">
+            <i class=\"ace-icon fa fa-times\"></i></button>
+            <i class=\"ace-icon fa fa-check green\"></i>&nbsp;&nbsp;"
+            . $text ."</div>";
   } else if($MessageType == MessageType::Failure) {
-    return "<div class=\"alert alert-block \
-            alert-danger\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">  \
-            <i class=\"ace-icon fa fa-times\"></i> </button><i class=\"ace-icon fa fa-ban \
-            red\"></i>&nbsp;&nbsp;" + $text + " </div>";
+    ChromePhp::log("failure");
+    echo "<div class=\"alert alert-block alert-danger\">
+          <button type=\"button\" class=\"close\" data-dismiss=\"alert\">
+          <i class=\"ace-icon fa fa-times\"></i> </button>
+          <i class=\"ace-icon fa fa-ban red\"></i>&nbsp;&nbsp;" 
+          . $text . " </div>";
+  } else if($MessageType == MessageType::RoboWarning) {
+    ChromePhp::log("RoboWarning");
+    echo "<div class=\"alert alert-block alert-danger\">
+          <button type=\"button\" class=\"close\" data-dismiss=\"alert\">
+          <i class=\"ace-icon fa fa-times\"></i></button>
+          <i class=\"ace-icon fa fa-android red\"></i>&nbsp;&nbsp;
+          PikesAce security Robot has detected re-submission of same data or hack attempt. Please try later.</div>";
   }
 }
 
@@ -1202,11 +1075,26 @@ class Stock
   public $TansactionTypeID;
 }
 
+class user 
+{
+  public $userID;
+  public $userName;
+  public $userEmail;
+  public $userPhone;
+  public $userAddr;
+  public $userRoleID;
+  public $userRole;
+  public $status;
+  public $idProof;
+  public $password;
+}
+
 abstract class MessageType
 {
     const Success = 0;
     const Failure = 1;
     const Warning = 2;
+    const RoboWarning = 3;
     // etc.
 }
 
