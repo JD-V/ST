@@ -28,14 +28,13 @@ require '_header.php';
           <!-- small box -->
           <div class="small-box bg-aqua">
             <div class="inner">
-              <h3>150</h3>
-
+              <h3><?php echo TodaysSale() ?></h3>
               <p>Today's sale</p>
             </div>
             <div class="icon">
-              <i class="ion ion-bag"></i>
+              <i class="ion ion-stats-bars"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="orders.php?date=<?php echo date('d-m-Y');?>" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->
@@ -43,14 +42,13 @@ require '_header.php';
           <!-- small box -->
           <div class="small-box bg-green">
             <div class="inner">
-              <h3>53<sup style="font-size: 20px">%</sup></h3>
-
+              <h3><?php echo TodaysService(); ?></h3>
               <p>Today's Service</p>
             </div>
             <div class="icon">
               <i class="fa fa-car"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="services.php?date=<?php echo date('d-m-Y');?>" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->
@@ -58,12 +56,26 @@ require '_header.php';
           <!-- small box -->
           <div class="small-box bg-yellow">
             <div class="inner">
-              <h3>44</h3>
-
-              <p>non billables</p>
+              <h3><?php echo TodaysNonBillable() ?></h3>
+              <p>Today's Non billables</p>
             </div>
             <div class="icon">
               <i class="fa fa-thumb-tack"></i>
+            </div>
+            <a href="nonbillable.php?date=<?php echo date('d-m-Y');?>" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <div class="small-box bg-red">
+            <div class="inner">
+              <h3>0</h3>
+
+              <p>upcoming Cheques</p>
+            </div>
+            <div class="icon">
+              <i class="fa fa-money"></i>
             </div>
             <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
           </div>

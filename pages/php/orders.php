@@ -90,15 +90,12 @@ window.open("DisplaySaleInvoice.php?id="+InvoiceID);
                 <th>#</th>
                 <th>Invoice</th>
                 <th>DateTime</th>
-
                 <th>Customer</th>
                 <th>Phone</th>
                 <th>Vehicle No</th>
-                
                 <th>Basic</th>
                 <th>Vat</th>
                 <th>Discount</th>
-
                 <th>Amount Paid</th>
                 <th>Address</th>
                 <th>Notes</th>
@@ -116,15 +113,12 @@ window.open("DisplaySaleInvoice.php?id="+InvoiceID);
                     <th><?php echo '<a href="addservicerecord.php?id='.$order['InvoiceNumber'].'">' . $i+=1  . '</a>'; ?></th>
                     <td><?php echo $order['InvoiceNumber']; ?></td>
                     <td><?php $date = date_create($order['InvoiceDateTime']); echo date_format($date, 'd-m-Y H:i'); ?></td>
-
                     <td><?php echo $order['CustomerName']; ?></td>
                     <td><?php echo $order['CustomerPhone'] ?></td>
                     <td><?php echo $order['VehicleNumber']; ?></td>
-
                     <td><?php echo $order['BasicAmount']; ?></td>
                     <td><?php echo $order['Vat']; ?></td>
                     <td><?php echo $order['Discount']; ?></td>
-
                     <td><?php echo $order['AmountPaid']; ?></td>
                     <td><?php echo $order['Address']; ?></td>
                     <td><?php echo $order['Notes']; ?></td>

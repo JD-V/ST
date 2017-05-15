@@ -949,6 +949,42 @@ function AddItemToServiceInvoice($serviceable,$invoiceNumber) {
     return 0;
 }
 
+function TodaysSale() {
+  $getTodaysSale = mysql_query("SELECT SUM(AmountPaid) As TotalSale FROM `sales` WHERE InvoiceDateTime > DATE(NOW())");
+    if(mysql_num_rows($getTodaysSale)>=1) {
+        $ShowData = mysql_fetch_assoc($getTodaysSale);
+        if(isset($ShowData['TotalSale']))
+          return $ShowData['TotalSale'];
+    } else {
+      return 0;
+    }
+    return 0;
+}
+
+function TodaysService() {
+  $getTodaysService = mysql_query("SELECT SUM(AmountPaid) As TotalService FROM `service` WHERE InvoiceDateTime > DATE(NOW())");
+    if(mysql_num_rows($getTodaysService)>=1) {
+        $ShowData = mysql_fetch_assoc($getTodaysService);
+        if(isset($ShowData['TotalService']))
+          return $ShowData['TotalService'];
+    } else {
+      return 0;
+    }
+    return 0;
+}
+
+function TodaysNonBillable() {
+  $getTodaysNonBillable = mysql_query("SELECT SUM(AmountPaid) As TotalAmount from nonbillable WHERE RecordDate > DATE(NOW())");
+    if(mysql_num_rows($getTodaysNonBillable)>=1) {
+        $ShowData = mysql_fetch_assoc($getTodaysNonBillable);
+        if(isset($ShowData['TotalAmount']))
+          return $ShowData['TotalAmount'];   
+    } else {
+      return 0;
+    }
+    return 0;
+}
+
 function FilterInput($inputString) {
   return mysql_real_escape_string(trim($inputString));
 }

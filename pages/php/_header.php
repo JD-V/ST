@@ -75,50 +75,50 @@
           </li> -->
 
           <!-- Notifications: style can be found in dropdown.less -->
-  <script type="text/javascript">
-    $.ajax({
-      dataType: "json",
-      type: "GET",
-      url: "AddUpdateRetriveStokcs.php?action=Retrive",
-      success: function(result) {
-        var count =0;
-        var StockArray= result;
-        //console.log(StockArray);
-        $.each(StockArray, function( key, value ) {
-          var Qty= parseInt(value.Qty)
-          if(Qty != NaN && Qty>9) { 
-            //console.log( value.ProductName + " : green : " + value.Qty );
-          }
-          else if(Qty != NaN && Qty>0) {
-            count++;
-            // console.log( value.ProductName + " : yellow : " + value.Qty );
-            $('.notifications').append(
-              $('<li/>').append(
-                $('<a/>', {'href': 'manageStock.php?product='+value.ProductDisplay}).append(
-                  $('<i/>', {'class': 'fa fa-warning text-yellow'})
-                ).append(value.ProductDisplay+' has only ' + value.Qty + ' Nos Left')
-              )
-           );             
-          }
-          else {
-            count++;
-            // console.log( value.ProductName + " : red : " + value.Qty );
-             $('.notifications').append(
-              $('<li/>').append(
-                $('<a/>', {'href': 'manageStock.php?product='+value.ProductDisplay}).append(
-                  $('<i/>', {'class': 'fa fa-ban text-red'})
-                ).append(value.ProductDisplay +' is out of stock')
-              )
-           );    
-          }
-        });
+        <script type="text/javascript">
+          $.ajax({
+            dataType: "json",
+            type: "GET",
+            url: "AddUpdateRetriveStokcs.php?action=Retrive",
+            success: function(result) {
+              var count =0;
+              var StockArray= result;
+              //console.log(StockArray);
+              $.each(StockArray, function( key, value ) {
+                var Qty= parseInt(value.Qty)
+                if(Qty != NaN && Qty>9) { 
+                  //console.log( value.ProductName + " : green : " + value.Qty );
+                }
+                else if(Qty != NaN && Qty>0) {
+                  count++;
+                  // console.log( value.ProductName + " : yellow : " + value.Qty );
+                  $('.notifications').append(
+                    $('<li/>').append(
+                      $('<a/>', {'href': 'manageStock.php?product='+value.ProductDisplay}).append(
+                        $('<i/>', {'class': 'fa fa-warning text-yellow'})
+                      ).append(value.ProductDisplay+' has only ' + value.Qty + ' Nos Left')
+                    )
+                );             
+                }
+                else {
+                  count++;
+                  // console.log( value.ProductName + " : red : " + value.Qty );
+                  $('.notifications').append(
+                    $('<li/>').append(
+                      $('<a/>', {'href': 'manageStock.php?product='+value.ProductDisplay}).append(
+                        $('<i/>', {'class': 'fa fa-ban text-red'})
+                      ).append(value.ProductDisplay +' is out of stock')
+                    )
+                );    
+                }
+              });
 
-        $('.notification-count-message').html('You have ' + count + ' notificaitons');
-        $('.notification-count').html(count);
-      }
-    });
-          
-  </script>
+              $('.notification-count-message').html('You have ' + count + ' notificaitons');
+              $('.notification-count').html(count);
+            }
+          });
+                
+        </script>
           <li class="dropdown notifications-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <i class="fa fa-bell-o"></i>
@@ -164,7 +164,7 @@
         <li class="header">MAIN NAVIGATION</li>
 
         <li class="<?php if($CDATA['PAGE_NAME'] == 'DASHBOARD'){ echo 'active'; } ?> hover">
-          <a href="../../index.php">
+          <a href="dashboard.php">
             <i class="fa fa-tachometer"></i>
             <span> Dashboard </span>
             <span class="pull-right-container">
@@ -653,23 +653,20 @@
         <?php } ?>
 
         <li class="header">REPORTS</li>
-
-        <li class="<?php if($CDATA['PAGE_NAME'] == 'SUMMARY'){ echo 'active'; } ?> hover">
-            <a href="
-							<?php
-								//$userRoleID = getUserRoleID();
-                if($userRoleID == 1)	// Admin role 1
-                  echo "summary_Admin.php";
-                else                      // Associate role 4
-                  echo "summaryAssociate.php";
-                ?>" >
-                <i class="fa fa-file-text"></i>
-                <span>Summary</span>
-                <span class="pull-right-container">
-                  <i class="fa fa-angle-right pull-right"></i>
-                </span>
-            </a>
-        </li>
+        <?php
+            $isActive = "";
+            if($CDATA['PAGE_NAME'] == 'REPORTS'){ $isActive =  'active'; }
+            echo "<li class=\"hover " . $isActive . " \">
+                    <a href=\"reports.php\" >
+                      <i class=\"fa fa-plus-square\"></i>
+                      <span>Reports</span>
+                      <span class=\"pull-right-container\">
+                      <i class=\"fa fa-angle-right pull-right\"></i>
+                      </span>
+                    </a>
+                  </li>";
+        ?>
+       
       </ul>
     </section>
     <!-- /.sidebar -->

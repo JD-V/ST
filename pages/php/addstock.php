@@ -159,12 +159,24 @@ require '_header.php'
           <form class="form-horizontal"  name="Supplier" id="Supplier" action="addSupplier.php?_auth=<?php echo $_SESSION['AUTH_KEY']; ?>" method="post">
               <input type="hidden" value="<?php echo $_SESSION['AUTH_KEY']; ?>" name="akey" id="ID_akey" >
 
-              <div class="form-group">
-                <label for="SupplierName" class="control-label col-sm-3 lables">Supplier Name<span class="mandatoryLabel">*</span></label>
-                <div class='col-sm-4'>
-                  <input type="text" class="form-control" name="SupplierName" placeholder = "Name" value = "<?php  if(isset($Record['SupplierName'])) echo  $Record['SupplierName']; ?>"/>
+            <div class="form-group">
+                <label for="BrandID" class="control-label col-sm-3 lables">Brand<span class="mandatoryLabel">*</span></label>
+                <div class="col-sm-4">
+                    <select class="form-control" name="BrandID" id="BrandID" ng-model="Brand" ng-change="GetProducts()" >
+                    <option selected="true" disabled="disabled" style="display: none" value="default">Select Brand</option>
+                    <?php
+                        $brands = GetBrands();
+                        if(mysql_num_rows($brands)!=0) {
+                            while($brand = mysql_fetch_assoc($brands)) {
+                              echo '<option value="' . $brand['BrandID'] . '">' . $brand['BrandName'] . '</option>';
+                            }
+                        }
+                    ?>
+                    </select>
                 </div>
-              </div>
+            </div>
+
+            
               <div class="form-group">
                 <label for="TinNum" class="control-label col-sm-3 lables">TIN Number<span class="mandatoryLabel">*</span></label>
                 <div class='col-sm-4'>
