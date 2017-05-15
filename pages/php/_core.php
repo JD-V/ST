@@ -878,14 +878,14 @@ function GetStockTransactionHistory() {
 }
 
 function AddNewSalesItem($order) {
-
   $AddOrder = mysql_query("INSERT INTO `sales` 
     (`InvoiceNumber`, `InvoiceDateTime`, `CustomerName`, `CustomerPhone`, `VehicleNumber`, 
-    `SubTotal`, `Discount`, `Vat`, `AmountPaid`,`Address`, `Notes` ) VALUES 
+     `VehicleMileage`, `BasicAmount`, `Discount`, `Vat`, `AmountPaid`,`PaymentType`,
+     `ChequeNo`, `chequeDate`, `Address`, `Notes` ) VALUES 
     (  '$order->invoiceNumber', '$order->invoiceDate', '$order->customerName',  '$order->customerPhone',
-       '$order->vehicleNumber', '$order->subTotal',  '$order->discount', 
-       '$order->vatAmount', '$order->amountPaid', '$order->address','$order->notes' )" );
-
+       '$order->vehicleNumber', '$order->vehicleMileage', '$order->basic',  '$order->discount', 
+       '$order->vatAmount', '$order->amountPaid', '$order->paymentMethod', '$order->chequeNo', 
+       '$order->chequeDate', '$order->address', '$order->notes' )" );
   if($AddOrder)
     return 1;
   else
@@ -894,11 +894,12 @@ function AddNewSalesItem($order) {
 }
 
 function AddProductToSalesInvoice($product,$invoiceNumber) {
-
-  $AddProductToInvoice = mysql_query("INSERT INTO `salesproducts` (`ProductID`, `InvoiceNumber`, `ProductDispName`, `Qty`, `CostPrice`, `SalePrice` ) VALUES 
-    (  '$product->productID', '$invoiceNumber', '$product->productName',
-       '$product->qty', '$product->costPrice', '$product->sellingPrice' )" );
-
+  $AddProductToInvoice = mysql_query("INSERT INTO `salesproducts` 
+    (`ProductID`, `BrandName`, `Productsize`, `Pattern`, 
+     `ProductType`, `Qty`, `CostPrice`, `SalePrice`, `InvoiceNumber` ) VALUES 
+    ( '$product->productID', '$product->brandName', '$product->productSize', 
+      '$product->productPattern', '$product->productType', '$product->qty',
+      '$product->costPrice', '$product->maxSellingPrice','$invoiceNumber' )" );
   if($AddProductToInvoice)
     return 1;
   else
@@ -979,20 +980,25 @@ function MessageTemplate($MessageType, $text) {
   }
 }
 
-class Order
-{
-  public $invoiceNumber;
-  public $invoiceDate;
-  public $customerName;
-  public $customerPhone;
-  public $vehicleNumber;
-  public $subTotal=0.00;
-  public $discount=0.00;
-  public $vatAmount=0.00;
-  public $amountPaid=0.00;
-  public $notes="";
-  public $address="";
-}
+ class Order
+ {
+   public $invoiceNumber;
+   public $invoiceDate;
+    public $customerName;
+    public $customerPhone;
+    public $vehicleNumber;
+    public $vehicleMileage;
+    public $subTotal=0.00;
+    public $basic=0.00;
+    public $discount=0.00;
+    public $vatAmount=0.00;
+    public $amountPaid=0.00;
+    public $paymentMethod;
+    public $chequeNo=NULL;
+    public $chequeDate=NULL;
+    public $notes="";
+    public $address="";
+  }
 
  class Product
  {

@@ -95,7 +95,7 @@ window.open("DisplaySaleInvoice.php?id="+InvoiceID);
                 <th>Phone</th>
                 <th>Vehicle No</th>
                 
-                <th>SubTotal</th>
+                <th>Basic</th>
                 <th>Vat</th>
                 <th>Discount</th>
 
@@ -121,7 +121,7 @@ window.open("DisplaySaleInvoice.php?id="+InvoiceID);
                     <td><?php echo $order['CustomerPhone'] ?></td>
                     <td><?php echo $order['VehicleNumber']; ?></td>
 
-                    <td><?php echo $order['SubTotal']; ?></td>
+                    <td><?php echo $order['BasicAmount']; ?></td>
                     <td><?php echo $order['Vat']; ?></td>
                     <td><?php echo $order['Discount']; ?></td>
 

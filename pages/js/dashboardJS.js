@@ -63,5 +63,5 @@ $('#salesTable').DataTable({
   $('*[name=InvoiceDate]').appendDtpicker({"dateOnly": true, "dateFormat":'DD-MM-YYYY' });
   $('*[name=ServiceInvoiceDate]').appendDtpicker({"dateFormat":'DD-MM-YYYY hh:mm' });
   $('*[name=SalesInvoiceDate]').appendDtpicker({"dateFormat":'DD-MM-YYYY hh:mm' });
-
+  $('*[name=ChequeDate]').appendDtpicker({"dateOnly": true, "dateFormat":'DD-MM-YYYY'});
 });

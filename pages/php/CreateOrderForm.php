@@ -1,13 +1,9 @@
 <?php
 require '_connect.php';
 require '_core.php';
-
 if(isLogin() && isAdmin() ) {
-
   if( isset($_GET['action']) ) {
-
     $action = mysql_real_escape_string($_GET['action']);
-
     if($action == 'Retrive') {
       if(isset($_GET['item']) && $_GET['item'] == "MaxSalesInvoice") {
         print GetMaxSalesInoviceNumber();
@@ -25,7 +21,6 @@ if(isLogin() && isAdmin() ) {
     }
   }
 }
-
 function RetriveProducts($BrandID) {
   $products = getProductWithStocks($BrandID);
   $product_array = array();
@@ -41,7 +36,6 @@ function RetriveProducts($BrandID) {
   //print 'arr';
   print json_encode($product_array);
 }
-
 function saveOrder($FormData) {
   $FormData = json_decode($FormData);
   $order = new Order();
@@ -49,33 +43,38 @@ function saveOrder($FormData) {
   
   $date = date_create($FormData->SalesInvoiceDate); 
   $order->invoiceDate = date_format($date, 'Y-m-d H:i');
-
   $order->customerName = $FormData->CustomerName;
   $order->customerPhone = $FormData->CustomerPhone;
   $order->vehicleNumber = $FormData->VehicleNo;
-  $order->subTotal = $FormData->SubTotal;
+  $order->vehicleMileage = $FormData->VehicleMileage;
+  $order->basic = $FormData->BasicAmount;
   $order->vatAmount = $FormData->VatAmount;
-  $order->DiscountAmount = $FormData->DiscountAmount;
+  $order->discount = $FormData->DiscountAmount;
   $order->amountPaid = $FormData->TotalAmountPaid;
+  $order->paymentMethod = $FormData->PaymentMethod;
   $order->notes = $FormData->Notes;
   $order->address = $FormData->Address;
+   if( $order->paymentMethod == '3') {
+        $dateC = date_create($FormData->ChequeDate); 
+        $order->chequeDate = date_format($dateC, 'Y-m-d H:i');
+        $order->chequeNo = $FormData->ChequeNo;
+      }
   chromephp::log($order);
   if(AddNewSalesItem($order)) {
   $i = 0;
-
   foreach($FormData->Products as $product) {
       $ProductInventory = new ProductInventory();
       $ProductInventory->productID = $product->ProductID;
       $ProductInventory->brandName = $product->BrandName;
       $ProductInventory->productSize = $product->ProductSize;
       $ProductInventory->productPattern = $product->ProductPattern;
+      $ProductInventory->productType = $product->ProductTypeName;
       $ProductInventory->qty = $product->Qty;
       $ProductInventory->costPrice = $product->CostPrice;
-      $ProductInventory->sellingPrice = $product->SellingPrice;
+      $ProductInventory->maxSellingPrice = $product->SellPrice;
       
       $i += AddProductToSalesInvoice($ProductInventory,$order->invoiceNumber);
       chromephp::log($product); 
-
       $stock = new Stock();
       $stock->ProductID = $product->ProductID;
       $stock->Qty= -$product->Qty;
