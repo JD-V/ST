@@ -607,6 +607,48 @@ $("#Service").submit(function (e) {}).validate({
 });
 
 
+$("#addstock").submit(function (e) {}).validate({
+
+  rules: {
+    BrandID: {
+      required: true,
+    },
+    productSize: {
+      required: true,
+    },
+    Pattern: {
+      required: true,
+    },
+    Qty: {
+      required: true,
+      digits: true
+    }
+  },
+  // Specify the validation error messages
+  messages: {
+    BrandID: {
+      required: "Please select a valid brand",
+    },
+    productSize: {
+      required: "Please select valid size",
+    },
+    Pattern: {
+      required: "Please select valid pattern",
+    },
+    Qty: {
+      required: "Please enter valid Quantity",
+      digits: "please enter digits only",
+    }
+  },
+  errorPlacement: function (error, element) {
+      error.insertAfter($(element).parent()).addClass('errorMessage');
+  },
+  submitHandler: function (form) {
+    $('input[name="UKey"]').val('2');
+    form.submit();
+  }
+});
+
 
 function addMultiInputNamingRulesSkipFirst(form, alt, field, rules) {
   $(form).find(field).each(function (index) {

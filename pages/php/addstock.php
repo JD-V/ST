@@ -8,7 +8,61 @@ if(isLogin() && isAdmin())
 require '_header.php'
 
 ?>
+<script type = "text/javascript" >
+  var patterns = new Array();
+$(document).ready(function() {
 
+
+  $('.product-brand').on('change', function() {
+      var BrandID = this.value;
+      $.ajax({
+          dataType: "json",
+          type: "GET",
+          url: "CreateOrderForm.php?action=Retrive&BrandID="+BrandID,
+          success: function(result) {
+            $('.typeahead').typeahead('destroy');
+            $('#productSize').val('');
+            $('.product-Pattern').empty();
+              var keyVal = new Array();
+              patterns = [];
+              for (var i = 0; i < result.length; i++) {
+                keyVal[result[i].ProductID] = result[i].ProductSize;
+                patterns.push({ "productSize" : result[i].ProductSize,
+                                "productID" : result[i].ProductID,
+                                "productPattern" : result[i].ProductPattern,
+                                "Qty" : result[i].Qty });
+              }
+              var productSizes = new Bloodhound({
+                  datumTokenizer: Bloodhound.tokenizers.whitespace,
+                  queryTokenizer: Bloodhound.tokenizers.whitespace,
+                  local: keyVal,
+              });
+              // Initializing the typeahead
+              $('.typeahead').typeahead({
+                  hint: true,
+                  highlight: true, /* Enable substring highlighting */
+                  minLength: 2,/* Specify minimum characters required for showing result */
+              },
+              {
+                  name: 'productSizes',
+                  source: productSizes
+              });
+          }
+      });
+  });
+
+
+  $('#productSize').on('blur', function() {
+    $('.product-Pattern').empty();
+    var selectedSize = $('#productSize').val();
+    for (var i = 0; i < patterns.length; i++) {
+      if(patterns[i].productSize == selectedSize)
+       $('.product-Pattern').append(new Option(patterns[i].productPattern, patterns[i].productID));
+    }
+  });
+
+});
+</script>
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
   <div id='message' style='display: none;'></div>
@@ -40,94 +94,35 @@ require '_header.php'
       if(@$_POST['akey'] == $_SESSION['AUTH_KEY'])
       {
         ChromePhp::log("sbumitting ");
-        if( isset($_POST['SupplierName']) && !empty($_POST['SupplierName']) &&
-            isset($_POST['TinNum']) && !empty($_POST['TinNum']))
+        if( isset($_POST['BrandID']) && !empty($_POST['BrandID']) &&
+            isset($_POST['productSize']) && !empty($_POST['productSize']) &&
+            isset($_POST['Pattern']) && !empty($_POST['Pattern']) &&
+            isset($_POST['Qty']) && !empty($_POST['Qty'])  )
           {
 
-            $SupplierName = mysql_real_escape_string(trim($_POST['SupplierName']));
-            $TinNum = mysql_real_escape_string(trim($_POST['TinNum']));
+             $qty = FilterInput($_POST['Qty']);
+             $productID = FilterInput($_POST['Pattern']);
+         
+             $Stock = new Stock();
+             $Stock->ProductID = $productID;
+             $Stock->Qty = $qty;
+             $Stock->TansactionTypeID = 1;
 
-            $MobileNum = '';
-             if(isset($_POST['MobileNum']) && !empty($_POST['MobileNum']) )
-               $MobileNum = mysql_real_escape_string(trim($_POST['MobileNum']));
-
-            $Email = '';
-            if(isset($_POST['Email']) && !empty($_POST['Email']) )
-              $Email = mysql_real_escape_string(trim($_POST['Email']));
-
-            $Address = '';
-            if(isset($_POST['Address']) && !empty($_POST['Address']) )
-              $Address = mysql_real_escape_string(trim($_POST['Address']));
-
-            $ContactPerson = '';
-            if(isset($_POST['ContactPerson']) && !empty($_POST['ContactPerson']) )
-              $ContactPerson = mysql_real_escape_string(trim($_POST['ContactPerson']));
-
-            $SupplierID = 0;
-            if(isset($_POST['SupplierID']) && !empty($_POST['SupplierID']) )
-              $SupplierID = mysql_real_escape_string(trim($_POST['SupplierID']));  
-
-
-             ChromePhp::log("SupplierID = ");
-             ChromePhp::log($SupplierID);
-             $Result = false;
-             $msg = "";
-            if($SupplierID == 0)
-            {
-               $Result = AddSupplier($SupplierName, $TinNum, $MobileNum, $Email, $Address, $ContactPerson);
-               $msg = ' Suppplier Added successfully!';
-
-            }
-            else
-            {
-              $Result = UpdateSupplier($SupplierID, $SupplierName, $TinNum, $MobileNum, $Email, $Address, $ContactPerson);
-              $msg = ' Supplier Updated successfully!';
+            if(AddStockEntry($Stock) == 1) {
+              echo MessageTemplate(MessageType::Success, "Stock updated successfully");
+            } else {
+              echo MessageTemplate(MessageType::Failure, "Something went wrong, please contact your system admin.");
             }
 
-            if($Result)
-            {
-                  echo '<div class="alert alert-block alert-success">
-                          <button type="button" class="close" data-dismiss="alert">
-                            <i class="ace-icon fa fa-times"></i>
-                          </button>
-                          <i class="ace-icon fa fa-check green"></i>'. $msg . '</div>'; //needs to correct 
-            }
-            else
-            {
-              echo '<div class="alert alert-block alert-danger">
-                      <button type="button" class="close" data-dismiss="alert">
-                        <i class="ace-icon fa fa-times"></i>
-                      </button>
-                      <i class="ace-icon fa fa-ban red"></i>
-                      Something went wrong, please contact your system admin.
-                    </div>';
-            }
-          }
-          else
-          {
-            echo '<div class="alert alert-block alert-danger">
-                    <button type="button" class="close" data-dismiss="alert">
-                      <i class="ace-icon fa fa-times"></i>
-                    </button>
-                    <i class="ace-icon fa fa-ban red"></i>
-                    Please enter all the details.
-                  </div>';
+          } else {
+            echo MessageTemplate(MessageType::Failure, "Please enter all the details.");
           }
           /* codefellas Security Robot for re-submission of form */
           $_SESSION['AUTH_KEY'] = mt_rand(100000000,999999999);
           ChromePhp::log($_SESSION['AUTH_KEY']);
           /* END */
-        }
-        else
-        {
-
-          echo '<div class="alert alert-block alert-danger">
-                  <button type="button" class="close" data-dismiss="alert">
-                    <i class="ace-icon fa fa-times"></i>
-                  </button>
-                  <i class="ace-icon fa fa-android red"></i>
-                  Our Security Robot has detected re-submission of same data or hack attempt. Please try later.
-                </div>';
+        } else {
+          echo MessageTemplate(MessageType::RoboWarning, "");
         }
     }
 
@@ -136,16 +131,7 @@ require '_header.php'
     <!-- Default box -->
     <div class="box">
       <div class="box-header with-border">
-        <?php
-          $title="Add";
-          if($GetRecord = @GetSuppliersRecords($_GET['id'])) {
-            ChromePhp::log("got record id ");
-            $Record  = mysql_fetch_assoc($GetRecord);
-            ChromePhp::log($Record);
-            $title="Update";
-          }
-        ?>
-        <h3 class="box-title"><?php echo $title; ?></h3>
+        <h3 class="box-title">Add</h3>
        <!--  <div class="box-tools pull-right">
           <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
             <i class="fa fa-minus"></i></button>
@@ -155,80 +141,57 @@ require '_header.php'
       </div>
       <div class="box-body">
 
-      <div id="AddOrUpdateSupplier">
-          <form class="form-horizontal"  name="Supplier" id="Supplier" action="addSupplier.php?_auth=<?php echo $_SESSION['AUTH_KEY']; ?>" method="post">
+      <div>
+          <form class="form-horizontal"  name="addstock" id="addstock" action="addstock.php?_auth=<?php echo $_SESSION['AUTH_KEY']; ?>" method="post">
               <input type="hidden" value="<?php echo $_SESSION['AUTH_KEY']; ?>" name="akey" id="ID_akey" >
 
-            <div class="form-group">
-                <label for="BrandID" class="control-label col-sm-3 lables">Brand<span class="mandatoryLabel">*</span></label>
-                <div class="col-sm-4">
-                    <select class="form-control" name="BrandID" id="BrandID" ng-model="Brand" ng-change="GetProducts()" >
-                    <option selected="true" disabled="disabled" style="display: none" value="default">Select Brand</option>
-                    <?php
-                        $brands = GetBrands();
-                        if(mysql_num_rows($brands)!=0) {
-                            while($brand = mysql_fetch_assoc($brands)) {
-                              echo '<option value="' . $brand['BrandID'] . '">' . $brand['BrandName'] . '</option>';
-                            }
-                        }
-                    ?>
-                    </select>
-                </div>
-            </div>
-
-            
               <div class="form-group">
-                <label for="TinNum" class="control-label col-sm-3 lables">TIN Number<span class="mandatoryLabel">*</span></label>
-                <div class='col-sm-4'>
-                  <input type="text" class="form-control" name="TinNum" onkeypress = "return isNumberKey(event)" placeholder = "TIN Number" value = "<?php  if(isset($Record['TinNumber'])) echo  $Record['TinNumber']; ?>"/>
-                </div>
-              </div>
-              
-              <div class="form-group">
-                <label for="ContactPerson" class="control-label col-sm-3 lables">Contact Person Name</label>
-                <div class='col-sm-4'>
-                  <input type="text" class="form-control" name="ContactPerson" placeholder = "Name" value = "<?php  if(isset($Record['ContactPerson'])) echo  $Record['ContactPerson']; ?>"/>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label for="MobileNum" class="control-label col-sm-3 lables">Mobile Number</label>
-                <div class="col-sm-4">
-                  <div class='input-group'>
-                    <span class="input-group-addon">
-                        <span class="fa fa-mobile"></span>
-                    </span>
-                    <input type="text" class="form-control mobile"  name="MobileNum" onkeypress="return isNumberKey(event)" value="<?php  if(isset($Record['Mobile'])) echo  $Record['Mobile']; ?>" >
+                  <label for="BrandID" class="control-label col-sm-3 lables">Brand<span class="mandatoryLabel">*</span></label>
+                  <div class="col-sm-4">
+                      <select class="form-control product-brand" name="BrandID" id="BrandID"  >
+                      <option selected="true" disabled="disabled" style="display: none" value="default">Select Brand</option>
+                      <?php
+                          $brands = GetBrands();
+                          if(mysql_num_rows($brands)!=0) {
+                              while($brand = mysql_fetch_assoc($brands)) {
+                                echo '<option value="' . $brand['BrandID'] . '">' . $brand['BrandName'] . '</option>';
+                              }
+                          }
+                      ?>
+                      </select>
                   </div>
+              </div>
+
+              <div class="form-group">
+                <label for="productSize" class="control-label col-sm-3 lables" >product Size<span class="mandatoryLabel">*</span></label>
+                <div class="col-sm-4">
+                  <input type="text" id="productSize" name="productSize" class="form-control typeahead tt-query" autocomplete="on" spellcheck="false" >
                 </div>
+                <div id="errorMsgMN" name="errorMsgMN" style="font:10px Tahoma,sans-serif;margin-left:5px;display:inline;color:red;" role="error"></div>
               </div>
               
               <div class="form-group">
-                <label for="Email" class="control-label col-sm-3 lables">Email</label>
-                <div class="col-sm-4">
-                <div class='input-group'>
-                <span class="input-group-addon">
-               <span class="fa fa-envelope"></span>
-                    </span>
-                    <input type="text" class="form-control email" name="Email" placeholder = "Email ID"  value="<?php  if(isset($Record['Email'])) echo  $Record['Email']; ?>" >
-                </div>
-                </div>
+                  <label for="Pattern" class="control-label col-sm-3 lables">Pattern<span class="mandatoryLabel">*</span></label>
+                  <div class="col-sm-4">
+                      <select class="form-control product-Pattern" name="Pattern" id="Pattern"  >
+                      <option selected="true" disabled="disabled" style="display: none" value="default">Select Pattern</option>
+                      </select>
+                  </div>
               </div>
+
               <div class="form-group">
-                <label for="Address" class="control-label col-sm-3 lables">Address</label>
+                <label for="Qty" class="control-label col-sm-3 lables">Qty</label>
                 <div class="col-sm-4">
-                  <textarea  class="form-control" name="Address" placeholder="Address" ><?php  if(isset($Record['Address'])) echo  $Record['Address']; ?></textarea>
+                    <input type="text" class="form-control mobile"  name="Qty" onkeypress="return isNumberKey(event)" >
                 </div>
               </div>
               
               <div class="form-group">
                 <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> </label>
-
                 <div class="col-sm-9">
-                  <input type="submit" name="nc_submit" value="submit" id="ID_Sub" class="btn btn-sm btn-success" style="<?php if(isset($Record['SupplierID'])) echo 'margin-left:90px'; else echo 'margin-left:50px'; ?>" />
+                  <input type="submit" name="nc_submit" value="submit" id="ID_Sub" class="btn btn-sm btn-success" style="margin-left:50px" />
                   <input type="hidden" name="UKey" value="1" id="ID_UKey" />
-                  <input type="hidden" name="SupplierID" value="<?php if(isset($Record['SupplierID'])) echo $Record['SupplierID'] ?>" />
-                  <button type="reset" class="btn btn-sm btn-default" style="visibility:<?php if(isset($Record['SupplierID'])) echo 'hidden'; else 'visible'?> ">Clear</button>
+                  <button type="reset" class="btn btn-sm btn-default" style="visibility:visible">Clear</button>
                 </div>
               </div>
 

@@ -112,7 +112,13 @@ window.open("DisplaySaleInvoice.php?id="+InvoiceID);
                   <tr>
                     <th><?php echo '<a href="addservicerecord.php?id='.$order['InvoiceNumber'].'">' . $i+=1  . '</a>'; ?></th>
                     <td><?php echo $order['InvoiceNumber']; ?></td>
-                    <td><?php $date = date_create($order['InvoiceDateTime']); echo date_format($date, 'd-m-Y H:i'); ?></td>
+                    <td>
+                      <?php 
+                        $date = date_create($order['InvoiceDateTime']); 
+                        echo "<span class='hide'>".$order['InvoiceDateTime'] ."</span>"; 
+                        echo date_format($date, 'd-m-Y H:i'); 
+                      ?>
+                    </td>
                     <td><?php echo $order['CustomerName']; ?></td>
                     <td><?php echo $order['CustomerPhone'] ?></td>
                     <td><?php echo $order['VehicleNumber']; ?></td>
