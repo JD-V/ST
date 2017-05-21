@@ -2,7 +2,7 @@
 require '_connect.php';
 require '_core.php';
 
-if(isLogin() && isAdmin() ) {
+if(isLogin()) {
 
   if( isset($_GET['action']) ) {
 
@@ -11,7 +11,7 @@ if(isLogin() && isAdmin() ) {
     if($action == 'Retrive') {
       RetriveStocks();
     }
-    else if($action == 'save') {
+    else if($action == 'save'  && isAdmin() ) {
       if(isset($_GET["ItemArr"])) { 
         SaveStocks($_GET["ItemArr"]);
       }

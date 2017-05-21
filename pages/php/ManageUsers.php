@@ -8,7 +8,11 @@ if(isLogin() && isAdmin())
 require '_header.php'
 
 ?>
-
+<script type = "text/javascript">
+function DisplayProof(path){
+  window.open(path);
+}
+</script>
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
   <div id='message' style='display: none;'></div>

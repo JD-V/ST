@@ -40,7 +40,7 @@ $(document).ready(function () {
   $("#loginMain").submit(function (e) {}).validate({
     errorElement: 'p',
     rules: {
-      email: {
+      userName: {
         required: true,
       },
       passwd: {
@@ -49,15 +49,15 @@ $(document).ready(function () {
     },
     // Specify the validation error messages
     messages: {
-      email: {
-        required: "Please Enter a valid Email ID",
+      userName: {
+        required: "Please Enter a valid user name",
       },
       passwd: {
         required: "Please Enter a valid Password",
       }
     },
     errorPlacement: function (error, element) {
-      if (element.attr("name") == "email") {
+      if (element.attr("name") == "userName") {
         error.appendTo("#errorBox").addClass('alert alert-danger');
         $("#phpError").remove();
       } else if (element.attr("name") == "passwd") {
@@ -649,6 +649,49 @@ $("#addstock").submit(function (e) {}).validate({
   }
 });
 
+$("#reportsForm").submit(function (e) {          
+    }).validate({
+
+      rules: {
+        reportType:
+        {
+          required: true,
+        },
+        FromDate:
+        {
+          required: true,
+          dateonly: true,
+        },
+        ToDate:
+        {
+          required: true,
+          dateonly: true,
+        }
+      },
+      // Specify the validation error messages
+      messages: {
+        reportType:
+        {
+          required: "Please select Report type",
+        },
+        FromDate:
+        {
+          required: "Please select or enter a valid Date",
+          dateonly: "Please select or enter a valid Date in DD-MM-YYY format",
+        },
+        ToDate:
+        {
+          required: "Please select or enter a valid Date",
+          dateonly: "Please select or enter a valid Date in DD-MM-YYY format",
+        }
+      },
+      errorPlacement: function(error, element) {
+        error.insertAfter($(element).parent()).addClass('errorMessage');
+      },
+      submitHandler: function (form) {
+        form.submit();
+      }
+    });
 
 function addMultiInputNamingRulesSkipFirst(form, alt, field, rules) {
   $(form).find(field).each(function (index) {

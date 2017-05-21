@@ -1,7 +1,7 @@
 <?php
 require '_connect.php';
 require '_core.php';
-if(isLogin() && isAdmin() ) {
+if(isLogin()) {
   if( isset($_GET['action']) ) {
     $action = mysql_real_escape_string($_GET['action']);
     if($action == 'Retrive') {
@@ -41,12 +41,14 @@ function saveOrder($FormData) {
   $order = new Order();
   $order->invoiceNumber = $FormData->InvoiceNo;
   
-  $date = date_create($FormData->SalesInvoiceDate); 
+  $date = date_create($FormData->SalesInvoiceDate);
   $order->invoiceDate = date_format($date, 'Y-m-d H:i');
   $order->customerName = $FormData->CustomerName;
   $order->customerPhone = $FormData->CustomerPhone;
   $order->vehicleNumber = $FormData->VehicleNo;
   $order->vehicleMileage = $FormData->VehicleMileage;
+  $order->customerPAN = $FormData->CustomerPAN;
+  $order->customerTIN = $FormData->CustomerTIN;
   $order->basic = $FormData->BasicAmount;
   $order->vatAmount = $FormData->VatAmount;
   $order->discount = $FormData->DiscountAmount;

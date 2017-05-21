@@ -5,7 +5,6 @@ require '_core.php';
 if(isLogin())
 {
 require '_header.php';
-
 ?>
 
 <!-- Content Wrapper. Contains page content -->
@@ -72,7 +71,7 @@ require '_header.php';
             <div class="inner">
               <h3>0</h3>
 
-              <p>upcoming Cheques</p>
+              <p>Upcoming Cheques</p>
             </div>
             <div class="icon">
               <i class="fa fa-money"></i>

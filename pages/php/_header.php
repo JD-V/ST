@@ -122,10 +122,10 @@
           <li class="dropdown notifications-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <i class="fa fa-bell-o"></i>
-              <span class="label label-warning notification-count">10</span>
+              <span class="label label-warning notification-count">0</span>
             </a>
             <ul class="dropdown-menu" style="width:400px">
-              <li class="header notification-count-message">You have 5  notifications</li>
+              <li class="header notification-count-message">You have 0  notifications</li>
               <li>
                 <!-- inner menu: contains the actual data -->
                 <ul class="menu notifications">
@@ -172,12 +172,66 @@
             </span>
           </a>
         </li>
+
+
         <?php
           $userRoleID = getUserRoleID();
           $isActiveTV = "";
           if($userRoleID ==1 )  // Admin role 1
           {
-            if($CDATA['PAGE_NAME'] == 'MNUSER' || $CDATA['PAGE_NAME'] == 'MNGLOC' || $CDATA['PAGE_NAME'] == 'MNSRVS' || $CDATA['PAGE_NAME']   == 'MNGBRAND') {
+            if($CDATA['PAGE_NAME'] == 'MNUSER' || $CDATA['PAGE_NAME'] == 'USERS' ) {
+              $isActiveTV =  'active';
+            } else {
+              $isActiveTV = "";
+            }
+        ?>
+
+        <li class="treeview <?php echo $isActiveTV ?>" >
+          <a href="#">
+            <i class="fa fa-user"></i>
+            <span>Manage Users</span>
+            <span class="pull-right-container">
+            <i class="fa fa-angle-down pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+
+            <?php $isActive = ""; if($CDATA['PAGE_NAME'] == 'USERS'){ $isActive =  'active'; }
+
+            echo "<li class=\"hover " . $isActive . " \">
+                    <a href=\"Users.php\" >
+                      <i class=\"fa fa-user\"></i>
+                      <span>Users</span>
+                      <span class=\"pull-right-container\">
+                      <i class=\"fa fa-angle-right pull-right\"></i>
+                      </span>
+                    </a>
+                  </li>";
+
+           $isActive = "";
+           if($CDATA['PAGE_NAME'] == 'MNUSER') { $isActive =  'active';  }
+
+              echo "<li class=\"hover " . $isActive . " \">
+                      <a href=\"ManageUsers.php\" >
+                        <i class=\"fa fa-plus-square\"></i>
+                        <span>Add User</span>
+                        <span class=\"pull-right-container\">
+                        <i class=\"fa fa-angle-right pull-right\"></i>
+                        </span>
+                      </a>
+                    </li>"; 
+            ?>
+
+          </ul>
+        </li>
+        <?php } ?>
+
+        <?php
+          $userRoleID = getUserRoleID();
+          $isActiveTV = "";
+          if($userRoleID ==1 )  // Admin role 1
+          {
+            if($CDATA['PAGE_NAME'] == 'MNGLOC' || $CDATA['PAGE_NAME'] == 'MNSRVS' || $CDATA['PAGE_NAME']   == 'MNGBRAND') {
               $isActiveTV =  'active';
             } else {
               $isActiveTV = "";
@@ -193,17 +247,7 @@
           </a>
           <ul class="treeview-menu">
 
-            <?php $isActive = ""; if($CDATA['PAGE_NAME'] == 'MNUSER'){ $isActive =  'active'; }
-
-            echo "<li class=\"hover " . $isActive . " \">
-                    <a href=\"ManageUsers.php\" >
-                      <i class=\"fa fa-user\"></i>
-                      <span>Users</span>
-                      <span class=\"pull-right-container\">
-                      <i class=\"fa fa-angle-right pull-right\"></i>
-                      </span>
-                    </a>
-                  </li>";
+            <?php 
 
             $isActive = "";
            if($CDATA['PAGE_NAME'] == 'MNGLOC') { $isActive =  'active';  }
@@ -251,6 +295,61 @@
 
           </ul>
         </li>
+        <?php } ?>
+
+        <?php
+          //$userRoleID = getUserRoleID();
+          $isActiveTV = "";
+          if($userRoleID ==1 )  // Admin role 1
+          {
+            if($CDATA['PAGE_NAME'] == 'SUPPLIER' || $CDATA['PAGE_NAME'] == 'ADDSUPPLIER' ) {
+              $isActiveTV =  'active';
+            } else {
+              $isActiveTV = "";
+            }
+          ?>
+
+        <li class="treeview <?php echo $isActiveTV ?>" >
+            <a href="#">
+              <i class="fa fa-industry"></i>
+              <span>Suppliers</span>
+              <span class="pull-right-container">
+              <i class="fa fa-angle-down pull-right"></i>
+              </span>
+            </a>
+            <ul class="treeview-menu">
+            <?php
+            
+            $isActive = "";
+            if($CDATA['PAGE_NAME'] == 'SUPPLIER'){ $isActive =  'active'; }
+
+            echo "<li class=\"hover " . $isActive . " \">
+                    <a href=\"supplier.php\" >
+                      <i class=\"fa fa-list\"></i>
+                      <span>Supplier</span>
+                      <span class=\"pull-right-container\">
+                      <i class=\"fa fa-angle-right pull-right\"></i>
+                      </span>
+                    </a>
+                  </li>";
+            
+            $isActive = "";
+            if($CDATA['PAGE_NAME'] == 'ADDSUPPLIER'){ $isActive =  'active'; }
+            echo "<li class=\"hover " . $isActive . " \">
+                    <a href=\"addsupplier.php\" >
+                      <i class=\"fa fa-plus-square\"></i>
+                      <span>Add Supplier</span>
+                      <span class=\"pull-right-container\">
+                      <i class=\"fa fa-angle-right pull-right\"></i>
+                      </span>
+                    </a>
+                  </li>";
+                
+          ?>
+
+          </ul>
+        </li>
+
         <?php } ?>
 
         <?php
@@ -432,12 +531,28 @@
 
           </ul>
         </li>
-        <?php } ?>
+        <?php 
+        } else {
+           $isActive = "";
+           if($CDATA['PAGE_NAME'] == 'MNSTOCK') { $isActive =  'active'; }
+          
+           echo "<li class=\"hover " . $isActive . " \">
+                    <a href=\"manageStock.php\" >
+                      <i class=\"fa fa-th-large\"></i>
+                      <span>Available Stock</span>
+                      <span class=\"pull-right-container\">
+                      <i class=\"fa fa-angle-right pull-right\"></i>
+                      </span>
+                    </a>
+                  </li>";
+        
+          }
+      ?>
 
       <?php
           //$userRoleID = getUserRoleID();
           $isActiveTV = "";
-          if($userRoleID ==1 )  // Admin role 1
+          if($userRoleID ==1 || $userRoleID ==3)  // Admin role 1
           {
             if($CDATA['PAGE_NAME'] == 'ADSLSREC' || $CDATA['PAGE_NAME'] == 'ORDERS') {
               $isActiveTV =  'active';
@@ -497,7 +612,7 @@
         <?php
           //$userRoleID = getUserRoleID();
           $isActiveTV = "";
-          if($userRoleID ==1 )  // Admin role 1
+          if($userRoleID ==1 || $userRoleID ==3)  // Admin role 1
           {
             if($CDATA['PAGE_NAME'] == 'ADSRVREC' || $CDATA['PAGE_NAME'] == 'SERVICES' ) {
               $isActiveTV =  'active';
@@ -548,7 +663,7 @@
          <?php
           //$userRoleID = getUserRoleID();
           $isActiveTV = "";
-          if($userRoleID ==1 )  // Admin role 1
+          if($userRoleID ==1 || $userRoleID ==3)  // Admin role 1
           {
             if($CDATA['PAGE_NAME'] == 'ADNONBILLREC' || $CDATA['PAGE_NAME'] == 'NONBILLREC' ) {
               $isActiveTV =  'active';
@@ -597,74 +712,22 @@
           </ul>
         </li>
       <?php } ?>
-        <?php
-          //$userRoleID = getUserRoleID();
-          $isActiveTV = "";
-          if($userRoleID ==1 )  // Admin role 1
+      <?php
+        if($userRoleID ==1)  // Admin role 1
           {
-            if($CDATA['PAGE_NAME'] == 'SUPPLIER' || $CDATA['PAGE_NAME'] == 'ADDSUPPLIER' ) {
-              $isActiveTV =  'active';
-            } else {
-              $isActiveTV = "";
-            }
-          ?>
-
-        <li class="treeview <?php echo $isActiveTV ?>" >
-            <a href="#">
-              <i class="fa fa-industry"></i>
-              <span>Suppliers</span>
-              <span class="pull-right-container">
-              <i class="fa fa-angle-down pull-right"></i>
-              </span>
-            </a>
-            <ul class="treeview-menu">
-            <?php
-            
-            $isActive = "";
-            if($CDATA['PAGE_NAME'] == 'SUPPLIER'){ $isActive =  'active'; }
-
-            echo "<li class=\"hover " . $isActive . " \">
-                    <a href=\"supplier.php\" >
-                      <i class=\"fa fa-list\"></i>
-                      <span>Supplier</span>
-                      <span class=\"pull-right-container\">
-                      <i class=\"fa fa-angle-right pull-right\"></i>
-                      </span>
-                    </a>
-                  </li>";
-            
-            $isActive = "";
-            if($CDATA['PAGE_NAME'] == 'ADDSUPPLIER'){ $isActive =  'active'; }
-            echo "<li class=\"hover " . $isActive . " \">
-                    <a href=\"addsupplier.php\" >
-                      <i class=\"fa fa-plus-square\"></i>
-                      <span>Add Supplier</span>
-                      <span class=\"pull-right-container\">
-                      <i class=\"fa fa-angle-right pull-right\"></i>
-                      </span>
-                    </a>
-                  </li>";
-                
-          ?>
-
-          </ul>
-        </li>
-
-        <?php } ?>
-
-        <li class="header">REPORTS</li>
-        <?php
+            echo "<li class=\"header\">REPORTS</li>";
             $isActive = "";
             if($CDATA['PAGE_NAME'] == 'REPORTS'){ $isActive =  'active'; }
             echo "<li class=\"hover " . $isActive . " \">
                     <a href=\"reports.php\" >
-                      <i class=\"fa fa-plus-square\"></i>
+                      <i class=\"fa fa-file-text\"></i>
                       <span>Reports</span>
                       <span class=\"pull-right-container\">
                       <i class=\"fa fa-angle-right pull-right\"></i>
                       </span>
                     </a>
                   </li>";
+          }
         ?>
        
       </ul>

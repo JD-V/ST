@@ -3,7 +3,7 @@ $CDATA['PAGE_NAME'] = 'NONBILLREC';
 require '_connect.php';
 require '_core.php';
 
-if(isLogin() && isAdmin())
+if(isLogin())
 {
 require '_header.php';
 ?>

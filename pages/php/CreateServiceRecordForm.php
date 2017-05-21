@@ -2,7 +2,7 @@
 require '_connect.php';
 require '_core.php';
 
-if(isLogin() && isAdmin() ) {
+if(isLogin()) {
 
   if( isset($_GET['action']) ) {
 

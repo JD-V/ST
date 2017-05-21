@@ -26,7 +26,11 @@ class phpinvoice extends FPDF_rotation  {
 	public $color;
 	public $date;
 	public $time;
-	public $due;
+	public $vehicleNumber;
+	public $mileage;
+	public $serviceItems = false;
+	public $tin;
+	public $pan;
 	public $from;
 	public $to;
 	public $items;
@@ -149,8 +153,20 @@ class phpinvoice extends FPDF_rotation  {
 		$this->time = $time;
 	}
 	
-	public function setDue($date) {
-		$this->due = $date;
+	public function setVehicleNumber($vehicleNumber) {
+		$this->vehicleNumber = $vehicleNumber;
+	}
+
+	public function setMileage($mileage) {
+		$this->mileage = $mileage;
+	}
+
+	public function setPAN($pan) {
+		$this->pan = $pan;
+	}	
+
+	public function setTIN($tin) {
+		$this->tin = $tin;
 	}
 	
 	public function setLogo($logo = 0,$maxWidth = 0,$maxHeight = 0) {
@@ -160,7 +176,11 @@ class phpinvoice extends FPDF_rotation  {
 		$this->logo = $logo;
 		$this->dimensions = $this->resizeToFit($logo);
 	}
-	
+
+	public function setSeriveItems() {
+		$this->serviceItems = true;
+	}
+
 	public function hide_tofrom() {
 		$this->display_tofrom = false;
 	}
@@ -268,7 +288,7 @@ class phpinvoice extends FPDF_rotation  {
 		$this->SetFont($this->font,'B',9);
 		$positionX = $this->document['w']-$this->margins['l']-$this->margins['r']-max(strtoupper($this->GetStringWidth($this->lang['number'])),
 					 strtoupper($this->GetStringWidth($this->lang['date'])),
-					 strtoupper($this->GetStringWidth($this->lang['due'])))-35;
+					 strtoupper($this->GetStringWidth($this->lang['mileage'])))-35;
 		
 	    //Number
 		if(!empty($this->reference)) {
@@ -298,16 +318,46 @@ class phpinvoice extends FPDF_rotation  {
 		  $this->SetFont($this->font,'',9);
 		  $this->Cell(0,$lineheight,$this->time,0,1,'R');
 		}
-		//Due date
-		if(!empty($this->due)){
+		//vehiclemileageNumber
+		if(!empty($this->vehicleNumber)){
 			$this->Cell($positionX,$lineheight);
 			$this->SetFont($this->font,'B',9);
 			$this->SetTextColor($this->color[0],$this->color[1],$this->color[2]);
-			$this->Cell(32,$lineheight,iconv("UTF-8", "ISO-8859-1",strtoupper($this->lang['due'])).':',0,0,'L');	
+			$this->Cell(32,$lineheight,iconv("UTF-8", "ISO-8859-1",strtoupper($this->lang['vehicleNumber'])).':',0,0,'L');	
 			$this->SetTextColor(50,50,50);
 			$this->SetFont($this->font,'',9);
-			$this->Cell(0,$lineheight,$this->due,0,1,'R');
+			$this->Cell(0,$lineheight,$this->vehicleNumber,0,1,'R');
 		}
+		//mileage
+		if(!empty($this->mileage)){
+			$this->Cell($positionX,$lineheight);
+			$this->SetFont($this->font,'B',9);
+			$this->SetTextColor($this->color[0],$this->color[1],$this->color[2]);
+			$this->Cell(32,$lineheight,iconv("UTF-8", "ISO-8859-1",strtoupper($this->lang['mileage'])).':',0,0,'L');	
+			$this->SetTextColor(50,50,50);
+			$this->SetFont($this->font,'',9);
+			$this->Cell(0,$lineheight,$this->mileage,0,1,'R');
+		}
+		//TIN
+		if(!empty($this->tin)){
+			$this->Cell($positionX,$lineheight);
+			$this->SetFont($this->font,'B',9);
+			$this->SetTextColor($this->color[0],$this->color[1],$this->color[2]);
+			$this->Cell(32,$lineheight,iconv("UTF-8", "ISO-8859-1",strtoupper($this->lang['tin'])).':',0,0,'L');	
+			$this->SetTextColor(50,50,50);
+			$this->SetFont($this->font,'',9);
+			$this->Cell(0,$lineheight,$this->tin,0,1,'R');
+		}
+		//PAN
+		if(!empty($this->pan)){
+			$this->Cell($positionX,$lineheight);
+			$this->SetFont($this->font,'B',9);
+			$this->SetTextColor($this->color[0],$this->color[1],$this->color[2]);
+			$this->Cell(32,$lineheight,iconv("UTF-8", "ISO-8859-1",strtoupper($this->lang['pan'])).':',0,0,'L');	
+			$this->SetTextColor(50,50,50);
+			$this->SetFont($this->font,'',9);
+			$this->Cell(0,$lineheight,$this->pan,0,1,'R');
+		}						
 		
 		//First page
 		if($this->PageNo()== 1) {
@@ -336,24 +386,24 @@ class phpinvoice extends FPDF_rotation  {
 			}
 			
 			if($this->display_tofrom === true) {
-				$this->Cell($width,$lineheight,strtoupper($this->lang['from']),0,0,'L');
+				// $this->Cell($width,$lineheight,strtoupper($this->lang['from']),0,0,'L');
 				$this->Cell(0,$lineheight,strtoupper($this->lang['to']),0,0,'L');
 				$this->Ln(7);
 				$this->SetLineWidth(0.4);
 				$this->Line($this->margins['l'], $this->GetY(),$this->margins['l']+$width-10, $this->GetY());
-				$this->Line($this->margins['l']+$width, $this->GetY(),$this->margins['l']+$width+$width, $this->GetY());
+				// $this->Line($this->margins['l']+$width, $this->GetY(),$this->margins['l']+$width+$width, $this->GetY());
 	
 				//Information
 				$this->Ln(5);
 				$this->SetTextColor(50,50,50);
 				$this->SetFont($this->font,'B',10);
-				$this->Cell($width,$lineheight,$this->from[0],0,0,'L');
+				// $this->Cell($width,$lineheight,$this->from[0],0,0,'L');
 				$this->Cell(0,$lineheight,$this->to[0],0,0,'L');
 				$this->SetFont($this->font,'',8);
 				$this->SetTextColor(100,100,100);
 				$this->Ln(7);
 				for($i=1; $i<max(count($this->from),count($this->to)); $i++) {
-					$this->Cell($width,$lineheight,iconv("UTF-8", "ISO-8859-1",$this->from[$i]),0,0,'L');
+					// $this->Cell($width,$lineheight,iconv("UTF-8", "ISO-8859-1",$this->from[$i]),0,0,'L');
 					$this->Cell(0,$lineheight,iconv("UTF-8", "ISO-8859-1",$this->to[$i]),0,0,'L');
 					$this->Ln(5);
 				}	
@@ -370,7 +420,10 @@ class phpinvoice extends FPDF_rotation  {
 			$this->Ln(12);
 			$this->SetFont($this->font,'B',9);
 			$this->Cell(1,10,'',0,0,'L',0);
-			$this->Cell($this->firstColumnWidth,10,iconv("UTF-8", "ISO-8859-1",strtoupper($this->lang['product'])),0,0,'L',0);
+			if(isset($this->serviceItems))
+				$this->Cell($this->firstColumnWidth,10,iconv("UTF-8", "ISO-8859-1",strtoupper($this->lang['serviceItem'])),0,0,'L',0);
+			else
+				$this->Cell($this->firstColumnWidth,10,iconv("UTF-8", "ISO-8859-1",strtoupper($this->lang['product'])),0,0,'L',0);
 			$this->Cell($this->columnSpacing,10,'',0,0,'L',0);
 			$this->Cell($width_other,10,iconv("UTF-8", "ISO-8859-1",strtoupper($this->lang['qty'])),0,0,'C',0);
 			if(isset($this->vatField)) {

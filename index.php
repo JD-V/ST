@@ -11,7 +11,7 @@ if(!isLogin())
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>My Admin Pannel | JD</title>
+  <title>Shankar Tires | PikesAce</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.6 -->
@@ -55,9 +55,9 @@ if(!isLogin())
             <span style="margin-left: 5px;">Sign In</span>
           </button>
         </div>
-        <div class="col-xs-offset-9 col-xs-4">
+        <!--<div class="col-xs-offset-9 col-xs-4">
           <a href="#forget" onclick="forgetpassword();" id="forget">Forgot Password?</a>
-        </div>
+        </div>-->
       </div>
 
       <div class="box-body" id="errorBox" name="errorBox" style="margin-top: 10px; padding: 0px;"></div>
@@ -92,13 +92,15 @@ if(!isLogin())
       {
         if(isset($_POST['userName']) && !empty($_POST['userName']) && isset($_POST['passwd']) && !empty($_POST['passwd']))
         {
-          $userName = mysql_real_escape_string($_POST['userName']);
-          $userpwd = mysql_real_escape_string($_POST['passwd']);
+          $userName = FilterInput($_POST['userName']);
+          $userpwd = FilterInput($_POST['passwd']);
 
             $Res = validateLogin($userName,$userpwd);
             if($Res == 1)
             {
               $_SESSION['userName'] = $userName;
+              $_SESSION['userID'] = GetUserID($userName);
+             
               $_SESSION['AUTH_KEY'] = mt_rand(100000000,999999999);
               header('Location: pages/php/dashboard.php');
               exit;
@@ -106,7 +108,7 @@ if(!isLogin())
               echo "<p class='alert alert-danger'>Error(014) ! Access denided</p><br/>";
             } else if($Res == 2) {
               echo "<p class='alert alert-danger'>Error(011) ! Invalid User ID / Password</p><br/>";
-            } else if($Res == 2) {
+            } else if($Res == 3) {
               echo "<p class='alert alert-danger'>Error(012) ! Invalid User ID / Password</p>";
             }
 

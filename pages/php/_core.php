@@ -295,6 +295,25 @@ function getUserInfo($user_id) {
   }
 }
 
+function GetUserID($userName) {
+  if($getUserID = mysql_query("SELECT UserID FROM user WHERE Name = '$userName' ")) {
+    if(mysql_num_rows($getUserID) >= 1) {
+      $ShowData = mysql_fetch_assoc($getUserID);
+      return $ShowData['UserID'];
+    }
+  } else {
+    return 0;
+  }
+}
+
+function GetUsers() {
+    if($getUsers = mysql_query("SELECT u.*, r.RoleName FROM user u JOIN role r ON u.RoleID = r.RoleID")) {
+    return $getUsers;
+  } else {
+    return false;
+  }
+}
+
 function getLocations() {
 
   if($getLocations = mysql_query("SELECT * FROM location")) {
@@ -433,9 +452,9 @@ function AddUser($user) {
 }
 
 function AddNonBillable($RecDate,$Perticulars,$AmountPaid,$Notes){
-
-    if($result = mysql_query("INSERT INTO nonbillable (RecordDate, Perticulars, AmountPaid, Notes)
-                        VALUES ('$RecDate', '$Perticulars','$AmountPaid','$Notes')" ) )
+    $userID = $_SESSION['userID'];
+    if($result = mysql_query("INSERT INTO nonbillable (RecordDate, Perticulars, AmountPaid, Notes, UserID)
+                        VALUES ('$RecDate', '$Perticulars','$AmountPaid','$Notes','$userID')" ) )
     {
       return true;
     } else { 
@@ -546,24 +565,20 @@ function GetStaffNamesList() {
      }
 }
 
-function CheckRoomAvailibility($roomID,$dt1,$dt2){
+function GetNonBillableReport($fromDate,$toDate) {
+ return mysql_query("SELECT * FROM `nonbillable` WHERE RecordDate >='$fromDate' AND RecordDate <= '$toDate' ");
+}
 
-  if( $getLoc = mysql_query(" SELECT b.* FROM roomsalloc b
-                WHERE b.RoomID = '$roomID' AND ( (b.EndDateTime > '$dt1' AND b.StartDateTime < '$dt2' ) OR
-                (b.EndDateTime < '$dt1' AND b.StartDateTime > '$dt2') )" ) )
-      {
-        if(mysql_num_rows($getLoc)>0) {
-          echo '1';
-        }
-        else{
-          echo '0';
-        }
-      }
-      else {
-        echo '0';
-        ChromePhp::log("query failed" );
-      }
+function GetSalesReport($fromDate,$toDate) {
+ return mysql_query("SELECT sa.*, sp.* FROM sales sa JOIN salesproducts sp ON sa.InvoiceNumber = sp.InvoiceNumber WHERE 
+                     sa.InvoiceDateTime>='$fromDate' AND sa.InvoiceDateTime <='$toDate' 
+                     ORDER BY sa.InvoiceNumber, sa.InvoiceDateTime asc");
+}
 
+function GetServiceReport($fromDate,$toDate) {
+ return mysql_query("SELECT se.*, si.* FROM service se JOIN serviceitems si ON se.InvoiceNumber = si.InvoiceNumber WHERE 
+                      se.InvoiceDateTime>='$fromDate' AND se.InvoiceDateTime <='$toDate' 
+                      ORDER BY se.InvoiceNumber, se.InvoiceDateTime asc");
 }
 
 function AddInvoice($Invoice){
@@ -878,14 +893,14 @@ function GetStockTransactionHistory() {
 }
 
 function AddNewSalesItem($order) {
+  $userID = $_SESSION['userID'];
   $AddOrder = mysql_query("INSERT INTO `sales` 
-    (`InvoiceNumber`, `InvoiceDateTime`, `CustomerName`, `CustomerPhone`, `VehicleNumber`, 
-     `VehicleMileage`, `BasicAmount`, `Discount`, `Vat`, `AmountPaid`,`PaymentType`,
-     `ChequeNo`, `chequeDate`, `Address`, `Notes` ) VALUES 
-    (  '$order->invoiceNumber', '$order->invoiceDate', '$order->customerName',  '$order->customerPhone',
-       '$order->vehicleNumber', '$order->vehicleMileage', '$order->basic',  '$order->discount', 
+    (`InvoiceNumber`, `InvoiceDateTime`, `CustomerName`, `CustomerPhone`, `CustomerTIN`, `CustomerPAN`, `VehicleNumber`, `VehicleMileage`,
+     `BasicAmount`, `Discount`, `Vat`, `AmountPaid`,`PaymentType`, `ChequeNo`, `chequeDate`, `Address`, `Notes`, `UserID` ) VALUES 
+    (  '$order->invoiceNumber', '$order->invoiceDate', '$order->customerName', '$order->customerPhone', '$order->customerTIN',
+       '$order->customerPAN', '$order->vehicleNumber', '$order->vehicleMileage', '$order->basic',  '$order->discount', 
        '$order->vatAmount', '$order->amountPaid', '$order->paymentMethod', '$order->chequeNo', 
-       '$order->chequeDate', '$order->address', '$order->notes' )" );
+       '$order->chequeDate', '$order->address', '$order->notes', '$userID' )" );
   if($AddOrder)
     return 1;
   else
@@ -909,13 +924,13 @@ function AddProductToSalesInvoice($product,$invoiceNumber) {
 
 
 function AddNewSeriveRecord($service) {
-
+  $userID = $_SESSION['userID'];
   $AddSR = mysql_query("INSERT INTO `service` 
     ( `InvoiceNumber`, `InvoiceDateTime`, `CustomerName`, `CustomerPhone`, `VehicleNumber`, 
-      `VehicleMileage`, `SubTotal`, `Discount`, `AmountPaid`, `Address`,`Note` ) VALUES 
+      `VehicleMileage`, `SubTotal`, `Discount`, `AmountPaid`, `Address`,`Note`, `UserID` ) VALUES 
       ('$service->invoiceNumber', '$service->invoiceDate', '$service->customerName',  '$service->customerPhone',
        '$service->vehicleNumber', '$service->vehicleMileage', '$service->subTotal',  '$service->discountAmount', 
-       '$service->amountPaid', '$service->address',  '$service->notes' )" );
+       '$service->amountPaid', '$service->address',  '$service->notes', '$userID' )" );
 
   if($AddSR)
     return 1;
@@ -985,6 +1000,27 @@ function TodaysNonBillable() {
     return 0;
 }
 
+function MonthWiseService($fromDate, $toDate) {
+  return  mysql_query("SELECT DATE_FORMAT(InvoiceDateTime, '%m-%Y') AS Month, SUM(AmountPaid) AS Total
+                       FROM  service
+                       WHERE InvoiceDateTime >= '$fromDate' AND InvoiceDateTime < '$toDate'
+                       GROUP BY DATE_FORMAT(InvoiceDateTime, '%m-%Y') ");
+}
+
+function MonthWiseSale($fromDate, $toDate) {
+  return  mysql_query("SELECT DATE_FORMAT(InvoiceDateTime, '%m-%Y') AS Month, SUM(AmountPaid) AS Total
+                       FROM  sales
+                       WHERE InvoiceDateTime >= '$fromDate' AND InvoiceDateTime < '$toDate'
+                       GROUP BY DATE_FORMAT(InvoiceDateTime, '%m-%Y') ");
+}
+
+function MonthWiseNonBillable($fromDate, $toDate) {
+  return  mysql_query("SELECT DATE_FORMAT(RecordDate, '%m-%Y') AS Month, SUM(AmountPaid) AS Total
+                       FROM  nonbillable
+                       WHERE RecordDate >= '$fromDate' AND RecordDate < '$toDate'
+                       GROUP BY DATE_FORMAT(RecordDate, '%m-%Y') ");
+}
+
 function FilterInput($inputString) {
   return mysql_real_escape_string(trim($inputString));
 }
@@ -1018,12 +1054,14 @@ function MessageTemplate($MessageType, $text) {
 
  class Order
  {
-   public $invoiceNumber;
-   public $invoiceDate;
+    public $invoiceNumber;
+    public $invoiceDate;
     public $customerName;
     public $customerPhone;
     public $vehicleNumber;
     public $vehicleMileage;
+    public $customerTIN;
+    public $customerPAN;
     public $subTotal=0.00;
     public $basic=0.00;
     public $discount=0.00;

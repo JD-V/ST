@@ -3,7 +3,7 @@ require '_connect.php';
 require '_core.php';
 
 $CDATA['PAGE_NAME'] = 'MNSTOCK';
-if(isLogin() && isAdmin())
+if(isLogin())
 {
 require '_header.php';
 ?>
@@ -61,22 +61,22 @@ require '_header.php';
     <div class="box" ng-app="stockApp" ng-controller="stockCtrl">
       <div class="box-header with-border">
         <p class="box-title">Products</p>
-        <div class="box-tools pull-right">
+        <!--<div class="box-tools pull-right">
           <button type="button" class="btn btn-md btn-success" ng-click="SaveAll();">
             <i class="fa fa-floppy-o"></i>&nbsp;
             Save changes
           </button>
-        </div>
+        </div>-->
       </div>
       <div class="box-body">
-          <form>
-    <div class="form-group">
-      <div class="input-group">
-        <div class="input-group-addon"><i class="fa fa-search"></i></div>
-        <input type="text" class="form-control" placeholder="Search product" ng-model="serchProduct">
-      </div>      
-    </div>
-  </form>
+        <form>
+          <div class="form-group">
+            <div class="input-group">
+              <div class="input-group-addon"><i class="fa fa-search"></i></div>
+              <input type="text" class="form-control" placeholder="Search product" ng-model="serchProduct">
+            </div>      
+          </div>
+        </form>
 
       <div class="table-responsive col-sm-12" >
         <table id="StockTable" class="table table-striped table-hover" datatable="ng" >
@@ -124,7 +124,7 @@ require '_header.php';
                   <span ng-show="sortType == 'MaxSellPrice' && sortReverse" class="fa fa-caret-up"></span>
               </a>
             </th>            
-              <th><i class="fa fa-pencil-square-o" aria-hidden="true"></i></th>
+              <!--<th><i class="fa fa-pencil-square-o" aria-hidden="true"></i></th>-->
             </tr>
           </thead>
           <tr ng-repeat="item in stocks | orderBy:sortType:sortReverse | filter:serchProduct ">
@@ -160,9 +160,9 @@ require '_header.php';
             </div>
             </td>
                     
-            <td>
+            <!--<td>
             <a href="#" ng-click="item.editing = !item.editing; angular.element('#someid').focus()" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>&nbsp;&nbsp;&nbsp;
-            </td>
+            </td>-->
           </tr>
         </table>
       </div>

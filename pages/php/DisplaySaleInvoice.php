@@ -2,15 +2,14 @@
 require '_connect.php';
 require '_core.php';
 
-if(isLogin() && isAdmin())
+if(isLogin())
 {
 include('./phpinvoice.php');
 
   //ChromePhp::log(isset($_GET['id']));
   if($GetOrderRecord = GetOrderRecord($_GET['id'])) {
-    ChromePhp::log("got record id ");
     $OrderRecord  = mysql_fetch_assoc($GetOrderRecord);
-    ChromePhp::log($OrderRecord); 
+    // ChromePhp::log($OrderRecord); 
   } else {
     echo 'Not Found';
       return;
@@ -22,9 +21,12 @@ include('./phpinvoice.php');
   $invoice->setType("SALES INVOICE");
   $invoice->setReference($OrderRecord['InvoiceNumber']); // get it from db
   $date = date_create($OrderRecord['InvoiceDateTime']);
-  $invoice->setDate(date_format($date, 'd-m-Y')); // get it from db
-  $invoice->setTime(date_format($date, 'H:i')); // get ti from db
-  $invoice->setDue($OrderRecord['VehicleNumber']); //setDue(date('M dS ,Y',strtotime('+3 months')));
+  $invoice->setDate(date_format($date, 'd-m-Y H:i')); // get it from db
+  // $invoice->setTime(date_format($date, 'H:i')); // get ti from db
+  $invoice->setVehicleNumber($OrderRecord['VehicleNumber']); // set vehicle number
+  $invoice->setMileage($OrderRecord['VehicleMileage']); //mileage
+  $invoice->setTIN($OrderRecord['CustomerTIN']); //mileage
+  $invoice->setPAN($OrderRecord['CustomerPAN']); //mileage
   $invoice->setFrom(array("Shankar Enterprises","# 4 & 5, Vasu Complex","New Bel Road Bangalore-54","PH-23600699, 20603173, 9845973001"));
   $address = explode("\n", $OrderRecord['Address']);
   $addressLines = count($address);
@@ -49,7 +51,7 @@ include('./phpinvoice.php');
 
     while($product = mysql_fetch_assoc($getOrderRecordProducts)) {
       ChromePhp::log($product);
-      $invoice->addItem($product['ProductDispName'],$product['ProductTypeName'],$product['Qty'],0,$product['SalePrice'],0,$product['Qty']*$product['SalePrice']);
+      $invoice->addItem($product['BrandName'] . ' ' . $product['Productsize'] . ' ' . $product['Pattern'] ,$product['ProductTypeName'],$product['Qty'],0,$product['SalePrice'],0,$product['Qty']*$product['SalePrice']);
     }
   }
   
@@ -58,10 +60,10 @@ include('./phpinvoice.php');
   // $invoice->addItem('LG 18.5" WLCD',"",10,0,230,0,2300);
   // $invoice->addItem("HP LaserJet 5200","",1,0,1100,0,1100);
   /* Add totals */
-  $invoice->addTotal("Sub Total",$OrderRecord['SubTotal']);
-  $invoice->addTotal("VAT 14.5%",$OrderRecord['Vat']);
+  $invoice->addTotal("Basic",$OrderRecord['BasicAmount']);
+  $invoice->addTotal("VAT (". $_SESSION['VatFactor'] .")",$OrderRecord['Vat']);
   $invoice->addTotal("Discount",$OrderRecord['Discount']);
-  $invoice->addTotal("Grand Total",$OrderRecord['AmountPaid'],true);
+  $invoice->addTotal("Total",$OrderRecord['AmountPaid'],true);
   /* Set badge */ 
   // $invoice->addBadge("Payment Paid");
   /* Add title */

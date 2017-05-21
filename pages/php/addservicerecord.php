@@ -3,7 +3,7 @@ require '_connect.php';
 require '_core.php';
 
 $CDATA['PAGE_NAME'] = 'ADSRVREC';
-if(isLogin() && isAdmin())
+if(isLogin())
 {
 require '_header.php'
 

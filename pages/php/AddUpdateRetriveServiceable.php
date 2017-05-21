@@ -2,7 +2,7 @@
 require '_connect.php';
 require '_core.php';
 
-if(isLogin() && isAdmin() ) {
+if(isLogin()) {
 
   if( isset($_GET['action']) ) {
 
@@ -11,7 +11,7 @@ if(isLogin() && isAdmin() ) {
     if($action == 'Retrive') {
       RetriveServiceable();
     }
-    else if ($action == 'Remove') {
+    else if ($action == 'Remove'  && isAdmin()) {
       if( isset($_GET['ItemID']) ) {
         $ItemID = mysql_real_escape_string($_GET['ItemID']);
         if(DeleteServiceable($ItemID))
@@ -20,7 +20,7 @@ if(isLogin() && isAdmin() ) {
             print 0;
       }
     }
-    else if($action == 'save') {
+    else if($action == 'save'  && isAdmin()) {
       if(isset($_GET["ItemArr"])) { 
         saveServiceables($_GET["ItemArr"]);
       }

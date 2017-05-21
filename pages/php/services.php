@@ -3,7 +3,7 @@ $CDATA['PAGE_NAME'] = 'SERVICES';
 require '_connect.php';
 require '_core.php';
 
-if(isLogin() && isAdmin())
+if(isLogin())
 {
 require '_header.php';
 ?>
@@ -41,34 +41,6 @@ window.open("DisplayServiceInvoice.php?id="+InvoiceID);
         is bigger than your content because it prevents extra unwanted scrolling.</p>
     </div> -->
     <div id="messages">
-      <?php
-
-        if(@$_GET['act'] == 'delete' && $http_referer != 'direct_link' && !empty($_GET['del']))
-        {
-          $DELEventID = mysql_real_escape_string($_GET['del']);
-
-          if($DelCase = mysql_query("DELETE FROM subevent WHERE subeventId = '$DELEventID' "))
-          {
-          echo '<div class="alert alert-block alert-success">
-                <button type="button" class="close" data-dismiss="alert">
-                  <i class="ace-icon fa fa-times"></i>
-                </button>
-                <i class="ace-icon fa fa-tick red"></i>
-                Service deleted successfully.
-              </div>';
-          }
-          else
-          {
-          echo '<div class="alert alert-block alert-danger">
-                <button type="button" class="close" data-dismiss="alert">
-                  <i class="ace-icon fa fa-times"></i>
-                </button>
-                <i class="ace-icon fa fa-ban red"></i>
-                Something went wrong, try later.
-              </div>';
-          }
-        }
-      ?>
     </div>
     <!-- Default box -->
 

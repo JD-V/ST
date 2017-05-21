@@ -3,7 +3,7 @@ require '_connect.php';
 require '_core.php';
 
 $CDATA['PAGE_NAME'] = 'ADSLSREC';
-if(isLogin() && isAdmin())
+if(isLogin())
 {
 require '_header.php'
 
@@ -404,7 +404,21 @@ require '_header.php'
                     <input type="text" ng-required="PaymentMethod == 3" class="form-control cheque-date" ng-model="ChequeDate" name="ChequeDate">
                 </div>
                 <div ng-show="PaymentMethod == 3 && salesForm.$submitted  && salesForm.ChequeDate.$error.required" class="errorMessage">Please select cheque date</div>
-              </div>              
+              </div>
+
+              <div class="form-group">
+                <label for="CustomerTIN" class="control-label col-sm-3 lables">Customer TIN</label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control" name="CustomerTIN" placeholder="Customer TIN" ng-model="CustomerTIN" >
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="CustomerPAN" class="control-label col-sm-3 lables">Customer PAN</label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control" name="CustomerPAN" placeholder="Customer PAN" ng-model="CustomerPAN" >
+                </div>
+              </div>
 
               <div class="form-group">
                 <label for="Notes" class="control-label col-sm-3 lables">Notes</label>
@@ -600,6 +614,8 @@ var ValidSubmit = ['$parse', function ($parse) {
         $scope.VehicleMileage= '';
         $scope.CustomerPhone = '';
         $scope.DiscountAmount = 0;
+        $scope.CustomerTIN = '';
+        $scope.CustomerPAN = '';
         $scope.Notes = '';
         $scope.Address = '';
         $scope.PaymentMethod = 1;
@@ -638,6 +654,8 @@ var ValidSubmit = ['$parse', function ($parse) {
       FormData.CustomerPhone = $scope.CustomerPhone;
       FormData.VehicleNo = $scope.VehicleNo;
       FormData.VehicleMileage = $scope.VehicleMileage;
+      FormData.CustomerPAN = $scope.CustomerPAN;
+      FormData.CustomerTIN = $scope.CustomerTIN;
       FormData.BasicAmount = $scope.BasicAmount;
       FormData.VatAmount = $scope.VatAmount;
       FormData.DiscountAmount =  $scope.DiscountAmount;

@@ -2,7 +2,7 @@
 require '_connect.php';
 require '_core.php';
 
-if(isLogin() && isAdmin())
+if(isLogin())
 {
   include('./phpinvoice.php');
 
@@ -22,15 +22,16 @@ if(isLogin() && isAdmin())
   $invoice->setType("SERVICE INVOICE");
   $invoice->setReference($ServiceRecord['InvoiceNumber']); // get it from db
   $date = date_create($ServiceRecord['InvoiceDateTime']);
-  $invoice->setDate(date_format($date, 'd-m-Y')); // get it from db
-  $invoice->setTime(date_format($date, 'H:i')); // get ti from db
-  $invoice->setDue($ServiceRecord['VehicleNumber']); //setDue(date('M dS ,Y',strtotime('+3 months')));
-  $invoice->setFrom(array("Shankar Enterprises","# 4 & 5, Vasu Complex","New Bel Road Bangalore-54","PH-23600699, 20603173, 9845973001"));
+  $invoice->setDate(date_format($date, 'd-m-Y H:i')); // get it from db
+  // $invoice->setTime(date_format($date, 'H:i')); // get ti from db
+  $invoice->setVehicleNumber($ServiceRecord['VehicleNumber']); //VehicleNumber
+  $invoice->setMileage($ServiceRecord['VehicleMileage']); // Mileage
+  $invoice->setSeriveItems();
+  // $invoice->setFrom(array("Shankar Enterprises","# 4 & 5, Vasu Complex","New Bel Road Bangalore-54","PH-23600699, 20603173, 9845973001"));
   $address = explode("\n", $ServiceRecord['Address']);
   $addressLines = count($address);
   if($addressLines<=1) {
-   
-   if(trim($address[0]) == '' )  
+   if(trim($address[0]) == '' )
       $invoice->setTo(array($ServiceRecord['CustomerName'],'MO: '.$ServiceRecord['CustomerPhone'],"","")); //get it from db
     else
       $invoice->setTo(array($ServiceRecord['CustomerName'],$address[0],'MO: '.$ServiceRecord['CustomerPhone'],"")); //get it from db
@@ -43,9 +44,9 @@ if(isLogin() && isAdmin())
     }
     $invoice->setTo(array($ServiceRecord['CustomerName'],$address[0],$address[1],$address[2] .'. MO: '. $ServiceRecord['CustomerPhone'])); //get it from db
   }
+  // $invoice->setTo($ServiceRecord['Address']);
   /* Adding Items in table */
   if($getServiceRecordItems = GetServiceRecordItems($_GET['id'])) {
-ChromePhp::log('true');
     while($item = mysql_fetch_assoc($getServiceRecordItems)) {
       ChromePhp::log($item);
       $invoice->addItem($item['ServiceableDispName'],' ',$item['Qty'],0,$item['Price'],0,$item['Qty']*$item['Price']);
