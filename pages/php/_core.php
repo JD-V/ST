@@ -615,6 +615,7 @@ function AddProduct($Product){
   ChromePhp::log('InvoiceID ' . $Product->invoiceID );
   ChromePhp::log('productSize ' . $Product->productSize );
   ChromePhp::log('brand ' . $Product->brand );
+  ChromePhp::log('productPattern ' . $Product->productPattern );
   ChromePhp::log('units '. $Product->units);
   ChromePhp::log('rate ' . $Product->rate);
   ChromePhp::log('discountsAmount ' . $Product->discountsAmount);
@@ -622,9 +623,9 @@ function AddProduct($Product){
   ChromePhp::log('VatPer '. $Product->vatPer );
   ChromePhp::log('TotalPaid ' . $Product->subtotal);
 
-  $addProduct = mysql_query("INSERT INTO `products` (`InvoiceID`, `ProductSize`, `ProductBrand`, 
+  $addProduct = mysql_query("INSERT INTO `products` (`InvoiceID`, `ProductSize`, `ProductBrand`, `Pattern`, 
     `ProductQty`, `UnitPrice`, `DiscountRs`, `DiscountPer`, `VatPer`, `SubTotal` ) VALUES 
-    ( '$Product->invoiceID','$Product->productSize', '$Product->brand',  '$Product->units', '$Product->rate', 
+    ( '$Product->invoiceID','$Product->productSize', '$Product->brand', '$Product->productPattern', '$Product->units', '$Product->rate', 
     '$Product->discountsAmount', '$Product->discountPer',  '$Product->vatPer', '$Product->subtotal' )" );
 
   if($addProduct)
@@ -1079,6 +1080,7 @@ function MessageTemplate($MessageType, $text) {
    public $invoiceID;
    public $productSize;
    public $brand;
+   public $productPattern;
    public $units;
    public $rate;
    public $amount;

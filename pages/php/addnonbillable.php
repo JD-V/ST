@@ -32,8 +32,6 @@ require '_header.php'
 
     <?php
     //$_SESSION['AUTH_KEY'] = mt_rand(100000000,999999999);
-    ChromePhp::log("form");
-    ChromePhp::log("UKEY" . @$_POST['UKey']);
     if(@$_POST['UKey'] == '2')
     {
       ChromePhp::log("AKEY" . $_POST['akey']);
@@ -56,66 +54,29 @@ require '_header.php'
             if(isset($_POST['RecordId']) && !empty($_POST['RecordId']) )
                $RecordId = mysql_real_escape_string(trim($_POST['RecordId']));
 
-             ChromePhp::log("RecordId = ");
-             ChromePhp::log($RecordId);
              $Result = false;
              $msg = "";
-            if($RecordId == 0)
-            {
+            if($RecordId == 0) {
                $Result = AddNonBillable($RecDate,$Perticulars,$AmountPaid,$Notes);
                $msg = ' Record Added successfully!';
-
-            }
-            else
-            {
+            } else {
               $Result = UpdateNonBillable($RecordId,$RecDate,$Perticulars,$AmountPaid,$Notes); 
               $msg = ' Record Updated successfully!';
             }
 
-            if($Result)
-            {
-                  echo '<div class="alert alert-block alert-success">
-                          <button type="button" class="close" data-dismiss="alert">
-                            <i class="ace-icon fa fa-times"></i>
-                          </button>
-                          <i class="ace-icon fa fa-check green"></i>'. $msg . '</div>'; //needs to correct 
+            if($Result) {
+                echo MessageTemplate(MessageType::Success, $msg);
+            } else {
+              echo MessageTemplate(MessageType::Failure, "Something went wrong, please contact your system admin.");
             }
-            else
-            {
-              echo '<div class="alert alert-block alert-danger">
-                      <button type="button" class="close" data-dismiss="alert">
-                        <i class="ace-icon fa fa-times"></i>
-                      </button>
-                      <i class="ace-icon fa fa-ban red"></i>
-                      Something went wrong, please contact your system admin.
-                    </div>';
-            }
+          } else {
+            echo MessageTemplate(MessageType::Failure, "Please enter all the details.");
           }
-          else
-          {
-            echo '<div class="alert alert-block alert-danger">
-                    <button type="button" class="close" data-dismiss="alert">
-                      <i class="ace-icon fa fa-times"></i>
-                    </button>
-                    <i class="ace-icon fa fa-ban red"></i>
-                    Please enter all the details.
-                  </div>';
-          }
-          /* codefellas Security Robot for re-submission of form */
+          /* pikesAce Security Robot for re-submission of form */
           $_SESSION['AUTH_KEY'] = mt_rand(100000000,999999999);
-          ChromePhp::log($_SESSION['AUTH_KEY']);
           /* END */
-        }
-        else
-        {
-
-          echo '<div class="alert alert-block alert-danger">
-                  <button type="button" class="close" data-dismiss="alert">
-                    <i class="ace-icon fa fa-times"></i>
-                  </button>
-                  <i class="ace-icon fa fa-android red"></i>
-                  Our Security Robot has detected re-submission of same data or hack attempt. Please try later.
-                </div>';
+        } else {
+          echo MessageTemplate(MessageType::RoboWarning, "");
         }
     }
 
@@ -165,7 +126,7 @@ require '_header.php'
               <div class="form-group">
                 <label for="Perticulars" class="control-label col-sm-3 lables">Particulars</label>
                 <div class="col-sm-4">
-                  <textarea  class="form-control" name="Perticulars" placeholder="Perticulars"><?php  if(isset($Record['Perticulars'])) echo  $Record['Perticulars']; ?></textarea>
+                  <textarea  class="form-control" name="Perticulars" placeholder="Particulars"><?php  if(isset($Record['Perticulars'])) echo  $Record['Perticulars']; ?></textarea>
                 </div>
               </div>
 

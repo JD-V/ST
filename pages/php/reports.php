@@ -285,9 +285,27 @@ require '_header.php';
     ToMonthPlus1 = parseInt(ToMonth)+1;
     ToMonthPlus1 = ToMonthPlus1 < 10 ? '0' + ToMonthPlus1 : ToMonthPlus1;
     console.log(selectedMoths);
-    console.log(year[0] +'-' + FromMonth +'-' + '01' );
-    console.log(year[1] +'-' + ToMonthPlus1 +'-' + '01' );
-    var areaChartData = {
+    var fromdate = year[0] +'-' + FromMonth +'-' + '01';
+    var todate = year[1] +'-' + ToMonthPlus1 +'-' + '01';
+
+
+    $.ajax({
+    url: "GetReportsData.php?action=Retrive&fromDate="+fromdate+"&toDate="+todate ,
+    method: "GET",
+    async: false,
+    success: function(data) {
+      var data = jQuery.parseJSON(data);
+      var saleData = [];
+      console.log(data.sale);
+      // for (var i=FromMonth; i<=12; i++ ) {
+      //   saleData.push(data.sale.year[0] +'-' + FromMonth);
+      // }
+      // for (var i=1; i<=ToMonth; i++ ) {
+      //   saleData.push(months[i-1]);
+      // }
+
+      // console.log(data.sale);
+      var areaChartData = {
       labels: selectedMoths,
       datasets: [
         {
@@ -458,7 +476,14 @@ require '_header.php';
 
     barChartOptions.datasetFill = false;
     barChart.Bar(barChartData, barChartOptions);
+ 
+    },
+    error: function(data) {
+      console.log(data);
+    }
+  });
 
+    
   });
 </script>
 

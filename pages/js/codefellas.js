@@ -154,6 +154,10 @@ $(document).ready(function () {
         required: true,
         valueNotEquals: 'default',
       },
+      'ProductPattern[]': {
+        required: true,
+        valueNotEquals: 'default',
+      },      
       'Quantity[]': {
         required: true,
         digits: true,
@@ -198,6 +202,9 @@ $(document).ready(function () {
       },
       'Brand[]': {
         required: "Please specify Brand name",
+      },
+      'ProductPattern[]': {
+        required: "Please specify Pattern",
       },
       'Quantity[]': {
         required: "Please specify Product quantity",

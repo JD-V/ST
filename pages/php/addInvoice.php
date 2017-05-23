@@ -18,35 +18,42 @@ function AddProductFieldset(e){
   $( $fieldset ).find( "input" ).val('');   //clears out input field
   $fieldsetmain.parent().append($fieldset);
 
-  addMultiInputNamingRules('#AddorUpdateProduct','ProductSize[]', 'input[name="ProductSize[]"]', {
+  addMultiInputNamingRules('#AddorUpdateInvoice','ProductSize[]', 'input[name="ProductSize[]"]', {
       required: true,
       messages: {
           required: "Please spcify Product size",
       }
   } );
 
-  addMultiInputNamingRules('#AddorUpdateProduct','Brand[]', 'input[name="Brand[]"]', {
+  addMultiInputNamingRules('#AddorUpdateInvoice','Brand[]', 'input[name="Brand[]"]', {
       required: true,
       messages: {
           required: "Please specify Product Brand",
       }
   } );
 
-  addMultiInputNamingRules('#AddorUpdateProduct','Quantity[]', 'input[name="Quantity[]"]', {
+  addMultiInputNamingRules('#AddorUpdateInvoice','ProductPattern[]', 'input[name="ProductPattern[]"]', {
+      required: true,
+      messages: {
+          required: "Please specify Product Pattern",
+      }
+  } );  
+
+  addMultiInputNamingRules('#AddorUpdateInvoice','Quantity[]', 'input[name="Quantity[]"]', {
       required: true,
       messages: {
           required: "Please Enter Quantity",
       }
   });
 
-  addMultiInputNamingRules('#AddorUpdateProduct','Rate[]', 'input[name="Rate[]"]', {
+  addMultiInputNamingRules('#AddorUpdateInvoice','Rate[]', 'input[name="Rate[]"]', {
       required: true,
       messages: {
           required: "Please Enter Product Rate",
       }
   });
 
-  addMultiInputNamingRules('#AddorUpdateProduct','Amount[]', 'input[name="Amount[]"]', {
+  addMultiInputNamingRules('#AddorUpdateInvoice','Amount[]', 'input[name="Amount[]"]', {
       required: true,
       messages: {
           required: "Please Enter Amount",
@@ -95,16 +102,16 @@ function CalculateAmount(e) {
 
 function UpdateFinalSubtotal() {
   var finalSubtotal = 0.00;
-  $('#AddorUpdateProduct').find('input.subtotal[type="text"]').each(function(index) {
+  $('#AddorUpdateInvoice').find('input.subtotal[type="text"]').each(function(index) {
     if( $.isNumeric($(this).val()) )
       finalSubtotal += + $(this).val();
   });
 
-  var finalDiscount = $('#AddorUpdateProduct').find('.final-discounts-amount').val();
+  var finalDiscount = $('#AddorUpdateInvoice').find('.final-discounts-amount').val();
 
-  var finalDiscountPer = $('#AddorUpdateProduct').find('.final-discount-rate').val();
+  var finalDiscountPer = $('#AddorUpdateInvoice').find('.final-discount-rate').val();
 
-  var rounding = $('#AddorUpdateProduct').find('.rounding').val();
+  var rounding = $('#AddorUpdateInvoice').find('.rounding').val();
 
   if(finalDiscount == '')
     finalDiscount = 0.00;
@@ -124,14 +131,14 @@ function UpdateFinalSubtotal() {
 
 if($.isNumeric(finalDiscount) && $.isNumeric(finalDiscountPer) && $.isNumeric(rounding) ) {
     var finalSubtotalWithDiscount = (finalSubtotal - finalDiscount - finalSubtotal * finalDiscountPer/100.0);
-    $('#AddorUpdateProduct').find('.final-subTotal-amount').val((finalSubtotal).toFixed(2));
-    $('#AddorUpdateProduct').find('.vat-amount').val((finalSubtotalWithDiscount * VatRate/100.0).toFixed(2));
-    $('#AddorUpdateProduct').find('.total-paid').val( (finalSubtotalWithDiscount + (finalSubtotalWithDiscount * VatRate/100.0) + rounding).toFixed(2) );
+    $('#AddorUpdateInvoice').find('.final-subTotal-amount').val((finalSubtotal).toFixed(2));
+    $('#AddorUpdateInvoice').find('.vat-amount').val((finalSubtotalWithDiscount * VatRate/100.0).toFixed(2));
+    $('#AddorUpdateInvoice').find('.total-paid').val( (finalSubtotalWithDiscount + (finalSubtotalWithDiscount * VatRate/100.0) + rounding).toFixed(2) );
   }
   else {
-    $('#AddorUpdateProduct').find('.final-subTotal-amount').val('0.00');
-    $('#AddorUpdateProduct').find('.vat-amount').val('0.00');
-    $('#AddorUpdateProduct').find('.total-paid').val('0.00');
+    $('#AddorUpdateInvoice').find('.final-subTotal-amount').val('0.00');
+    $('#AddorUpdateInvoice').find('.vat-amount').val('0.00');
+    $('#AddorUpdateInvoice').find('.total-paid').val('0.00');
 
   }
 }
@@ -142,6 +149,7 @@ function RemoveProductFieldset(e) {
   $(e).parent().fadeOut(300, function() {
        //Remove parent element (main section)
        $(e).closest( 'fieldset' ).remove();
+       UpdateFinalSubtotal();
        return false;
    });
 }
@@ -183,6 +191,7 @@ function RemoveProductFieldset(e) {
             isset($_POST['TinNumber']) && !empty($_POST['TinNumber']) &&
             isset($_POST['ProductSize']) && !empty($_POST['ProductSize']) &&
             isset($_POST['Brand']) && !empty($_POST['Brand']) &&
+            isset($_POST['ProductPattern']) && !empty($_POST['ProductPattern']) &&
             isset($_POST['Quantity']) && !empty($_POST['Quantity']) &&
             isset($_POST['Rate']) && !empty($_POST['Rate']) &&
             isset($_POST['Amount']) && !empty($_POST['Amount']) &&
@@ -194,43 +203,43 @@ function RemoveProductFieldset(e) {
           {
             $Invoice = new Invoice();
             
-            $dateStr = mysql_real_escape_string(trim($_POST['InvoiceDate']));
+            $dateStr = FilterInput($_POST['InvoiceDate']);
             $date = DateTime::createFromFormat('d-m-Y', $dateStr);
             $Invoice->invoiceDate = $date->format('Y-m-d'); // => 2013-12-24
-            $Invoice->companyName = mysql_real_escape_string(trim($_POST['CompanyName']));
-            $Invoice->invoiceNumber = mysql_real_escape_string(trim($_POST['InvoiceNumber']));
-            $Invoice->tinNumber = mysql_real_escape_string(trim($_POST['TinNumber']));
-            $Invoice->vatAmount = mysql_real_escape_string(trim($_POST['VatAmount']));
-            $Invoice->vatPer = mysql_real_escape_string(trim($_POST['VatPer']));
-            $Invoice->subTotalAmount = mysql_real_escape_string(trim($_POST['FinalSubTotalAmount']));
+            $Invoice->companyName = FilterInput($_POST['CompanyName']);
+            $Invoice->invoiceNumber = FilterInput($_POST['InvoiceNumber']);
+            $Invoice->tinNumber = FilterInput($_POST['TinNumber']);
+            $Invoice->vatAmount = FilterInput($_POST['VatAmount']);
+            $Invoice->vatPer = FilterInput($_POST['VatPer']);
+            $Invoice->subTotalAmount = FilterInput($_POST['FinalSubTotalAmount']);
             
             if(isset($_POST['FinalDiscountsAmount']) && !empty($_POST['FinalDiscountsAmount']) )
-               $Invoice->discountsAmount = mysql_real_escape_string(trim($_POST['FinalDiscountsAmount']));
+               $Invoice->discountsAmount = FilterInput($_POST['FinalDiscountsAmount']);
 
             if(isset($_POST['FinalDiscountRate']) && !empty($_POST['FinalDiscountRate']) )
-              $Invoice->discountPer = mysql_real_escape_string(trim($_POST['FinalDiscountRate']));
+              $Invoice->discountPer = FilterInput($_POST['FinalDiscountRate']);
 
             if(isset($_POST['RoundingAmount']) && !empty($_POST['RoundingAmount']) )
-              $Invoice->rounding = mysql_real_escape_string(trim($_POST['RoundingAmount']));
+              $Invoice->rounding = FilterInput($_POST['RoundingAmount']);
 
-            $Invoice->totalAmount = mysql_real_escape_string(trim($_POST['TotalAmount']));
+            $Invoice->totalAmount = FilterInput($_POST['TotalAmount']);
           
             if(isset($_POST['InvoiceNotes']) && !empty($_POST['InvoiceNotes']) )
-              $Invoice->invoiceNotes = mysql_real_escape_string(trim($_POST['InvoiceNotes']));
+              $Invoice->invoiceNotes = FilterInput($_POST['InvoiceNotes']);
 
             if(AddInvoice($Invoice))
             {
               $successCount = 0;
-              
               $MaxInvoiceID = GetMaxInvoiceID();
 
-              $vatPer = mysql_real_escape_string(trim($_POST['VatPer']));
+              $vatPer = FilterInput($_POST['VatPer']);
               $productSize = $_POST['ProductSize'];
+              $ProductPattern = $_POST['ProductPattern'];
               $brand = $_POST['Brand'];
               $units = $_POST['Quantity'];
               $rate = $_POST['Rate'];
               $amount = $_POST['Amount'];
-              $vatPer = mysql_real_escape_string(trim($_POST['VatPer']));
+              $vatPer = $_SESSION['VatFactor'];
               $discountsAmount = $_POST['DiscountRs'];
               $discountPer = $_POST['Discount'];
               $subtotal = $_POST['Subtotal'];
@@ -240,6 +249,7 @@ function RemoveProductFieldset(e) {
                 $Product =  new Product();
                 $Product->invoiceID = $MaxInvoiceID;
                 $Product->productSize = $productSize[$i];
+                $Product->productPattern = $ProductPattern[$i];
                 $Product->brand = $brand[$i];
                 $Product->units = $units[$i];
                 $Product->rate = $rate[$i];
@@ -252,51 +262,19 @@ function RemoveProductFieldset(e) {
                 if(AddProduct($Product))
                   $successCount++;
               }
-
-                  echo '<div class="alert alert-block alert-success">
-                          <button type="button" class="close" data-dismiss="alert">
-                            <i class="ace-icon fa fa-times"></i>
-                          </button>
-                          <i class="ace-icon fa fa-check green"></i>
-                          Invoice Added successfully!
-                        </div>';
+              echo MessageTemplate(MessageType::Success, "Invoice Added successfully!");
+            } else {
+              echo MessageTemplate(MessageType::Failure, "Something went wrong, please contact your system admin.");
             }
-            else
-            {
-              echo '<div class="alert alert-block alert-danger">
-                      <button type="button" class="close" data-dismiss="alert">
-                        <i class="ace-icon fa fa-times"></i>
-                      </button>
-                      <i class="ace-icon fa fa-ban red"></i>
-                      Something went wrong, try again.
-                    </div>';
-            }
+          } else {
+            echo MessageTemplate(MessageType::Failure, "Please enter all the details.");
           }
-          else
-          {
-            echo '<div class="alert alert-block alert-danger">
-                    <button type="button" class="close" data-dismiss="alert">
-                      <i class="ace-icon fa fa-times"></i>
-                    </button>
-                    <i class="ace-icon fa fa-ban red"></i>
-                    Please enter all the details.
-                  </div>';
-          }
-          /* codefellas Security Robot for re-submission of form */
+          /* pikesAce Security Robot for re-submission of form */
           $_SESSION['AUTH_KEY'] = mt_rand(100000000,999999999);
           ChromePhp::log($_SESSION['AUTH_KEY']);
           /* END */
-        }
-        else
-        {
-
-          echo '<div class="alert alert-block alert-danger">
-                  <button type="button" class="close" data-dismiss="alert">
-                    <i class="ace-icon fa fa-times"></i>
-                  </button>
-                  <i class="ace-icon fa fa-android red"></i>
-                  Our Security Robot has detected re-submission of same data or hack attempt. Please try later.
-                </div>';
+        } else {
+          echo MessageTemplate(MessageType::RoboWarning, "");
         }
     }
 
@@ -354,6 +332,13 @@ function RemoveProductFieldset(e) {
                 <legend>Products<span class="mandatoryLabel">*</span></legend>
 
               <div class="form-group">
+                <label for="Brand" class="control-label col-sm-3 lables">Brand<span class="mandatoryLabel">*</span></label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control" name="Brand[]" placeholder="" >
+                </div>
+              </div>
+
+              <div class="form-group">
                 <label for="ProductSize" class="control-label col-sm-3 lables">Product Size<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
                   <input type="text" class="form-control" name="ProductSize[]" placeholder="" >
@@ -361,11 +346,11 @@ function RemoveProductFieldset(e) {
               </div>
 
               <div class="form-group">
-                <label for="Brand" class="control-label col-sm-3 lables">Brand<span class="mandatoryLabel">*</span></label>
+                <label for="ProductPattern" class="control-label col-sm-3 lables">Product Pattern<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" name="Brand[]" placeholder="" >
+                  <input type="text" class="form-control" name="ProductPattern[]" placeholder="" >
                 </div>
-              </div>
+              </div>                            
 
               <div class="form-group">
                 <label for="Quantity" class="control-label col-sm-3 lables ">Quantity<span class="mandatoryLabel">*</span></label>
@@ -429,7 +414,7 @@ function RemoveProductFieldset(e) {
                     <span class="input-group-addon">
                         <span class="fa fa-inr"></span>
                     </span>
-                    <input type="text" class="form-control subtotal currency"  readonly="readonly" maskedFormat="10,2" name="Subtotal[]" placeholder="0.00" >
+                    <input type="text" class="form-control subtotal currency" maskedFormat="10,2" name="Subtotal[]" placeholder="0.00" >
                   </div>
                 </div>
               </div>
@@ -448,7 +433,6 @@ function RemoveProductFieldset(e) {
                   <button type="button" name="RemoveProduct[]" class="btn btn-sm btn-danger" style="margin-left:25px"  onclick="RemoveProductFieldset(this)">Remove</button>
                 </div>
               </div>
-
             </div>
           </fieldset>
 
@@ -490,13 +474,13 @@ function RemoveProductFieldset(e) {
           </div>
 
           <div class="form-group">
-            <label for="VatAmount" class="control-label col-sm-3 lables">Vat<span class="mandatoryLabel">*</span></label>
+            <label for="VatAmount" class="control-label col-sm-3 lables">Vat (<?php echo $_SESSION['VatFactor']; ?>%) <span class="mandatoryLabel">*</span></label>
             <div class="col-sm-4">
               <div class='input-group'>
                 <span class="input-group-addon">
                     <span class="fa fa-inr"></span>
                 </span>
-                <input type="text" readonly="readonly" class="form-control vat-amount currency" maskedFormat="10,2" name="VatAmount" placeholder="0.00" >
+                <input type="text" class="form-control vat-amount currency" maskedFormat="10,2" name="VatAmount" placeholder="0.00" >
               </div>
             </div>
           </div>
@@ -521,7 +505,7 @@ function RemoveProductFieldset(e) {
                 <span class="input-group-addon">
                     <span class="fa fa-inr"></span>
                 </span>
-                <input type="text" readonly="readonly" class="form-control total-paid currency" maskedFormat="10,2" name="TotalAmount" placeholder="0.00" >
+                <input type="text" class="form-control total-paid currency" maskedFormat="10,2" name="TotalAmount" placeholder="0.00" >
               </div>
             </div>
           </div>
@@ -537,9 +521,9 @@ function RemoveProductFieldset(e) {
             <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> </label>
 
             <div class="col-sm-9">
-              <input type="submit" name="nc_submit" value="submit" id="ID_Sub" class="btn btn-sm btn-success" style="<?php if(isset($subEventData['EventCode'])) echo 'margin-left:90px'; else echo 'margin-left:50px'; ?>" />
+              <input type="submit" name="nc_submit" value="submit" id="ID_Sub" class="btn btn-sm btn-success" style="margin-left:50px;" />
               <input type="hidden" name="UKey" value="1" id="ID_UKey" />
-              <button type="reset" class="btn btn-sm btn-default" style="visibility:<?php if(isset($subEventData['EventCode'])) echo 'hidden'; else 'visible'?> ">Clear</button>
+              <button type="reset" class="btn btn-sm btn-default" style="visibility:visible">Clear</button>
             </div>
           </div>
 

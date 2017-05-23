@@ -117,7 +117,7 @@ $(document).ready(function() {
           } else {
             echo MessageTemplate(MessageType::Failure, "Please enter all the details.");
           }
-          /* codefellas Security Robot for re-submission of form */
+          /* pikesAce Security Robot for re-submission of form */
           $_SESSION['AUTH_KEY'] = mt_rand(100000000,999999999);
           ChromePhp::log($_SESSION['AUTH_KEY']);
           /* END */

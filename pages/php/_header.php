@@ -199,7 +199,7 @@
             <?php $isActive = ""; if($CDATA['PAGE_NAME'] == 'USERS'){ $isActive =  'active'; }
 
             echo "<li class=\"hover " . $isActive . " \">
-                    <a href=\"Users.php\" >
+                    <a href=\"users.php\" >
                       <i class=\"fa fa-user\"></i>
                       <span>Users</span>
                       <span class=\"pull-right-container\">
@@ -447,7 +447,7 @@
            ChromePhp::log('isa active '. $CDATA['PAGE_NAME'] );
 
               echo "<li class=\"hover " . $isActive . " \">
-                      <a href=\"addProduct.php\" >
+                      <a href=\"addproduct.php\" >
                         <i class=\"fa fa-plus-square\"></i>
                         <span>Add Product</span>
                         <span class=\"pull-right-container\">
