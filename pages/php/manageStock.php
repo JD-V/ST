@@ -7,29 +7,7 @@ if(isLogin())
 {
 require '_header.php';
 ?>
-<style type="text/css">
 
-.edited label:after {
-  content: " edited";
-  text-transform: uppercase;
-  color: #a7b9c4;
-  font-size : 10px;
-  padding-left: 5px;
-}
-
-.error label:after {
-  content: " error";
-  text-transform: uppercase;
-  color: #ff0000;
-  font-size : 10px;
-  padding-left: 5px;
-}
-
-.normal {
-  font-weight: 500;
-}
-
-</style>
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
   <!-- Content Header (Page header) -->

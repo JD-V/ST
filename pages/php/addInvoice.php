@@ -60,12 +60,6 @@ function AddProductFieldset(e){
       }
   });
 
-  addMultiInputNamingRules('#AddorUpdateProduct','Subtotal[]', 'input[name="Subtotal[]"]', {
-      required: true,
-      messages: {
-          required: "Please Enter Amount",
-      }
-  });
 }
 
 function CalculateAmount(e) {
@@ -74,72 +68,35 @@ function CalculateAmount(e) {
   var Qty = $fieldsetCurrent.find('.quantity').val();
   var Rate = $fieldsetCurrent.find('.rate').val();
 
-  var DiscountPer = $fieldsetCurrent.find('.discount').val();
-  var DiscountRs = $fieldsetCurrent.find('.discount-rs').val();
-
   if(Qty == '')
     Qty = 0;
 
   if(Rate == '')
     Rate = 0.00;
 
-  if(DiscountPer == '')
-    DiscountPer = 0.00;
-
-  if(DiscountRs == '')
-    DiscountRs = 0.00;
-
-  if($.isNumeric(Qty) && $.isNumeric(Rate) && $.isNumeric(DiscountPer) && $.isNumeric(DiscountRs)) {
+  if($.isNumeric(Qty) && $.isNumeric(Rate) ) {
     $fieldsetCurrent.find('.amount').val((Rate*Qty).toFixed(2));
-    $fieldsetCurrent.find('.subtotal').val(((Rate*Qty) - (Rate*Qty*DiscountPer/100.0).toFixed(2) - DiscountRs ).toFixed(2));
     UpdateFinalSubtotal();
   }
   else
     $fieldsetCurrent.find('.amount').val('');
 
 
+
 }
 
 function UpdateFinalSubtotal() {
   var finalSubtotal = 0.00;
-  $('#AddorUpdateInvoice').find('input.subtotal[type="text"]').each(function(index) {
+  $('#AddorUpdateInvoice').find('input.amount[type="text"]').each(function(index) {
     if( $.isNumeric($(this).val()) )
       finalSubtotal += + $(this).val();
-  });
+  }); 
 
-  var finalDiscount = $('#AddorUpdateInvoice').find('.final-discounts-amount').val();
-
-  var finalDiscountPer = $('#AddorUpdateInvoice').find('.final-discount-rate').val();
-
-  var rounding = $('#AddorUpdateInvoice').find('.rounding').val();
-
-  if(finalDiscount == '')
-    finalDiscount = 0.00;
-  else
-    finalDiscount = parseFloat(finalDiscount);
-
-  if(finalDiscountPer == '')
-    finalDiscountPer = 0.00;
-  else
-    finalDiscountPer = parseFloat(finalDiscountPer);
-
-  if(rounding == '')
-    rounding = 0.00;
-  else
-    rounding = parseFloat(rounding);
-
-
-if($.isNumeric(finalDiscount) && $.isNumeric(finalDiscountPer) && $.isNumeric(rounding) ) {
-    var finalSubtotalWithDiscount = (finalSubtotal - finalDiscount - finalSubtotal * finalDiscountPer/100.0);
-    $('#AddorUpdateInvoice').find('.final-subTotal-amount').val((finalSubtotal).toFixed(2));
-    $('#AddorUpdateInvoice').find('.vat-amount').val((finalSubtotalWithDiscount * VatRate/100.0).toFixed(2));
-    $('#AddorUpdateInvoice').find('.total-paid').val( (finalSubtotalWithDiscount + (finalSubtotalWithDiscount * VatRate/100.0) + rounding).toFixed(2) );
+if($.isNumeric(finalSubtotal)) {
+    $('#AddorUpdateInvoice').find('.total-paid').val( finalSubtotal.toFixed(2) );
   }
   else {
-    $('#AddorUpdateInvoice').find('.final-subTotal-amount').val('0.00');
-    $('#AddorUpdateInvoice').find('.vat-amount').val('0.00');
     $('#AddorUpdateInvoice').find('.total-paid').val('0.00');
-
   }
 }
 
@@ -188,17 +145,12 @@ function RemoveProductFieldset(e) {
         if( isset($_POST['InvoiceDate']) && !empty($_POST['InvoiceDate']) &&
             isset($_POST['CompanyName']) && !empty($_POST['CompanyName']) &&
             isset($_POST['InvoiceNumber']) && !empty($_POST['InvoiceNumber']) &&
-            isset($_POST['TinNumber']) && !empty($_POST['TinNumber']) &&
             isset($_POST['ProductSize']) && !empty($_POST['ProductSize']) &&
             isset($_POST['Brand']) && !empty($_POST['Brand']) &&
             isset($_POST['ProductPattern']) && !empty($_POST['ProductPattern']) &&
             isset($_POST['Quantity']) && !empty($_POST['Quantity']) &&
             isset($_POST['Rate']) && !empty($_POST['Rate']) &&
             isset($_POST['Amount']) && !empty($_POST['Amount']) &&
-            isset($_POST['Subtotal']) && !empty($_POST['Subtotal']) &&
-            isset($_POST['FinalSubTotalAmount']) && !empty($_POST['FinalSubTotalAmount']) &&
-            isset($_POST['VatPer']) && !empty($_POST['VatPer']) &&
-            isset($_POST['VatAmount']) && !empty($_POST['VatAmount']) &&
             isset($_POST['TotalAmount']) && !empty($_POST['TotalAmount'])   )
           {
             $Invoice = new Invoice();
@@ -209,55 +161,32 @@ function RemoveProductFieldset(e) {
             $Invoice->companyName = FilterInput($_POST['CompanyName']);
             $Invoice->invoiceNumber = FilterInput($_POST['InvoiceNumber']);
             $Invoice->tinNumber = FilterInput($_POST['TinNumber']);
-            $Invoice->vatAmount = FilterInput($_POST['VatAmount']);
-            $Invoice->vatPer = FilterInput($_POST['VatPer']);
-            $Invoice->subTotalAmount = FilterInput($_POST['FinalSubTotalAmount']);
-            
-            if(isset($_POST['FinalDiscountsAmount']) && !empty($_POST['FinalDiscountsAmount']) )
-               $Invoice->discountsAmount = FilterInput($_POST['FinalDiscountsAmount']);
-
-            if(isset($_POST['FinalDiscountRate']) && !empty($_POST['FinalDiscountRate']) )
-              $Invoice->discountPer = FilterInput($_POST['FinalDiscountRate']);
-
-            if(isset($_POST['RoundingAmount']) && !empty($_POST['RoundingAmount']) )
-              $Invoice->rounding = FilterInput($_POST['RoundingAmount']);
-
             $Invoice->totalAmount = FilterInput($_POST['TotalAmount']);
-          
+
             if(isset($_POST['InvoiceNotes']) && !empty($_POST['InvoiceNotes']) )
               $Invoice->invoiceNotes = FilterInput($_POST['InvoiceNotes']);
-
+            
+            $Invoice->invoiceID = GetMaxInvoiceID() + 1;
+            
             if(AddInvoice($Invoice))
             {
               $successCount = 0;
-              $MaxInvoiceID = GetMaxInvoiceID();
-
-              $vatPer = FilterInput($_POST['VatPer']);
               $productSize = $_POST['ProductSize'];
               $ProductPattern = $_POST['ProductPattern'];
               $brand = $_POST['Brand'];
               $units = $_POST['Quantity'];
               $rate = $_POST['Rate'];
               $amount = $_POST['Amount'];
-              $vatPer = $_SESSION['VatFactor'];
-              $discountsAmount = $_POST['DiscountRs'];
-              $discountPer = $_POST['Discount'];
-              $subtotal = $_POST['Subtotal'];
               
               for ($i=0; $i < count($productSize); $i++) {
-
                 $Product =  new Product();
-                $Product->invoiceID = $MaxInvoiceID;
+                $Product->invoiceID = $Invoice->invoiceID;
                 $Product->productSize = $productSize[$i];
                 $Product->productPattern = $ProductPattern[$i];
                 $Product->brand = $brand[$i];
                 $Product->units = $units[$i];
                 $Product->rate = $rate[$i];
                 $Product->amount = $amount[$i];
-                $Product->vatPer = $vatPer;
-                $Product->discountPer = $discountPer[$i];
-                $Product->discountsAmount = $discountsAmount[$i];
-                $Product->subtotal = $subtotal[$i];
 
                 if(AddProduct($Product))
                   $successCount++;
@@ -321,7 +250,7 @@ function RemoveProductFieldset(e) {
               </div>
 
               <div class="form-group">
-                <label for="TinNumber" class="control-label col-sm-3 lables">TIN number<span class="mandatoryLabel">*</span></label>
+                <label for="TinNumber" class="control-label col-sm-3 lables">TIN number</label>
                 <div class="col-sm-4">
                   <input type="text" class="form-control" name="TinNumber" placeholder="Tin Number" >
                 </div>
@@ -355,7 +284,7 @@ function RemoveProductFieldset(e) {
               <div class="form-group">
                 <label for="Quantity" class="control-label col-sm-3 lables ">Quantity<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control quantity" name="Quantity[]" placeholder="0" onchange="CalculateAmount(this)" onkeypress="return isNumberKey(event)">
+                  <input type="text" class="form-control quantity" name="Quantity[]" placeholder="0" onchange="CalculateAmount(this)"  onkeypress="return isNumberKey(event)">
                 </div>
               </div>
 
@@ -384,49 +313,6 @@ function RemoveProductFieldset(e) {
               </div>
 
               <div class="form-group">
-                <label for="Discount" class="control-label col-sm-3 lables">Discount (%)</label>
-                <div class="col-sm-4">
-                  <div class='input-group'>
-                    <span class="input-group-addon">
-                        <span class="fa fa-percent"></span>
-                    </span>
-                    <input type="text" class="form-control discount currency" name="Discount[]" maskedFormat="10,2" placeholder="0.00%" value="0.00" onchange="CalculateAmount(this)" >
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label for="Discount" class="control-label col-sm-3 lables">Discount Rs</label>
-                <div class="col-sm-4">
-                  <div class='input-group'>
-                    <span class="input-group-addon">
-                        <span class="fa fa-inr"></span>
-                    </span>
-                    <input type="text" class="form-control discount-rs currency" name="DiscountRs[]" maskedFormat="10,2" placeholder="0.00" value="0.00" onchange="CalculateAmount(this)" >
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label for="Subtotal" class="control-label col-sm-3 lables">Subtotal<span class="mandatoryLabel">*</span></label>
-                <div class="col-sm-4">
-                  <div class='input-group'>
-                    <span class="input-group-addon">
-                        <span class="fa fa-inr"></span>
-                    </span>
-                    <input type="text" class="form-control subtotal currency" maskedFormat="10,2" name="Subtotal[]" placeholder="0.00" >
-                  </div>
-                </div>
-              </div>
-
-              <!-- <div class="form-group">
-                <label for="Subtotal" class="control-label col-sm-3 lables">Subtotal<span class="mandatoryLabel">*</span></label>
-                <div class="col-sm-4">
-                  <input type="text" class="form-control subtotal"  readonly="readonly" name="Subtotal[]" placeholder="0.00" >
-                </div>
-              </div> -->
-
-              <div class="form-group">
                 <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> </label>
                 <div class="col-sm-4 col-xs-offset-1">
                   <button type="button" name="AddProduct[]" class="btn btn-sm btn-primary"  onclick="AddProductFieldset(this)">Add</button>
@@ -435,68 +321,6 @@ function RemoveProductFieldset(e) {
               </div>
             </div>
           </fieldset>
-
-
-          <div class="form-group">
-            <label for="FinalSubTotalAmount" class="control-label col-sm-3 lables">Sub Total<span class="mandatoryLabel">*</span></label>
-            <div class="col-sm-4">
-              <div class='input-group'>
-                <span class="input-group-addon">
-                    <span class="fa fa-inr"></span>
-                </span>
-                <input type="text" readonly="readonly" class="form-control final-subTotal-amount currency" maskedFormat="10,2" name="FinalSubTotalAmount" placeholder="0.00" >
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="FinalDiscountRate" class="control-label col-sm-3 lables">Discount (%)</label>
-            <div class="col-sm-4">
-              <div class='input-group'>
-                <span class="input-group-addon">
-                    <span class="fa fa-percent"></span>
-                </span>
-                <input type="text" class="form-control final-discount-rate currency" maskedFormat="10,2" name="FinalDiscountRate" placeholder="0.00 %" value="0.00" onchange="UpdateFinalSubtotal()">
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="FinalDiscountAmountRs" class="control-label col-sm-3 lables">Discount Rs</label>
-            <div class="col-sm-4">
-              <div class='input-group'>
-                <span class="input-group-addon">
-                    <span class="fa fa-inr"></span>
-                </span>
-                <input type="text" class="form-control final-discounts-amount currency" maskedFormat="10,2" name="FinalDiscountsAmount" placeholder="0.00" value="0.00" onchange="UpdateFinalSubtotal()">
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="VatAmount" class="control-label col-sm-3 lables">Vat (<?php echo $_SESSION['VatFactor']; ?>%) <span class="mandatoryLabel">*</span></label>
-            <div class="col-sm-4">
-              <div class='input-group'>
-                <span class="input-group-addon">
-                    <span class="fa fa-inr"></span>
-                </span>
-                <input type="text" class="form-control vat-amount currency" maskedFormat="10,2" name="VatAmount" placeholder="0.00" >
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="RoundingAmount" class="control-label col-sm-3 lables">Rounding</label>
-            <div class="col-sm-4">
-              <div class='input-group'>
-                <span class="input-group-addon">
-                    <span class="fa fa-inr"></span>
-                </span>
-                <input type="text" class="form-control rounding currency" name="RoundingAmount" maskedFormat="10,2" placeholder="0.00" onchange="UpdateFinalSubtotal()" >
-              </div>
-            </div>
-          </div>
-
 
           <div class="form-group">
             <label for="TotalAmount" class="control-label col-sm-3 lables">Total paid<span class="mandatoryLabel">*</span></label>

@@ -584,24 +584,20 @@ function GetServiceReport($fromDate,$toDate) {
 function AddInvoice($Invoice){
 
   ChromePhp::log('InvoiceDate ' . $Invoice->invoiceDate );
+  ChromePhp::log('InvoiceID ' . $Invoice->invoiceID );
   ChromePhp::log('InvoiceNumber ' . $Invoice->invoiceNumber );
   ChromePhp::log('Company ' . $Invoice->companyName );
   ChromePhp::log('TinNumber '. $Invoice->tinNumber);
-  ChromePhp::log('SubTotal ' . $Invoice->subTotalAmount);
-  ChromePhp::log('DiscountRs ' . $Invoice->discountsAmount);
-  ChromePhp::log('DiscountPer ' . $Invoice->discountPer);
-  ChromePhp::log('VatPer '. $Invoice->vatPer );
-  ChromePhp::log('VatAmount ' . $Invoice->vatAmount);
-  ChromePhp::log('Rounding ' . $Invoice->rounding);
   ChromePhp::log('TotalPaid ' . $Invoice->totalAmount);
   ChromePhp::log('Notes' .$Invoice->invoiceNotes);
 
 
-  $addInvoice = mysql_query("INSERT INTO `purchaseinvoice` (`InvoiceDate`, `InvoiceNumber`, `Company`, `TinNumber`, `SubTotal`, 
-    `DiscountRs`, `DiscountPer`, `VatPer`, `VatAmount`, `Rounding`, `TotalPaid`, `Notes` ) VALUES 
-    ( '$Invoice->invoiceDate','$Invoice->invoiceNumber', '$Invoice->companyName',  '$Invoice->tinNumber', '$Invoice->subTotalAmount', 
-    '$Invoice->discountsAmount', '$Invoice->discountPer',  '$Invoice->vatPer', '$Invoice->vatAmount', '$Invoice->rounding', 
-    '$Invoice->totalAmount', '$Invoice->invoiceNotes' )" );
+  $addInvoice = mysql_query(
+              "INSERT INTO `purchaseinvoice` (`InvoiceID`, `InvoiceDate`, `Company`,
+              `InvoiceNumber`, `TinNumber`, `TotalPaid`, `Notes` ) VALUES 
+              ('$Invoice->invoiceID', '$Invoice->invoiceDate', '$Invoice->companyName', 
+              '$Invoice->invoiceNumber', '$Invoice->tinNumber', '$Invoice->totalAmount', 
+              '$Invoice->invoiceNotes' )" );
 
   if($addInvoice)
     return 1;
@@ -618,15 +614,14 @@ function AddProduct($Product){
   ChromePhp::log('productPattern ' . $Product->productPattern );
   ChromePhp::log('units '. $Product->units);
   ChromePhp::log('rate ' . $Product->rate);
-  ChromePhp::log('discountsAmount ' . $Product->discountsAmount);
-  ChromePhp::log('DiscountPer ' . $Product->discountPer);
-  ChromePhp::log('VatPer '. $Product->vatPer );
-  ChromePhp::log('TotalPaid ' . $Product->subtotal);
+  ChromePhp::log('amount ' . $Product->amount);
 
-  $addProduct = mysql_query("INSERT INTO `products` (`InvoiceID`, `ProductSize`, `ProductBrand`, `Pattern`, 
-    `ProductQty`, `UnitPrice`, `DiscountRs`, `DiscountPer`, `VatPer`, `SubTotal` ) VALUES 
-    ( '$Product->invoiceID','$Product->productSize', '$Product->brand', '$Product->productPattern', '$Product->units', '$Product->rate', 
-    '$Product->discountsAmount', '$Product->discountPer',  '$Product->vatPer', '$Product->subtotal' )" );
+  $addProduct = mysql_query(
+          "INSERT INTO `products` (`InvoiceID`, `ProductSize`, `ProductBrand`, 
+          `Pattern`, `ProductQty`, `UnitPrice`, `Amount` ) VALUES 
+          ('$Product->invoiceID','$Product->productSize', '$Product->brand', 
+          '$Product->productPattern', '$Product->units', '$Product->rate', 
+          '$Product->amount' )" );
 
   if($addProduct)
     return 1;
@@ -1113,10 +1108,11 @@ function MessageTemplate($MessageType, $text) {
 
  class Invoice
  {
+    public $invoiceID;
     public $invoiceDate;
     public $companyName;
     public $invoiceNumber;
-    public $tinNumber;
+    public $tinNumber ="";
     public $vatAmount;
     public $vatPer;
     public $subTotalAmount;

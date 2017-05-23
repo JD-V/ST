@@ -144,9 +144,6 @@ $(document).ready(function () {
       InvoiceNumber: {
         required: true,
       },
-      TinNumber: {
-        required: true,
-      },
       'ProductSize[]': {
         required: true,
       },
@@ -169,15 +166,6 @@ $(document).ready(function () {
       'Amount[]': {
         required: true,
       },
-      'Subtotal[]': {
-        required: true,
-      },
-      SubTotalAmount: {
-        required: true,
-      },
-      VatAmount: {
-        required: true,
-      },
       TotalAmount: {
         required: true,
       }
@@ -194,9 +182,6 @@ $(document).ready(function () {
       InvoiceNumber: {
         required: "Please enter Invoice number",
       },
-      TinNumber: {
-        required: "Please enter Tin number",
-      },
       'ProductSize[]': {
         required: "Please specify Product size",
       },
@@ -210,17 +195,11 @@ $(document).ready(function () {
         required: "Please specify Product quantity",
         digits: "please enter digits only",
       },
+      'Rate[]': {
+        required: "Please enter Rate",
+      },      
       'Amount[]': {
         required: "Please enter Product amount",
-      },
-      'Subtotal[]': {
-        required: "Please enter Subtotal amount",
-      },
-      FinalSubTotalAmount: {
-        required: "Please enter Subtotal amount",
-      },
-      VatAmount: {
-        required: "Please enter Vat amount",
       },
       TotalAmount: {
         required: "Please enter Total amount ",
@@ -236,12 +215,10 @@ $(document).ready(function () {
       $('input[name="UKey"]').val('2');
       removeMultiInputNamingRules(form, 'input[alt="ProductSize[]"]');
       removeMultiInputNamingRules(form, 'input[alt="Brand[]"]');
+      removeMultiInputNamingRules(form, 'input[alt="ProductPattern[]"]');
       removeMultiInputNamingRules(form, 'input[alt="Quantity[]"]');
       removeMultiInputNamingRules(form, 'input[alt="Rate[]"]');
       removeMultiInputNamingRules(form, 'input[alt="Amount[]"]');
-      removeMultiInputNamingRules(form, 'input[alt="Discount[]"]');
-      removeMultiInputNamingRules(form, 'input[alt="DiscountRs[]"]');
-      removeMultiInputNamingRules(form, 'input[alt="Subtotal[]"]');
       form.submit();
     }
   });

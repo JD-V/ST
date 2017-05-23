@@ -85,14 +85,8 @@ require '_header.php';
                 <th>Invoice Date</th>
                 <th>Invoice No</th>
                 <th>TIN No</th>
-                <td align="right" style="font-weight:bold">Vat(%) </td>
-                <td align="right" style="font-weight:bold">Sub Total</td>
-                <td align="right" style="font-weight:bold">Discount (%)</td>
-                <td align="right" style="font-weight:bold">Discount Rs</td>
-                <td align="right" style="font-weight:bold">Vat Amount</td>
                 <td align="right" style="font-weight:bold">Total Paid</td>
                 <th>Notes</th>
-                <th><i class="fa fa-pencil" aria-hidden="true"></i></th>
               </tr>
             </thead>
             <tbody>
@@ -106,16 +100,11 @@ require '_header.php';
                     <th><?php echo '<a href="addproduct.php?id='. $Invoice['InvoiceID'].'">' . $i+=1  . '</a>'; ?></th>
                     <td><?php echo $Invoice['Company']; ?></td>
                     <td><?php $date = date_create($Invoice['InvoiceDate']); echo date_format($date, 'm-d-Y'); ?></td>
+                    
                     <td><?php echo $Invoice['InvoiceNumber']; ?></td>
                     <td><?php echo $Invoice['TinNumber'] ?></td>
-                    <td align="right"><?php echo $Invoice['VatPer']. ' %'; ?></td>
-                    <td align="right"><?php echo $Invoice['SubTotal']; ?></td>
-                    <td align="right"><?php echo $Invoice['DiscountPer']. ' %'; ?></td>
-                    <td align="right"><?php echo $Invoice['DiscountRs']; ?></td>
-                    <td align="right"><?php echo $Invoice['VatAmount']; ?></td>
                     <td align="right"><?php echo $Invoice['TotalPaid']; ?></td>
                     <td><?php echo $Invoice['Notes']; ?></td>
-                    <td><?php echo '<a href="addproduct.php?id='.$Invoice['InvoiceID'].'"  class=""><i class="fa fa-pencil" aria-hidden="true"></i></a>'; ?></td>
                   </tr>
                   <?php
                 }
@@ -150,13 +139,7 @@ require '_header.php';
                 <th>Product Size</th>
                 <th>Qty</th>
                 <td align="right" style="font-weight:bold">Unit price</td>
-                <td align="right" style="font-weight:bold">Vat(%) </td>
-                <td align="right" style="font-weight:bold">Sub Total</td>
-                <td align="right" style="font-weight:bold">Discount (%)</td>
-                <td align="right" style="font-weight:bold">Discount Rs</td>
-                <td align="right" style="font-weight:bold">Vat Amount</td>
-                <td align="right" style="font-weight:bold">Total</td>
-                <th><i class="fa fa-pencil" aria-hidden="true"></i></th>
+                <td align="right" style="font-weight:bold">Amount</td>
               </tr>
             </thead>
             <tbody>
@@ -173,13 +156,7 @@ require '_header.php';
                     <td><?php echo $Product['ProductSize'] ?></td>
                     <td><?php echo $Product['ProductQty']; ?></td>
                     <td align="right"><?php echo $Product['UnitPrice']; ?></td>
-                    <td align="right"><?php echo $Product['VatPer']; ?></td>
-                    <td align="right"><?php echo $Product['SubTotal']; ?></td>
-                    <td align="right"><?php echo $Product['DiscountPer']. ' %'; ?></td>
-                    <td align="right"><?php echo $Product['DiscountRs']; ?></td>
-                    <td align="right"><?php echo number_format($Product['SubTotal'] * ($Product['VatPer']/100.0), 2, '.', ''); ?></td>
-                    <td align="right"><?php echo  number_format($Product['SubTotal'] * (1+ $Product['VatPer']/100.0), 2, '.', ''); ?></td>
-                    <td><?php echo '<a href="addproduct.php?id='.$Product['InvoiceID'].'"  class=""><i class="fa fa-pencil" aria-hidden="true"></i></a>'; ?></td>
+                    <td align="right"><?php echo $Product['Amount']; ?></td>
                   </tr>
                   <?php
                 }
