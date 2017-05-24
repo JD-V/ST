@@ -7,6 +7,10 @@ if(isLogin()) {
     if($action == 'Retrive') {
       if(isset($_GET['item']) && $_GET['item'] == "MaxSalesInvoice") {
         print GetMaxSalesInoviceNumber();
+      } else if(isset($_GET['item']) && $_GET['item'] == "CutomerDetails" && isset($_GET['vehicleNo']) )  {
+
+        $VehicleNumber = FilterInput($_GET['vehicleNo']);
+        print CustomerDetails($VehicleNumber);
       }
       else if ( isset($_GET['BrandID'])) {
           RetriveProducts($_GET['BrandID']);
@@ -36,6 +40,20 @@ function RetriveProducts($BrandID) {
   //print 'arr';
   print json_encode($product_array);
 }
+
+function CustomerDetails($VehicleNumber) {
+  $customerDetails = GetCustomerDetailsByVehicleNumber($VehicleNumber);
+  $customerData = NULL;
+  if($customerDetails == NULL)
+    $customerData = array('data' => '0');
+  else {
+    $customer = mysql_fetch_assoc($customerDetails);
+    $customerData = array('data' => '1', 'CustomerName' => $customer['CustomerName'] ,'CustomerPhone' => $customer['CustomerPhone'], 'CustomerTIN' => $customer['CustomerTIN'], 
+    'CustomerPAN'=> $customer['CustomerPAN'], 'VehicleMileage' => $customer['VehicleMileage'],'Address' => $customer['Address'] );
+  }
+    print json_encode($customerData);
+}
+
 function saveOrder($FormData) {
   $FormData = json_decode($FormData);
   $order = new Order();

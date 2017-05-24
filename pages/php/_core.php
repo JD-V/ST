@@ -849,6 +849,16 @@ function GetProductStocks() {
   }
 }
 
+function GetCustomerDetailsByVehicleNumber($VehicleNumber) {
+
+  if($getCustomerDetails = mysql_query("SELECT * FROM `sales` WHERE VehicleNumber = '$VehicleNumber' ORDER BY InvoiceNumber DESC LIMIT 1")) {
+    if(mysql_num_rows($getCustomerDetails) >= 1) {
+      return $getCustomerDetails;
+    }
+  }
+  return NULL;
+}
+
 function getProductWithStocks($BrandID) {
   
   if($getProductInventory = mysql_query("SELECT pr.ProductID, pr.ProductSize, pr.ProductPattern, pr.BrandID, pr.ProductTypeID,pt.ProductTypeName,

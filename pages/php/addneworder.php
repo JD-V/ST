@@ -201,6 +201,14 @@ require '_header.php'
               </div>
 
               <div class="form-group">
+                <label for="VehicleNo" class="control-label col-sm-3 lables">Vehicle Number<span class="mandatoryLabel">*</span></label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control" name="VehicleNo" placeholder="Vehicle Number" ng-model="VehicleNo" required ng-blur="RetriveCustomerData()" >
+                </div>
+                <div ng-show="salesForm.$submitted && salesForm.VehicleNo.$error.required" class="errorMessage">Please enter Vehicle numnber</div>
+              </div>
+
+              <div class="form-group">
                 <label for="CustomerName" class="control-label col-sm-3 lables">Customer Name<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
                   <input type="text" class="form-control" name="CustomerName" placeholder="Cutomer Name" ng-model = "CustomerName" required >
@@ -221,14 +229,6 @@ require '_header.php'
                 <div ng-show="salesForm.$submitted && salesForm.CustomerPhone.$error.required" class="errorMessage">Please enter phone numnber</div>
                 <div class="errorMessage" ng-show="((salesForm.CustomerPhone.$error.minlength || salesForm.CustomerPhone.$error.maxlength) &&  salesForm.CustomerPhone.$dirty) ">phone number should be 10 digits</div>
               </div>
-
-            <div class="form-group">
-              <label for="VehicleNo" class="control-label col-sm-3 lables">Vehicle Number<span class="mandatoryLabel">*</span></label>
-              <div class="col-sm-4">
-                <input type="text" class="form-control" name="VehicleNo" placeholder="Vehicle Number" ng-model="VehicleNo" required >
-              </div>
-              <div ng-show="salesForm.$submitted && salesForm.VehicleNo.$error.required" class="errorMessage">Please enter Vehicle numnber</div>
-            </div>
 
             <div class="form-group">
               <label for="VehicleMileage" class="control-label col-sm-3 lables">Vehicle Mileage<span class="mandatoryLabel">*</span></label>
@@ -515,6 +515,19 @@ var ValidSubmit = ['$parse', function ($parse) {
     });
   };
 
+  $scope.RetriveCustomerData = function() {
+     dataService.getcustomerData($scope.VehicleNo, function(response) {
+      var customerData = response.data;
+      if(customerData.data == 1) {
+        $scope.CustomerName = customerData.CustomerName
+        $scope.VehicleMileage= customerData.VehicleMileage;
+        $scope.CustomerPhone = customerData.CustomerPhone;
+        $scope.CustomerTIN = customerData.CustomerTIN;
+        $scope.CustomerPAN = customerData.CustomerPAN;
+        $scope.Address = customerData.Address;
+      }
+    });
+  }
   // $scope.updateSalesDate = function(){
   //   $scope.SalesInvoiceDate = $('.sales-invoice-date').val();
   // }
@@ -717,6 +730,14 @@ var ValidSubmit = ['$parse', function ($parse) {
         }).then(callback)
       };
 
+  // Get customerData
+  this.getcustomerData = function(CustomerData,callback) {
+        
+        $http({
+          method : "GET",
+          url : "CreateOrderForm.php?action=Retrive&item=CutomerDetails&vehicleNo="+CustomerData,
+        }).then(callback)
+      };
 
     //Save orders
     this.submitOrder = function(FormData,callback) {

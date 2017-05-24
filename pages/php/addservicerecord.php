@@ -74,6 +74,14 @@ require '_header.php'
               </div>
 
               <div class="form-group">
+                <label for="VehicleNo" class="control-label col-sm-3 lables">Vehicle Number<span class="mandatoryLabel">*</span></label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control" name="VehicleNo" placeholder="Vehicle Number" ng-model="VehicleNo" required ng-blur="RetriveCustomerData()">
+                </div>
+                <div ng-show="serviceForm.$submitted && serviceForm.VehicleNo.$error.required" class="errorMessage">Please enter Vehicle numnber</div>
+              </div>              
+
+              <div class="form-group">
                 <label for="CustomerName" class="control-label col-sm-3 lables">Customer Name<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
                   <input type="text" class="form-control" name="CustomerName" ng-model = "CustomerName" placeholder="Cutomer Name" ng-model = "CustomerName" required>
@@ -93,14 +101,6 @@ require '_header.php'
                 </div>
                 <div ng-show="serviceForm.$submitted && serviceForm.CustomerPhone.$error.required" class="errorMessage">Please enter phone numnber</div>
                 <div class="errorMessage" ng-show="((serviceForm.CustomerPhone.$error.minlength || serviceForm.CustomerPhone.$error.maxlength) &&  serviceForm.CustomerPhone.$dirty) ">phone number should be 10 digits</div>
-              </div>
-
-              <div class="form-group">
-                <label for="VehicleNo" class="control-label col-sm-3 lables">Vehicle Number<span class="mandatoryLabel">*</span></label>
-                <div class="col-sm-4">
-                  <input type="text" class="form-control" name="VehicleNo" placeholder="Vehicle Number" ng-model="VehicleNo" required >
-                </div>
-                <div ng-show="serviceForm.$submitted && serviceForm.VehicleNo.$error.required" class="errorMessage">Please enter Vehicle numnber</div>
               </div>
 
             <div class="form-group">
@@ -350,6 +350,18 @@ $scope.AddItem = function(ItemId){
       $scope.TotalAmountPaid = $scope.SubTotal;
   };
 
+  $scope.RetriveCustomerData = function() {
+     dataService.getcustomerData($scope.VehicleNo, function(response) {
+      var customerData = response.data;
+      if(customerData.data == 1) {
+        $scope.CustomerName = customerData.CustomerName
+        $scope.VehicleMileage= customerData.VehicleMileage;
+        $scope.CustomerPhone = customerData.CustomerPhone;
+        $scope.Address = customerData.Address;
+      }
+    });
+  }  
+
   $scope.validateInput = function($inputValue) {
     if($inputValue === "") {
       document.getElementById("messages").innerHTML = MessageTemplate(1, "can not be blank.");
@@ -448,6 +460,15 @@ $scope.AddItem = function(ItemId){
         url : "AddUpdateRetriveServiceable.php?action=Retrive",
       }).then(callback)
     };
+
+  // Get customerData
+  this.getcustomerData = function(CustomerData,callback) {
+        
+        $http({
+          method : "GET",
+          url : "CreateOrderForm.php?action=Retrive&item=CutomerDetails&vehicleNo="+CustomerData,
+        }).then(callback)
+      };
 
   this.getMaxServiceInvoiceNumber = function(callback) {
         
