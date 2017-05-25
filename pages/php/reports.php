@@ -277,10 +277,10 @@ require '_header.php';
     var selectedMoths = [];
 
     for (var i=FromMonth; i<=12; i++ ) {
-      selectedMoths.push(months[i-1]);
+      selectedMoths.push(months[i-1] +'-' + year[0]);
     }
     for (var i=1; i<=ToMonth; i++ ) {
-      selectedMoths.push(months[i-1]);
+      selectedMoths.push(months[i-1]+'-' + year[1]);
     }
     ToMonthPlus1 = parseInt(ToMonth)+1;
     ToMonthPlus1 = ToMonthPlus1 < 10 ? '0' + ToMonthPlus1 : ToMonthPlus1;
@@ -294,17 +294,38 @@ require '_header.php';
     method: "GET",
     async: false,
     success: function(data) {
-      var data = jQuery.parseJSON(data);
+      var reportData = jQuery.parseJSON(data);
       var saleData = [];
-      console.log(data.sale);
-      // for (var i=FromMonth; i<=12; i++ ) {
-      //   saleData.push(data.sale.year[0] +'-' + FromMonth);
-      // }
-      // for (var i=1; i<=ToMonth; i++ ) {
-      //   saleData.push(months[i-1]);
-      // }
+      //console.log(data.sale);
+      var saleData = [];
+      var serviceData = [];
+      var nonbillableData = [];
 
-      // console.log(data.sale);
+      var saleTotal = 0;
+      var serviceTotal = 0;
+      var nonbillableTotal = 0;      
+      
+      for (var k in reportData.sale){
+          if (reportData.sale.hasOwnProperty(k)) {
+              saleData.push(reportData.sale[k]);
+              saleTotal += +reportData.sale[k];
+          }
+      }
+
+      for (var k in reportData.service){
+          if (reportData.service.hasOwnProperty(k)) {
+              serviceData.push(reportData.service[k]);
+              serviceTotal += +reportData.service[k];
+          }
+      }  
+
+      for (var k in reportData.nonbillable){
+          if (reportData.nonbillable.hasOwnProperty(k)) {
+              nonbillableData.push(reportData.nonbillable[k]);
+              nonbillableTotal += +reportData.nonbillable[k];
+          }
+      }            
+
       var areaChartData = {
       labels: selectedMoths,
       datasets: [
@@ -316,7 +337,7 @@ require '_header.php';
           pointStrokeColor: "#c1c7d1",
           pointHighlightFill: "#fff",
           pointHighlightStroke: "rgba(220,220,220,1)",
-          data: [23, 23, 45, 61, 36, 25, 44]
+          data: saleData
         },
         {
           label: "Service",
@@ -326,7 +347,7 @@ require '_header.php';
           pointStrokeColor: "#98FB98",
           pointHighlightFill: "#fff",
           pointHighlightStroke: "rgba(152,251,152,1)",
-          data: [65, 59, 80, 81, 56, 55, 40]
+          data: serviceData
         },
         {
           label: "Sale",
@@ -336,7 +357,7 @@ require '_header.php';
           pointStrokeColor: "rgba(60,141,188,1)",
           pointHighlightFill: "#fff",
           pointHighlightStroke: "rgba(60,141,188,1)",
-          data: [28, 48, 40, 19, 86, 27, 90]
+          data: nonbillableData
         },
       ]
     };
@@ -391,19 +412,19 @@ require '_header.php';
     var pieChart = new Chart(pieChartCanvas);
     var PieData = [
       {
-        value: 700,
+        value: saleTotal,
         color: "#f56954",
         highlight: "#f56954",
         label: "Sale"
       },
       {
-        value: 500,
+        value: serviceTotal,
         color: "#00a65a",
         highlight: "#00a65a",
         label: "Service"
       },
       {
-        value: 400,
+        value: nonbillableTotal,
         color: "#f39c12",
         highlight: "#f39c12",
         label: "Nonbillable"
