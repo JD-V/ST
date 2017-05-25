@@ -32,34 +32,6 @@ require '_header.php';
         is bigger than your content because it prevents extra unwanted scrolling.</p>
     </div> -->
     <div id="messages">
-      <?php
-
-        if(@$_GET['act'] == 'delete' && $http_referer != 'direct_link' && !empty($_GET['del']))
-        {
-          $DELEventID = mysql_real_escape_string($_GET['del']);
-
-          if($DelCase = mysql_query("DELETE FROM subevent WHERE subeventId = '$DELEventID' "))
-          {
-          echo '<div class="alert alert-block alert-success">
-                <button type="button" class="close" data-dismiss="alert">
-                  <i class="ace-icon fa fa-times"></i>
-                </button>
-                <i class="ace-icon fa fa-tick red"></i>
-                Event deleted successfully.
-              </div>';
-          }
-          else
-          {
-          echo '<div class="alert alert-block alert-danger">
-                <button type="button" class="close" data-dismiss="alert">
-                  <i class="ace-icon fa fa-times"></i>
-                </button>
-                <i class="ace-icon fa fa-ban red"></i>
-                Something went wrong, try later.
-              </div>';
-          }
-        }
-      ?>
     </div>
     <!-- Default box -->
 
@@ -85,6 +57,8 @@ require '_header.php';
                 <th>Invoice Date</th>
                 <th>Invoice No</th>
                 <th>TIN No</th>
+                <td align="right" style="font-weight:bold">Subtotal</td>
+                <td align="right" style="font-weight:bold">Vat</td>                
                 <td align="right" style="font-weight:bold">Total Paid</td>
                 <th>Notes</th>
               </tr>
@@ -100,9 +74,10 @@ require '_header.php';
                     <th><?php echo '<a href="addproduct.php?id='. $Invoice['InvoiceID'].'">' . $i+=1  . '</a>'; ?></th>
                     <td><?php echo $Invoice['Company']; ?></td>
                     <td><?php $date = date_create($Invoice['InvoiceDate']); echo date_format($date, 'm-d-Y'); ?></td>
-                    
                     <td><?php echo $Invoice['InvoiceNumber']; ?></td>
                     <td><?php echo $Invoice['TinNumber'] ?></td>
+                    <td align="right"><?php echo $Invoice['SubTotal'] ?></td>
+                    <td align="right"><?php echo $Invoice['VatAmount'] ?></td>
                     <td align="right"><?php echo $Invoice['TotalPaid']; ?></td>
                     <td><?php echo $Invoice['Notes']; ?></td>
                   </tr>

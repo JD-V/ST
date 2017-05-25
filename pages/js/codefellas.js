@@ -166,6 +166,12 @@ $(document).ready(function () {
       'Amount[]': {
         required: true,
       },
+      SubTotalAmount: {
+        required: true,
+      },
+      VatAmount: {
+        required: true,
+      },            
       TotalAmount: {
         required: true,
       }
@@ -201,6 +207,12 @@ $(document).ready(function () {
       'Amount[]': {
         required: "Please enter Product amount",
       },
+      SubTotalAmount: {
+        required: "Please enter SubTotal amount ",
+      },
+      VatAmount: {
+        required: "Please enter Vat amount ",
+      },       
       TotalAmount: {
         required: "Please enter Total amount ",
       }

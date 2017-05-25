@@ -594,10 +594,10 @@ function AddInvoice($Invoice){
 
   $addInvoice = mysql_query(
               "INSERT INTO `purchaseinvoice` (`InvoiceID`, `InvoiceDate`, `Company`,
-              `InvoiceNumber`, `TinNumber`, `TotalPaid`, `Notes` ) VALUES 
+              `InvoiceNumber`, `TinNumber`,`SubTotal`,`VatAmount`, `TotalPaid`, `Notes` ) VALUES 
               ('$Invoice->invoiceID', '$Invoice->invoiceDate', '$Invoice->companyName', 
-              '$Invoice->invoiceNumber', '$Invoice->tinNumber', '$Invoice->totalAmount', 
-              '$Invoice->invoiceNotes' )" );
+              '$Invoice->invoiceNumber', '$Invoice->tinNumber', '$Invoice->subTotalAmount', 
+              '$Invoice->vatAmount', '$Invoice->totalAmount', '$Invoice->invoiceNotes' )" );
 
   if($addInvoice)
     return 1;

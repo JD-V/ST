@@ -10,14 +10,13 @@ require '_header.php'
 ?>
 
 <script type="text/javascript">
-var VatRate = 14.5;
-function AddProductFieldset(e){
+  function AddProductFieldset(e){
 
   var $fieldsetmain = $(e).closest( 'fieldset' );
   var $fieldset =  $(e).closest( 'fieldset' ).clone();
   $( $fieldset ).find( "input" ).val('');   //clears out input field
   $fieldsetmain.parent().append($fieldset);
-
+  
   addMultiInputNamingRules('#AddorUpdateInvoice','ProductSize[]', 'input[name="ProductSize[]"]', {
       required: true,
       messages: {
@@ -63,6 +62,7 @@ function AddProductFieldset(e){
 }
 
 function CalculateAmount(e) {
+
   var $fieldsetCurrent = $(e).closest( 'fieldset' );
 
   var Qty = $fieldsetCurrent.find('.quantity').val();
@@ -86,6 +86,7 @@ function CalculateAmount(e) {
 }
 
 function UpdateFinalSubtotal() {
+  var VatRate = $('#VatPer').val();
   var finalSubtotal = 0.00;
   $('#AddorUpdateInvoice').find('input.amount[type="text"]').each(function(index) {
     if( $.isNumeric($(this).val()) )
@@ -93,10 +94,14 @@ function UpdateFinalSubtotal() {
   }); 
 
 if($.isNumeric(finalSubtotal)) {
-    $('#AddorUpdateInvoice').find('.total-paid').val( finalSubtotal.toFixed(2) );
+    $('#AddorUpdateInvoice').find('.subtotal').val( finalSubtotal.toFixed(2) );
+    $('#AddorUpdateInvoice').find('.vat-amount').val( (finalSubtotal*VatRate/100).toFixed(2)  );
+    $('#AddorUpdateInvoice').find('.total-paid').val( (finalSubtotal + finalSubtotal*VatRate/100  ).toFixed(2) );
   }
   else {
     $('#AddorUpdateInvoice').find('.total-paid').val('0.00');
+    $('#AddorUpdateInvoice').find('.vat-amount').val('0.00');
+    $('#AddorUpdateInvoice').find('.total-paid').val('0.00');    
   }
 }
 
@@ -151,6 +156,8 @@ function RemoveProductFieldset(e) {
             isset($_POST['Quantity']) && !empty($_POST['Quantity']) &&
             isset($_POST['Rate']) && !empty($_POST['Rate']) &&
             isset($_POST['Amount']) && !empty($_POST['Amount']) &&
+            isset($_POST['SubTotalAmount']) && !empty($_POST['SubTotalAmount']) &&
+            isset($_POST['VatAmount']) && !empty($_POST['VatAmount']) &&
             isset($_POST['TotalAmount']) && !empty($_POST['TotalAmount'])   )
           {
             $Invoice = new Invoice();
@@ -162,6 +169,8 @@ function RemoveProductFieldset(e) {
             $Invoice->invoiceNumber = FilterInput($_POST['InvoiceNumber']);
             $Invoice->tinNumber = FilterInput($_POST['TinNumber']);
             $Invoice->totalAmount = FilterInput($_POST['TotalAmount']);
+            $Invoice->vatAmount = FilterInput($_POST['VatAmount']);
+            $Invoice->subTotalAmount = FilterInput($_POST['SubTotalAmount']);
 
             if(isset($_POST['InvoiceNotes']) && !empty($_POST['InvoiceNotes']) )
               $Invoice->invoiceNotes = FilterInput($_POST['InvoiceNotes']);
@@ -226,7 +235,7 @@ function RemoveProductFieldset(e) {
       <div id="AddOrUpdateProducts">
           <form class="form-horizontal" id="AddorUpdateInvoice" name="AddorUpdateInvoice" action="addInvoice.php?_auth=<?php echo $_SESSION['AUTH_KEY']; ?>" method="post">
               <input type="hidden" value="<?php echo $_SESSION['AUTH_KEY']; ?>" name="akey" id="ID_akey" >
-              <input type="hidden" value="14.5" name="VatPer">
+              <input type="hidden" value="<?php echo $_SESSION['VatFactor']; ?>" name="VatPer" id="VatPer">
 
               <div class="form-group">
                 <label for="InvoiceDate" class="control-label col-sm-3 lables">Invoice Date<span class="mandatoryLabel">*</span></label>
@@ -301,7 +310,7 @@ function RemoveProductFieldset(e) {
               </div>
 
               <div class="form-group">
-                <label for="Amount" class="control-label col-sm-3 lables">Amount<span class="mandatoryLabel">*</span></label>
+                <label for="Amount" class="control-label col-sm-3 lables">Amount (Rate*Qty)<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
                   <div class='input-group'>
                     <span class="input-group-addon">
@@ -321,6 +330,30 @@ function RemoveProductFieldset(e) {
               </div>
             </div>
           </fieldset>
+
+          <div class="form-group">
+            <label for="SubTotal" class="control-label col-sm-3 lables">SubTotal<span class="mandatoryLabel">*</span></label>
+            <div class="col-sm-4">
+              <div class='input-group'>
+                <span class="input-group-addon">
+                    <span class="fa fa-inr"></span>
+                </span>
+                <input type="text" class="form-control subtotal currency" maskedFormat="10,2" name="SubTotalAmount" placeholder="0.00" >
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="VatAmount" class="control-label col-sm-3 lables">Vat (<?php echo $_SESSION['VatFactor']; ?>%) <span class="mandatoryLabel">*</span></label>
+            <div class="col-sm-4">
+              <div class='input-group'>
+                <span class="input-group-addon">
+                    <span class="fa fa-inr"></span>
+                </span>
+                <input type="text" class="form-control vat-amount currency" maskedFormat="10,2" name="VatAmount" placeholder="0.00" >
+              </div>
+            </div>
+          </div>
 
           <div class="form-group">
             <label for="TotalAmount" class="control-label col-sm-3 lables">Total paid<span class="mandatoryLabel">*</span></label>
