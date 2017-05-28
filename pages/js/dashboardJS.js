@@ -6,7 +6,7 @@ $(document).ready(function() {
   "paging":   false,
   "info":     false,
   "order": [[ 2, "desc" ]],
-  "columnDefs": [{ "orderable": false, "targets": [ 4,5,6,7,8] }]
+  "columnDefs": [{ "orderable": false, "targets": [ 4,5,6,7,8,9,11] }]
 });
 
   $('#productsTable').DataTable({

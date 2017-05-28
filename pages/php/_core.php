@@ -594,10 +594,12 @@ function AddInvoice($Invoice){
 
   $addInvoice = mysql_query(
               "INSERT INTO `purchaseinvoice` (`InvoiceID`, `InvoiceDate`, `Company`,
-              `InvoiceNumber`, `TinNumber`,`SubTotal`,`VatAmount`, `TotalPaid`, `Notes` ) VALUES 
+              `InvoiceNumber`, `TinNumber`, `SubTotal`, `VatAmount`, `TotalPaid`,
+              `PaymentType`, `ChequeNo`, `ChequeDate`, `Notes` ) VALUES 
               ('$Invoice->invoiceID', '$Invoice->invoiceDate', '$Invoice->companyName', 
               '$Invoice->invoiceNumber', '$Invoice->tinNumber', '$Invoice->subTotalAmount', 
-              '$Invoice->vatAmount', '$Invoice->totalAmount', '$Invoice->invoiceNotes' )" );
+              '$Invoice->vatAmount', '$Invoice->totalAmount', '$Invoice->paymentType',
+              '$Invoice->chequeNo', '$Invoice->chequeDate', '$Invoice->invoiceNotes' )" );
 
   if($addInvoice)
     return 1;
@@ -1130,6 +1132,9 @@ function MessageTemplate($MessageType, $text) {
     public $discountPer = 0.00;
     public $rounding = 0.00;
     public $totalAmount;
+    public $paymentType;
+    public $chequeNo=NULL;
+    public $chequeDate=NULL;
     public $invoiceNotes = "";
 }
 

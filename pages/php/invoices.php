@@ -60,6 +60,9 @@ require '_header.php';
                 <td align="right" style="font-weight:bold">Subtotal</td>
                 <td align="right" style="font-weight:bold">Vat</td>                
                 <td align="right" style="font-weight:bold">Total Paid</td>
+                 <td align="center" style="font-weight:bold">Payemnt Type</td>
+                <th>Cheque No</th>
+                <th>Cheque Date</th>
                 <th>Notes</th>
               </tr>
             </thead>
@@ -79,6 +82,26 @@ require '_header.php';
                     <td align="right"><?php echo $Invoice['SubTotal'] ?></td>
                     <td align="right"><?php echo $Invoice['VatAmount'] ?></td>
                     <td align="right"><?php echo $Invoice['TotalPaid']; ?></td>
+                    <td align="center">
+                      <?php 
+                        if($Invoice['PaymentType'] == 3) 
+                          echo 'Cheque';  
+                        else if ($Invoice['PaymentType'] == 2)
+                          echo 'Card';
+                        else
+                          echo 'Cash';
+                      ?>
+                    </td>
+                    <td ><?php echo $Invoice['ChequeNo']; ?></td>
+                    <td >
+                      <?php 
+                        $chequeDate = $Invoice['ChequeDate'];
+                        if ($chequeDate != '0000-00-00') {
+                          $chequeDate = date_create($chequeDate); 
+                          echo date_format($chequeDate, 'm-d-Y');
+                        }
+                      ?>
+                    </td>
                     <td><?php echo $Invoice['Notes']; ?></td>
                   </tr>
                   <?php

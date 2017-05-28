@@ -81,8 +81,6 @@ function CalculateAmount(e) {
   else
     $fieldsetCurrent.find('.amount').val('');
 
-
-
 }
 
 function UpdateFinalSubtotal() {
@@ -115,6 +113,39 @@ function RemoveProductFieldset(e) {
        return false;
    });
 }
+
+$(document).ready(function () {
+  $('input[name="paymentType"]').on('change', function(e) {
+      var paymentType = $("input[name='paymentType']:checked").val();
+      if(paymentType != 3) {
+        $("#ChequeNoDiv").prop('hidden', true);
+        $("#ChequeDateDiv").prop('hidden', true);
+
+        $("#AddorUpdateInvoice").validate(); //sets up the validator
+        $('input[name="ChequeNo"]').rules("remove", "required");
+        $('input[name="ChequeDate"]').rules("remove", "required");
+
+      } else {
+        $("#ChequeNoDiv").prop('hidden', false);
+        $("#ChequeDateDiv").prop('hidden', false);
+
+        $("#AddorUpdateInvoice").validate(); //sets up the validator
+        $('input[name="ChequeNo"]').rules("add", {
+            required: true,
+            messages: {
+                required: "Please Enter Cheque Number",
+            }
+        });
+        $('input[name="ChequeDate"]').rules("add", {
+            required: true,
+            messages: {
+                required: "Please Enter Cheque Date",
+            }
+        });
+      }
+
+  });
+});
 </script>
 
 
@@ -140,11 +171,8 @@ function RemoveProductFieldset(e) {
 
     <?php
     //$_SESSION['AUTH_KEY'] = mt_rand(100000000,999999999);
-    ChromePhp::log("form");
-    ChromePhp::log("UKEY" . @$_POST['UKey']);
     if(@$_POST['UKey'] == '2')
     {
-      ChromePhp::log("AKEY" . $_POST['akey']);
       if(@$_POST['akey'] == $_SESSION['AUTH_KEY'])
       {
         if( isset($_POST['InvoiceDate']) && !empty($_POST['InvoiceDate']) &&
@@ -158,7 +186,8 @@ function RemoveProductFieldset(e) {
             isset($_POST['Amount']) && !empty($_POST['Amount']) &&
             isset($_POST['SubTotalAmount']) && !empty($_POST['SubTotalAmount']) &&
             isset($_POST['VatAmount']) && !empty($_POST['VatAmount']) &&
-            isset($_POST['TotalAmount']) && !empty($_POST['TotalAmount'])   )
+            isset($_POST['TotalAmount']) && !empty($_POST['TotalAmount']) &&
+            isset($_POST['paymentType']) && !empty($_POST['paymentType']) )
           {
             $Invoice = new Invoice();
             
@@ -171,10 +200,18 @@ function RemoveProductFieldset(e) {
             $Invoice->totalAmount = FilterInput($_POST['TotalAmount']);
             $Invoice->vatAmount = FilterInput($_POST['VatAmount']);
             $Invoice->subTotalAmount = FilterInput($_POST['SubTotalAmount']);
+            $Invoice->paymentType = FilterInput($_POST['paymentType']);
 
             if(isset($_POST['InvoiceNotes']) && !empty($_POST['InvoiceNotes']) )
               $Invoice->invoiceNotes = FilterInput($_POST['InvoiceNotes']);
             
+            if($Invoice->paymentType == 3) {
+              $Invoice->chequeNo = FilterInput($_POST['ChequeNo']);
+
+              $dateC = date_create(FilterInput($_POST['ChequeDate'])); 
+              $Invoice->chequeDate = date_format($dateC, 'Y-m-d H:i');
+            }
+
             $Invoice->invoiceID = GetMaxInvoiceID() + 1;
             
             if(AddInvoice($Invoice))
@@ -209,7 +246,6 @@ function RemoveProductFieldset(e) {
           }
           /* pikesAce Security Robot for re-submission of form */
           $_SESSION['AUTH_KEY'] = mt_rand(100000000,999999999);
-          ChromePhp::log($_SESSION['AUTH_KEY']);
           /* END */
         } else {
           echo MessageTemplate(MessageType::RoboWarning, "");
@@ -366,6 +402,31 @@ function RemoveProductFieldset(e) {
               </div>
             </div>
           </div>
+
+              <div class="form-group">
+                <label class="control-label col-sm-3 lables">Payment Type<span class="mandatoryLabel">*</span></label>
+                <div class="col-sm-4">                  
+                  <label class="radio-inline"> <input type="radio" class="paymentType" name="paymentType" id="cash" value="1" checked > Cash </label>
+                  <label class="radio-inline"> <input type="radio" class="paymentType" name="paymentType" id="card" value="2" > Card </label>
+                  <label class="radio-inline"> <input type="radio" class="paymentType" name="paymentType" id="cheque" value="3" ng-change="AddDatePlugin()" > Cheque </label>
+                </div>
+              </div>
+
+              <div class="form-group" id="ChequeNoDiv" hidden>
+                <label for="ChequeNo" class="control-label col-sm-3 lables">cheque No<span class="mandatoryLabel">*</span></label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control cheque-no" onkeypress='return event.charCode >= 48 && event.charCode <= 57' name="ChequeNo" >
+                </div>
+                <div class="errorMessage"></div>
+              </div>
+
+              <div class="form-group" id="ChequeDateDiv" hidden>
+                <label for="ChequeDate"  class="control-label col-sm-3 lables">cheque Date<span class="mandatoryLabel">*</span></label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control cheque-date" name="ChequeDate">
+                </div>
+                <div class="errorMessage"></div>
+              </div>
 
           <div class="form-group">
             <label for="InvoiceNotes" class="control-label col-sm-3 lables">Notes</label>
