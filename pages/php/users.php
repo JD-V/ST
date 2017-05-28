@@ -15,6 +15,44 @@ function DisplayProof(path){
     var pathNew = currentPath.slice(0,currentPath.length-2).join('/') + '/uploads/' + path;
     window.open(pathNew);
 }
+
+function BlockUser(e,ID) {
+ $.ajax({
+      dataType: "json",
+      type: "GET",
+      url: "useroperations.php?action=Block&userID="+ID,
+      success: function(result) {
+       if(result.status == 1) {
+          document.getElementById("messages").innerHTML = MessageTemplate(0, "User has been blocked");
+          $(e).removeClass('btn-info');
+          $(e).addClass('btn-danger');
+          $(e).val('Unblock');
+          
+       } else {
+          document.getElementById("messages").innerHTML = MessageTemplate(1, "unable to perform operation");
+       }
+      }
+ });
+}
+
+function UnBlockUser(e,ID) {
+ $.ajax({
+      dataType: "json",
+      type: "GET",
+      url: "useroperations.php?action=UnBlock&userID="+ID,
+      success: function(result) {
+       if(result.status == 1) {
+          document.getElementById("messages").innerHTML = MessageTemplate(0, "User has been un blocked");
+          $(e).removeClass('btn-danger');
+          $(e).addClass('btn-info');
+          $(e).val('Block');
+          
+       } else {
+          document.getElementById("messages").innerHTML = MessageTemplate(1, "unable to perform operation");
+       }
+      }
+ });
+}
 </script>
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
@@ -68,7 +106,7 @@ function DisplayProof(path){
                 <th>Address</th>
                 <th>Status</th>
                 <th>ID Proof</th>
-                <th>Edit</th>
+                <th>Block</th>
               </tr>
             </thead>
             <tbody>
@@ -99,7 +137,18 @@ function DisplayProof(path){
                             }
                         ?>
                     </td>
-                    <td><?php echo '<input type="button" class="btn btn-sm btn-info" value="Edit" />'; ?></td>
+                    <td>
+                    <?php 
+                      if($user['RoleID'] != 1) {
+                        $ID = $user['UserID'];
+                        if($user['Status'] == '1') {
+                          echo '<input type="button" class="btn btn-sm btn-info" value="Block" onclick="BlockUser(this,\''.$ID.'\')" />';
+                        } else {
+                          echo '<input type="button" class="btn btn-sm btn-danger" value="Unblock" onclick="UnBlockUser(this,\''.$ID.'\')" />';
+                        }
+                      } else echo 'NA';
+                      ?>
+                  </td>
                   </tr>
                   <?php
                 }

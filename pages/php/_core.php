@@ -306,6 +306,24 @@ function GetUserID($userName) {
   }
 }
 
+function BlockUserByID($userID) {
+  $updateUser = mysql_query("UPDATE `user` SET `Status` = 0 WHERE `UserID` = '$userID' " );
+
+   if(-1 == mysql_affected_rows())
+       return 0;
+     else
+       return 1;
+}
+
+function UnBlockUserByID($userID) {
+    $updateUser = mysql_query("UPDATE `user` SET `Status` = 1 WHERE `UserID` = '$userID' " );
+
+   if(-1 == mysql_affected_rows())
+       return 0;
+     else
+       return 1;
+}
+
 function GetUsers() {
     if($getUsers = mysql_query("SELECT u.*, r.RoleName FROM user u JOIN role r ON u.RoleID = r.RoleID WHERE Hidden=0")) {
     return $getUsers;
