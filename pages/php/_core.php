@@ -307,7 +307,7 @@ function GetUserID($userName) {
 }
 
 function GetUsers() {
-    if($getUsers = mysql_query("SELECT u.*, r.RoleName FROM user u JOIN role r ON u.RoleID = r.RoleID")) {
+    if($getUsers = mysql_query("SELECT u.*, r.RoleName FROM user u JOIN role r ON u.RoleID = r.RoleID WHERE Hidden=0")) {
     return $getUsers;
   } else {
     return false;

@@ -86,8 +86,17 @@ function DisplayProof(path){
                     <td><?php if($user['Status'] == '1') echo 'Active'; else echo 'Inactive'; ?></td>
                     <td>
                         <?php 
-                                                       
-                            echo '<input type="button" class="btn-link" value="View"  onclick = "DisplayProof(\'user' . $user['UserID'] . '.png\');" />';
+                            $target_dir = realpath(dirname(__FILE__) . '/../uploads');
+                            $userID = 'user'.$user['UserID'];
+                            ChromePhp::log($target_dir);
+                            ChromePhp::log($userID);
+
+                            $files = preg_grep('~^'.$userID.'~', scandir($target_dir));
+                            ChromePhp::log($files);
+                            foreach ($files as $key => $value)
+                            {
+                              echo '<input type="button" class="btn-link" value="View"  onclick = "DisplayProof(\'' . $value . '\');" />';
+                            }
                         ?>
                     </td>
                     <td><?php echo '<input type="button" class="btn btn-sm btn-info" value="Edit" />'; ?></td>
