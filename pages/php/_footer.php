@@ -55,6 +55,9 @@
 <!-- custom styles -->
 <link rel="stylesheet" type="text/css" href="../css/mainCSS.css">
 
+<!-- custom styles -->
+<!--<link rel="stylesheet" type="text/css" href="../css/timelineBS.css">-->
+
 <!--multiple date selector -->
 <link rel="stylesheet" type="text/css" href="../../plugins/MultiDatesPicker/css/mdp.css">
 <link rel="stylesheet" type="text/css" href="../../plugins/MultiDatesPicker/css/prettify.css">

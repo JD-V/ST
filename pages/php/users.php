@@ -126,11 +126,7 @@ function UnBlockUser(e,ID) {
                         <?php 
                             $target_dir = realpath(dirname(__FILE__) . '/../uploads');
                             $userID = 'user'.$user['UserID'];
-                            ChromePhp::log($target_dir);
-                            ChromePhp::log($userID);
-
                             $files = preg_grep('~^'.$userID.'~', scandir($target_dir));
-                            ChromePhp::log($files);
                             foreach ($files as $key => $value)
                             {
                               echo '<input type="button" class="btn-link" value="View"  onclick = "DisplayProof(\'' . $value . '\');" />';

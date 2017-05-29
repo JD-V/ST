@@ -354,6 +354,51 @@ function GetNonBillableRecord($Record_id) {
   }
 }
 
+function GetOrderCheques($UnResolved) {
+  if($UnResolved == 0) {
+    if($GetOrderCheques = mysql_query("SELECT InvoiceNumber, ChequeNo, chequeDate, CustomerName, AmountPaid, Resolved FROM `sales` WHERE chequeNo != '' ") ) {
+        return $GetOrderCheques;
+    }
+  } else {
+    if($GetOrderCheques = mysql_query("SELECT InvoiceNumber, ChequeNo, chequeDate, CustomerName, AmountPaid, Resolved  FROM `sales` WHERE chequeNo != '' AND Resolved=0") ) {
+        return $GetOrderCheques;
+    }
+  }
+}
+
+function GetPurchaseInvoiceCheques($UnResolved) {
+  if($UnResolved == 0) {
+    if($GetInvoiceCheques = mysql_query("SELECT InvoiceNumber, ChequeNo, ChequeDate, Company, TotalPaid, Resolved FROM `purchaseinvoice` WHERE chequeNo != '' ") ) {
+      return $GetInvoiceCheques; 
+    }
+  } else {
+    if($GetInvoiceCheques = mysql_query("SELECT InvoiceNumber, ChequeNo, ChequeDate, Company, TotalPaid, Resolved FROM `purchaseinvoice` WHERE chequeNo != '' AND Resolved=0") ) {
+      return $GetInvoiceCheques; 
+    }
+  }
+}
+
+function ResolveSalesCheque($ChequeNo, $Invoice) {
+    ChromePhp::log("1ChequeNo" . $ChequeNo);
+  ChromePhp::log("1Invoice" . $Invoice);
+  $resolveSalesCheque = mysql_query("UPDATE sales SET Resolved=1 WHERE `InvoiceNumber` = '$Invoice' AND `ChequeNo` = '$ChequeNo' " );
+   if(-1 == mysql_affected_rows())
+       return 0;
+     else
+       return 1;
+}
+
+function ResolvePurchaseCheque($ChequeNo, $Invoice) {
+  ChromePhp::log("2ChequeNo" . $ChequeNo);
+  ChromePhp::log("2Invoice" . $Invoice);
+  $resolvePurchaseCheque = mysql_query("UPDATE purchaseinvoice SET Resolved=1 WHERE `InvoiceNumber` = '$Invoice' AND `ChequeNo` = '$ChequeNo' " );
+   if(-1 == mysql_affected_rows())
+       return 0;
+     else
+       return 1;
+}
+
+
 function GetSuppliersRecords($SupplierID) {
 
   if($GetRecordInformation = mysql_query("SELECT * FROM `supplier` WHERE SupplierID = '$SupplierID' ") ) {
@@ -363,6 +408,20 @@ function GetSuppliersRecords($SupplierID) {
   } else {
     return false;
   }
+}
+
+function GetUpcomingChequesCount() {
+
+  $total = 0;
+
+  if($GetInvoiceCheques = mysql_query("SELECT InvoiceNumber, ChequeNo, ChequeDate, Company, TotalPaid, Resolved FROM `purchaseinvoice` WHERE chequeNo != '' AND Resolved=0 ") ) {
+      $total +=  mysql_num_rows($GetInvoiceCheques);
+  }
+
+  if($GetOrderCheques = mysql_query("SELECT InvoiceNumber, ChequeNo, chequeDate, CustomerName, AmountPaid, Resolved FROM `sales` WHERE chequeNo != '' AND Resolved=0 ") ) {
+      $total +=  mysql_num_rows($GetOrderCheques);
+  }
+  echo $total;
 }
 
 function GetMaxAllocID() {
