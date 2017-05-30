@@ -100,7 +100,7 @@ if(!isLogin())
             {
               $_SESSION['userName'] = $userName;
               $_SESSION['userID'] = GetUserID($userName);
-             
+              $_SESSION['roleID'] = getUserRoleID();
               $_SESSION['AUTH_KEY'] = mt_rand(100000000,999999999);
               header('Location: pages/php/dashboard.php');
               exit;

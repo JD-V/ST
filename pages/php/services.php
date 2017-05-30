@@ -6,6 +6,7 @@ require '_core.php';
 if(isLogin())
 {
 require '_header.php';
+$roleID = getUserRoleID();
 ?>
 
 <script type = "text/javascript">
@@ -61,7 +62,6 @@ window.open("DisplayServiceInvoice.php?id="+InvoiceID);
           <table id="serviceTable" class="table table-striped table-hover" >
             <thead>
               <tr>
-                <th>#</th>
                 <th>Invoice</th>
                 <th>DateTime</th>
 
@@ -73,8 +73,9 @@ window.open("DisplayServiceInvoice.php?id="+InvoiceID);
                 <th>Amount Paid</th>
                 <th>Address</th>
                 <th>Notes</th>
-                <!--<th><i class="fa fa-pencil" aria-hidden="true"></i></th>-->
+                
                 <th>Invoice</i></th>
+                <th><i class="fa fa-pencil" aria-hidden="true"></i></th>
               </tr>
             </thead>
             <tbody>
@@ -84,7 +85,6 @@ window.open("DisplayServiceInvoice.php?id="+InvoiceID);
                 foreach ($services as $service) {
                   ?>
                   <tr>
-                    <th><?php echo '<a href="addservicerecord.php?id='. $service->invoiceNumber.'">' . $i+=1  . '</a>'; ?></th>
                     <td><?php echo $service->invoiceNumber; ?></td>
                     <td><?php echo $service->invoiceDate; ?></td>
 
@@ -98,6 +98,12 @@ window.open("DisplayServiceInvoice.php?id="+InvoiceID);
                     <td><?php echo $service->notes; ?></td>
                     
                     <td><?php echo '<input type="button" class="btn btn-sm btn-info" value="Invoice" onclick = "DisplayInvoice('.$service->invoiceNumber.');" />'; ?></td>
+                    <th>
+                    <?php 
+                      if( $roleID == 1 || strtotime(date('d-m-Y H:i:s')) - strtotime($service->invoiceDate) <= 900) 
+                        echo '<a href="addservicerecord.php?id='. $service->invoiceNumber.'">' . '<i class="fa fa-pencil" aria-hidden="true"></i>'. '</a>'; 
+                    ?>
+                    </th>
                   </tr>
                   <?php
                 }

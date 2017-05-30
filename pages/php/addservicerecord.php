@@ -60,7 +60,7 @@ require '_header.php'
               <div class="form-group">
                 <label for="InvoiceNo" class="control-label col-sm-3 lables">Invoice No<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" name="InvoiceNo" ng-model = "InvoiceNo"  required>
+                  <input type="text" class="form-control invoice-number" name="InvoiceNo" ng-model = "InvoiceNo"  required>
                 </div>
                 <div ng-show = "serviceForm.$submitted && serviceForm.InvoiceNo.$invalid" class="errorMessage">Invoice No is required</div>
               </div>
@@ -232,9 +232,9 @@ require '_header.php'
                 <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> </label>
 
                 <div class="col-sm-9" >
-                  <button ng-click="gotoBottom()" type="submit" class="btn btn-sm btn-success">Submit!</button>
+                  <button ng-click="gotoBottom()" type="submit" class="btn btn-sm btn-success submit-form">Submit</button>
                   <input type="hidden" name="UKey" value="1" id="ID_UKey"  />
-                  <button class="btn btn-sm btn-default" ng-click = "reset()" >Clear</button>
+                  <button class="btn btn-sm btn-default reset-form" ng-click = "reset()" >Clear</button>
                 </div>
               </div>
 
@@ -300,10 +300,35 @@ var ValidSubmit = ['$parse', function ($parse) {
 })
   .controller('serviceCtrl', function($scope,$filter, dataService) {
   
+  var urlparam = new URLSearchParams(window.location.search)
+  var invoiceid = urlparam.get('id'); // 'mdn query string'
+  var roleID = <?php echo $_SESSION['roleID'] ?>;
+  $scope.FillnvoiceData = function(invoiceid) {
+    dataService.getServiceRecordData(invoiceid, function(response) {
+      if(response.data.status == 1) {
+        if(roleID!=1) {
+          var currentDate = new Date();
+          var invoiceDate = new Date(response.data.InvoicDateUnfomrmatted);        
+          if( ((currentDate.getTime() - invoiceDate.getTime()) / 1000)<=900.00 )
+            $scope.set(response.data);
+          else {
+            $("#messages").html(MessageTemplate(1, "Updataing Invoice not allowed after 15 minutes"));
+            autoClosingAlert(".alert-block", 4000);
+            $scope.reset();
+          }
+        } else {
+          $scope.set(response.data);
+        }
+      } else {
+        $scope.reset();
+      }
+    });
+  }
+
   // refreshing data in the table
   $scope.RefreshView = function() {
     dataService.getServiceable(function(response) {
-      console.log(response.data);
+      // console.log(response.data);
       //$scope.serviceableActual = angular.copy(response.data);
       $scope.serviceable = response.data;
     });
@@ -311,7 +336,7 @@ var ValidSubmit = ['$parse', function ($parse) {
    //$scope.serviceItem = [];
   // $scope.TotalAmountPaid  = 0.0;
 
-$scope.AddItem = function(ItemId){
+    $scope.AddItem = function(ItemId){
 
        if($filter('getById')($scope.serviceItem, ItemId)== null){
        
@@ -330,7 +355,7 @@ $scope.AddItem = function(ItemId){
        }
       };
       
-      $scope.RemoveItem = function($ItemID,$index){
+      $scope.RemoveItem = function($ItemID,$index) {
         $scope.serviceItem.splice($index,1);
         $scope.CalculateAmount();
     };
@@ -374,25 +399,55 @@ $scope.AddItem = function(ItemId){
       return false;
     }
   };
+  
   $scope.reset = function(){
+      $('.invoice-number').removeAttr('readonly');
+      $('.submit-form').html('submit');
+      $('.reset-form').show();
+      $scope.OperationType = 1; // insert
       $scope.CustomerName  = "";
       $scope.ServiceInvoiceDate = '<?php echo date("d-m-Y H:i") ?>';
       dataService.getMaxServiceInvoiceNumber(function(response) {
         console.log(response.data);
         $scope.InvoiceNo = parseInt(response.data) +  +1;
       });
-        $scope.serviceItem = [];
-        $scope.SubTotal = 0;
-        $scope.TotalAmountPaid = 0;
-        $scope.VehicleNo = '';
-        $scope.VehicleMileage = '';
-        $scope.CustomerPhone = '';
-        $scope.DiscountAmount = 0;
-        $scope.Notes = '';
-        $scope.Address = '';
-   }
+      $scope.serviceItem = [];
+      $scope.SubTotal = 0;
+      $scope.TotalAmountPaid = 0;
+      $scope.VehicleNo = '';
+      $scope.VehicleMileage = '';
+      $scope.CustomerPhone = '';
+      $scope.DiscountAmount = 0;
+      $scope.Notes = '';
+      $scope.Address = '';
+  }
 
-  $scope.reset();
+  $scope.set = function(data){
+    $('.submit-form').html('update');
+    $('.invoice-number').attr('readonly','readonly');
+    $('.reset-form').hide();
+    $scope.OperationType = 2; // update
+    $scope.CustomerName  = data.CustomerName;
+    $scope.ServiceInvoiceDate = data.InvoiceDateTime;
+    $scope.InvoiceNo = data.InvoiceNumber;
+    $scope.serviceItem = data.Serviceables;
+    $scope.SubTotal = data.SubTotal;
+    $scope.TotalAmountPaid = data.AmountPaid;
+    $scope.VehicleNo = data.VehicleNumber;
+    $scope.VehicleMileage = data.VehicleMileage;
+    $scope.CustomerPhone = data.CustomerPhone;
+    $scope.DiscountAmount = data.Discount;
+    $scope.Notes = data.Note;
+    $scope.Address = data.Address;
+  }
+
+  // inital call
+  if(invoiceid!=null) {
+    $scope.FillnvoiceData(invoiceid);
+  } else {
+    $scope.reset();
+  }
+
   $scope.sendForm = function() {
     var serviceInvoiceDateVal = $('.service-invoice-date').val();
 
@@ -414,6 +469,7 @@ $scope.AddItem = function(ItemId){
               return;
             } else FormData.Products.push($scope.serviceItem[i]);
       }
+      FormData.OperationType = $scope.OperationType;
       FormData.InvoiceNo = $scope.InvoiceNo;
       FormData.CustomerName= $scope.CustomerName;
       $scope.ServiceInvoiceDate = serviceInvoiceDateVal;
@@ -428,21 +484,40 @@ $scope.AddItem = function(ItemId){
       FormData.Notes = $scope.Notes;
       console.log(JSON.stringify(FormData));
 
-      dataService.submitServiceRecord(FormData, function(response) {
-          if(parseInt(response.data, 10)) {
-            document.getElementById("messages").innerHTML = 
-              MessageTemplate(0, "Service Invoice has been added with " + response.data +" item(s)");
-              $scope.reset();
-              $scope.serviceForm.$setPristine();
-              $scope.serviceForm.$setUntouched();
-              $scope.serviceForm.$submitted = false;
-          }
-          else {
-              document.getElementById("messages").innerHTML =  MessageTemplate(1, response.data);
-          }
-          autoClosingAlert(".alert-block", 4000);
-          scrollTo(0,0);
-      });
+      if($scope.OperationType == 1) {
+        dataService.submitServiceRecord(FormData, function(response) {
+            if(parseInt(response.data, 10)) {
+              document.getElementById("messages").innerHTML = 
+                MessageTemplate(0, "Service Invoice has been added with " + response.data +" item(s)");
+                $scope.reset();
+                $scope.serviceForm.$setPristine();
+                $scope.serviceForm.$setUntouched();
+                $scope.serviceForm.$submitted = false;
+            }
+            else {
+                document.getElementById("messages").innerHTML =  MessageTemplate(1, response.data);
+            }
+            autoClosingAlert(".alert-block", 4000);
+            scrollTo(0,0);
+        });
+      } else if ($scope.OperationType == 2) {
+        dataService.updateServiceRecord(FormData, function(response) {
+            if(parseInt(response.data, 10)) {
+              document.getElementById("messages").innerHTML = 
+                MessageTemplate(0, "Service Invoice has been updated with " + response.data +" item(s)");
+                $scope.reset();
+                $scope.serviceForm.$setPristine();
+                $scope.serviceForm.$setUntouched();
+                $scope.serviceForm.$submitted = false;
+            }
+            else {
+                document.getElementById("messages").innerHTML =  MessageTemplate(1, response.data);
+            }
+            autoClosingAlert(".alert-block", 4000);
+            scrollTo(0,0);
+        });      
+      }
+
     }
   };
   $scope.getClass = function(b) {
@@ -453,7 +528,7 @@ $scope.AddItem = function(ItemId){
   })  
   .service('dataService', function($http) {
 
-    //get Location Service
+    //get servicable Service
     this.getServiceable = function(callback) {
       $http({
         method : "GET",
@@ -461,28 +536,44 @@ $scope.AddItem = function(ItemId){
       }).then(callback)
     };
 
-  // Get customerData
-  this.getcustomerData = function(CustomerData,callback) {
-        
-        $http({
-          method : "GET",
-          url : "CreateOrderForm.php?action=Retrive&item=CutomerDetails&vehicleNo="+CustomerData,
-        }).then(callback)
-      };
+    //get Invoice data
+    this.getServiceRecordData = function(invoiceid, callback) {
+      $http({
+        method : "GET",
+        url : "CreateServiceRecordForm.php?action=Retrive&item=GetServiceRecordData&InvoiceNumber="+invoiceid,
+      }).then(callback)
+    };
 
-  this.getMaxServiceInvoiceNumber = function(callback) {
-        
-        $http({
-          method : "GET",
-          url : "CreateServiceRecordForm.php?action=Retrive&item=MaxServiceInvoice",
-        }).then(callback)
-      };
+    // Get customerData
+    this.getcustomerData = function(CustomerData,callback) {
+          
+          $http({
+            method : "GET",
+            url : "CreateOrderForm.php?action=Retrive&item=CutomerDetails&vehicleNo="+CustomerData,
+          }).then(callback)
+    };
+
+    this.getMaxServiceInvoiceNumber = function(callback) {
+          
+          $http({
+            method : "GET",
+            url : "CreateServiceRecordForm.php?action=Retrive&item=MaxServiceInvoice",
+          }).then(callback)
+    };
+
     //Save Service
     this.submitServiceRecord = function(FormData,callback) {
-      
       $http({
         method : 'GET',
         url : "CreateServiceRecordForm.php?action=save",
+        params:{FormData : JSON.stringify(FormData)},
+      }).then(callback)
+    };
+
+    this.updateServiceRecord = function(FormData,callback) {
+      $http({
+        method : 'GET',
+        url : "CreateServiceRecordForm.php?action=update",
         params:{FormData : JSON.stringify(FormData)},
       }).then(callback)
     };

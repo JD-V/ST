@@ -25,24 +25,17 @@
 
   <!-- AdminLTE Skins. Choose a skin from the css/skins
        folder instead of downloading all of them to reduce the load. -->
-  <link rel="stylesheet" href="../../dist/css/skins/_all-skins.min.css">
+<link rel="stylesheet" href="../../dist/css/skins/_all-skins.min.css">
 <!-- jQuery 2.2.3 -->
 <script src="../../plugins/jQuery/jquery-2.2.3.min.js"></script>
 <!-- Angular js 1.4.8 -->
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 
-
-<!-- loads jquery and jquery ui -->
-<!-- -->
-<script type="text/javascript" src="../../plugins/MultiDatesPicker/js/jquery-1.11.1.js"></script>
-<script type="text/javascript" src="../../plugins/MultiDatesPicker/js/jquery-ui-1.11.1.js"></script>
-<script type="text/javascript" src="../../plugins/timepicker/bootstrap-timepicker.min.js"></script>
-<!--
-<script type="text/javascript" src="js/jquery-2.1.1.js"></script>
-<script type="text/javascript" src="js/jquery-ui-1.11.1.js"></script>-->
+<!-- InputMask -->
+<script src="../../plugins/input-mask/jquery.inputmask.js"></script>
 
 <!--  loads mdp -->
-<script type="text/javascript" src="../../plugins/MultiDatesPicker/jquery-ui.multidatespicker.js"></script>
+<!--<script type="text/javascript" src="../../plugins/MultiDatesPicker/jquery-ui.multidatespicker.js"></script>-->
 
 </head>
 <!-- ADD THE CLASS fixed TO GET A FIXED HEADER AND SIDEBAR LAYOUT -->
@@ -177,7 +170,7 @@
         <?php
           $userRoleID = getUserRoleID();
           $isActiveTV = "";
-          if($userRoleID ==1 )  // Admin role 1
+          if($userRoleID <=2 )  // Admin role 1
           {
             if($CDATA['PAGE_NAME'] == 'MNUSER' || $CDATA['PAGE_NAME'] == 'USERS' ) {
               $isActiveTV =  'active';
@@ -229,7 +222,7 @@
         <?php
           $userRoleID = getUserRoleID();
           $isActiveTV = "";
-          if($userRoleID ==1 )  // Admin role 1
+          if($userRoleID <=2 )  // Admin role 1
           {
             if($CDATA['PAGE_NAME'] == 'MNGLOC' || $CDATA['PAGE_NAME'] == 'MNSRVS' || $CDATA['PAGE_NAME']   == 'MNGBRAND') {
               $isActiveTV =  'active';
@@ -300,7 +293,7 @@
         <?php
           //$userRoleID = getUserRoleID();
           $isActiveTV = "";
-          if($userRoleID ==1 )  // Admin role 1
+          if($userRoleID <=2 )  // Admin role 1
           {
             if($CDATA['PAGE_NAME'] == 'SUPPLIER' || $CDATA['PAGE_NAME'] == 'ADDSUPPLIER' ) {
               $isActiveTV =  'active';
@@ -355,7 +348,7 @@
         <?php
           //$userRoleID = getUserRoleID();
           $isActiveTV = "";
-          if($userRoleID ==1 )  // Admin role 1
+          if($userRoleID <=2 )  // Admin role 1
           {
             if($CDATA['PAGE_NAME'] == 'INVOICE' || $CDATA['PAGE_NAME'] == 'ADDINV' ) {
               $isActiveTV =  'active';
@@ -408,7 +401,7 @@
         <?php
           //$userRoleID = getUserRoleID();
           $isActiveTV = "";
-          if($userRoleID ==1 )  // Admin role 1
+          if($userRoleID <=2 )  // Admin role 1
           {
             if($CDATA['PAGE_NAME'] == 'ADDPRD' || $CDATA['PAGE_NAME'] == 'INVPRDS') {
               $isActiveTV =  'active';
@@ -468,7 +461,7 @@
       <?php
           //$userRoleID = getUserRoleID();
           $isActiveTV = "";
-          if($userRoleID ==1 )  // Admin role 1
+          if($userRoleID <=2 )  // Admin role 1
           {
             if($CDATA['PAGE_NAME'] == 'MNSTOCK' || $CDATA['PAGE_NAME'] == 'STOCKENT' || $CDATA['PAGE_NAME'] == 'ADDSTOCK') {
               $isActiveTV =  'active';
@@ -552,7 +545,7 @@
       <?php
           //$userRoleID = getUserRoleID();
           $isActiveTV = "";
-          if($userRoleID ==1 || $userRoleID ==3)  // Admin role 1
+          if($userRoleID <=2 || $userRoleID ==3)  // Admin role 1
           {
             if($CDATA['PAGE_NAME'] == 'ADSLSREC' || $CDATA['PAGE_NAME'] == 'ORDERS') {
               $isActiveTV =  'active';
@@ -612,7 +605,7 @@
         <?php
           //$userRoleID = getUserRoleID();
           $isActiveTV = "";
-          if($userRoleID ==1 || $userRoleID ==3)  // Admin role 1
+          if($userRoleID <=2 || $userRoleID ==3)  // Admin role 1
           {
             if($CDATA['PAGE_NAME'] == 'ADSRVREC' || $CDATA['PAGE_NAME'] == 'SERVICES' ) {
               $isActiveTV =  'active';
@@ -663,7 +656,7 @@
          <?php
           //$userRoleID = getUserRoleID();
           $isActiveTV = "";
-          if($userRoleID ==1 || $userRoleID ==3)  // Admin role 1
+          if($userRoleID <=2 || $userRoleID ==3)  // Admin role 1
           {
             if($CDATA['PAGE_NAME'] == 'ADNONBILLREC' || $CDATA['PAGE_NAME'] == 'NONBILLREC' ) {
               $isActiveTV =  'active';
@@ -713,7 +706,7 @@
         </li>
       <?php } ?>
       <?php
-        if($userRoleID ==1)  // Admin role 1
+        if($userRoleID <=2)  // Admin role 1
           {
             echo "<li class=\"header\">REPORTS</li>";
             $isActive = "";

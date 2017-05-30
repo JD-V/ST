@@ -50,26 +50,17 @@ function getUserRole() {
 
   if(isset($_SESSION['userName']) && !empty($_SESSION['userName'])) {
     $userName = $_SESSION['userName'];
-    $GetRoleID = mysql_query("SELECT * FROM user WHERE Name = '$userName' ");
-    if(mysql_num_rows($GetRoleID)==1) {
-        $ShowData = mysql_fetch_assoc($GetRoleID);
-        $RoleID  = $ShowData['RoleID'];
-        $GetRoleName = mysql_query("SELECT RoleName FROM role WHERE RoleID = '$RoleID' ");
-        if(mysql_num_rows($GetRoleName)==1) {
+    $GetRoleName = mysql_query("SELECT r.RoleName FROM user u JOIN role r ON u.RoleID = r.RoleID WHERE u.Name = '$userName' ");
 
-          $ShowData = mysql_fetch_assoc($GetRoleName);
-          ChromePhp::log("role name" .$ShowData['RoleName']);
-          echo $ShowData['RoleName'];
-        }
-    }
-    else {
+    if(mysql_num_rows($GetRoleName)==1) {
+        $RoleName = mysql_fetch_assoc($GetRoleName);
+        echo $RoleName['RoleName'];
+    } else {
       echo "null";
     }
-  }
-  else {
+  } else {
     echo 'No User';
   }
-
 }
 
 function getUserRoleID() {
@@ -103,7 +94,7 @@ function isAdmin() {
 
   $userName = $_SESSION['userName'];
 
-  if($CheckAdmin = mysql_query("SELECT * FROM user WHERE RoleID = '1' AND Name = '$userName' ")) {
+  if($CheckAdmin = mysql_query("SELECT * FROM user WHERE RoleID <= '2' AND Name = '$userName' ")) {
     if(mysql_num_rows($CheckAdmin) == 1) {
       return true;
     } else {
@@ -617,6 +608,14 @@ function Addservicerecord($ServiceRecord) {
       return false;
     }
 }
+function GetServiceInvoice($InvoiceNumber) {
+    return mysql_query("SELECT * FROM service WHERE InvoiceNumber='$InvoiceNumber' ");
+}
+
+function GetServiceablesInInvoice($InvoiceNumber) {
+    return mysql_query("SELECT * FROM serviceitems WHERE InvoiceNumber='$InvoiceNumber' ");
+}
+
 
 function GetMaxInvoiceID() {
 
@@ -1024,6 +1023,22 @@ function AddNewSeriveRecord($service) {
     return 0;
 }
 
+function UpdateSeriveRecord($service) {
+  $userID = $_SESSION['userID'];
+  $UpdateSR = mysql_query("UPDATE `service` SET 
+      `InvoiceDateTime`='$service->invoiceDate', `CustomerName`='$service->customerName', 
+      `CustomerPhone`='$service->customerPhone', `VehicleNumber`='$service->vehicleNumber', 
+      `VehicleMileage`='$service->vehicleMileage', `SubTotal`='$service->subTotal', 
+      `Discount`='$service->discountAmount', `AmountPaid`='$service->amountPaid', 
+      `Address`='$service->address',`Note`='$service->notes', `UserID`='$userID'
+      WHERE `InvoiceNumber` = '$service->invoiceNumber' " );
+
+   if(-1 == mysql_affected_rows())
+    return 0;
+  else
+    return 1;
+}
+
 function GetMaxUserID() {
   
     $getMaxUserID = mysql_query("SELECT MAX(UserID) as UserID FROM user");
@@ -1047,6 +1062,15 @@ function AddItemToServiceInvoice($serviceable,$invoiceNumber) {
   else
     echo mysql_error();
     return 0;
+}
+
+function RemoveAllItemsFromServiceInvoice($invoiceNumber) {
+  $AddProductToInvoice = mysql_query("DELETE FROM `serviceitems` WHERE `InvoiceNumber`='$invoiceNumber' ");
+
+     if(-1 == mysql_affected_rows())
+       return 0;
+     else
+       return 1;
 }
 
 function TodaysSale() {

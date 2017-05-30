@@ -210,7 +210,7 @@ require '_header.php'
             <div class="form-group">
               <label for="ProductSize" class="control-label col-sm-3 lables">Product Size<span class="mandatoryLabel">*</span></label>
               <div class="col-sm-4">
-                <input type="text" class="form-control" name="ProductSize" placeholder="Product Size" value="<?php if($isValidProduct) echo $Product->productSize ?>" >
+                <input type="text" class="form-control" name="ProductSize" placeholder="Product Size" data-inputmask='"mask": "999/99 R99"' data-mask value="<?php if($isValidProduct) echo $Product->productSize ?>" >
               </div>
             </div>
 

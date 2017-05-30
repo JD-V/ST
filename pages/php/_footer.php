@@ -59,10 +59,10 @@
 <!--<link rel="stylesheet" type="text/css" href="../css/timelineBS.css">-->
 
 <!--multiple date selector -->
-<link rel="stylesheet" type="text/css" href="../../plugins/MultiDatesPicker/css/mdp.css">
+<!--<link rel="stylesheet" type="text/css" href="../../plugins/MultiDatesPicker/css/mdp.css">
 <link rel="stylesheet" type="text/css" href="../../plugins/MultiDatesPicker/css/prettify.css">
 <script type="text/javascript" src="../../plugins/MultiDatesPicker/js/prettify.js"></script>
-<script type="text/javascript" src="../../plugins/MultiDatesPicker/js/lang-css.js"></script>
+<script type="text/javascript" src="../../plugins/MultiDatesPicker/js/lang-css.js"></script>-->
 
 <script>
 $(document).ready(function() {
@@ -71,13 +71,11 @@ $(document).ready(function() {
     return (css.match (/(^|\s)skin-\S+/g) || []).join(' ');
 	});
 	if(roleN == 1){
-		$("body").addClass("skin-purple");
+		$("body").addClass("skin-yellow");
 	} else if (roleN == 2) {
-		$("body").addClass("skin-green");
+		$("body").addClass("skin-purple");
 	} else if (roleN == 3) {
-		$("body").addClass("skin-yellow");
-	} else if (roleN == 4) {
-		$("body").addClass("skin-yellow");
+		$("body").addClass("skin-green");
 	}
 });
 </script>

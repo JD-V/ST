@@ -114,7 +114,12 @@ function RemoveProductFieldset(e) {
    });
 }
 
+  // $(function () {
+  //     $("[data-mask]").inputmask();
+  // });
+
 $(document).ready(function () {
+
   $('input[name="paymentType"]').on('change', function(e) {
       var paymentType = $("input[name='paymentType']:checked").val();
       if(paymentType != 3) {
@@ -315,7 +320,7 @@ $(document).ready(function () {
               <div class="form-group">
                 <label for="ProductSize" class="control-label col-sm-3 lables">Product Size<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" name="ProductSize[]" placeholder="" >
+                  <input type="text" class="form-control" name="ProductSize[]" data-inputmask='"mask": "999/99 R99"' data-mask>
                 </div>
               </div>
 
@@ -324,7 +329,7 @@ $(document).ready(function () {
                 <div class="col-sm-4">
                   <input type="text" class="form-control" name="ProductPattern[]" placeholder="" >
                 </div>
-              </div>                            
+              </div>
 
               <div class="form-group">
                 <label for="Quantity" class="control-label col-sm-3 lables ">Quantity<span class="mandatoryLabel">*</span></label>

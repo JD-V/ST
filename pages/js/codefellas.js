@@ -16,6 +16,10 @@ $(document).ready(function () {
     return this.optional(element) || (validDate && validTime);
   }, "Please enter a valid date and time.");
 
+  $.validator.addMethod("productSizeFormat", function (value, element) {
+      return this.optional(element) || /^\d{3}\/\d{2} R\d{2}$/.test(value);
+  }, "Enter a valid product size.");
+
   $.validator.addMethod("dateonly", function (value, element) {
     var validDate = !/Invalid|NaN/.test(new Date(value.split("-").reverse().join("-")).toString());
     return this.optional(element) || validDate;
@@ -145,6 +149,7 @@ $(document).ready(function () {
         required: true,
       },
       'ProductSize[]': {
+        productSizeFormat: true,
         required: true,
       },
       'Brand[]': {
@@ -248,6 +253,7 @@ $("#AddorUpdateProduct").submit(function (e) {}).validate({
     },
     ProductSize: {
       required: true,
+      productSizeFormat: true,
     },
     ProductPattern: {
       required: true,

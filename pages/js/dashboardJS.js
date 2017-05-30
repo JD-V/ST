@@ -40,8 +40,8 @@ $('#salesTable').DataTable({
   $('#serviceTable').DataTable({
     "paging":   false,
     "info":     false,
-    "order": [[ 1, "desc" ]],
-    "columnDefs": [{ "orderable": false, "targets": [3,4,5,6,7,8,9] }]
+    "order": [[ 0, "desc" ]],
+    "columnDefs": [{ "orderable": false, "targets": [3,4,5,6,7,8,9,10] }]
   });
 
     $('#supplierTable').DataTable({
@@ -66,4 +66,5 @@ $('#salesTable').DataTable({
   $('*[name=ChequeDate]').appendDtpicker({"dateOnly": true, "dateFormat":'DD-MM-YYYY'});
   $('*[name=FromDate]').appendDtpicker({"dateOnly": true, "dateFormat":'DD-MM-YYYY' });
   $('*[name=ToDate]').appendDtpicker({"dateOnly": true, "dateFormat":'DD-MM-YYYY' });
+  $("[data-mask]").inputmask();
 });
