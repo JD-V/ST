@@ -32,11 +32,12 @@ function RetriveStocks() {
          'ProductID' => $stock['ProductID'] ,
          'ProductBrand' => $stock['BrandName'] ,
          'ProductSize' => $stock['ProductSize'] ,
-         'ProductDisplay' =>$stock['BrandName'] . ' '. $stock['ProductSize'] .' ' .$stock['ProductPattern'] ,
+         'ProductDisplay' => $stock['ProductTypeName'] .' ' .$stock['BrandName'] . ' '. $stock['ProductSize'] .' ' .$stock['ProductPattern'] ,
          'ProductPattern' => $stock['ProductPattern'] ,
          'Qty' => $stock['Qty'] == NULL ? 0 : $stock['Qty'] ,
          'MinSellPrice' => $stock['MinSellPrice'] ,
-         'MaxSellPrice' => $stock['MaxSellPrice'] );
+         'MaxSellPrice' => $stock['MaxSellPrice'] ,
+         'ProductType' => $stock['ProductTypeName'] );
       }
     }
   }

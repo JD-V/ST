@@ -8,61 +8,6 @@ if(isLogin() && isAdmin())
 require '_header.php'
 
 ?>
-<script type = "text/javascript" >
-  var patterns = new Array();
-$(document).ready(function() {
-
-
-  $('.product-brand').on('change', function() {
-      var BrandID = this.value;
-      $.ajax({
-          dataType: "json",
-          type: "GET",
-          url: "CreateOrderForm.php?action=Retrive&BrandID="+BrandID,
-          success: function(result) {
-            $('.typeahead').typeahead('destroy');
-            $('#productSize').val('');
-            $('.product-Pattern').empty();
-              var keyVal = new Array();
-              patterns = [];
-              for (var i = 0; i < result.length; i++) {
-                keyVal[result[i].ProductID] = result[i].ProductSize;
-                patterns.push({ "productSize" : result[i].ProductSize,
-                                "productID" : result[i].ProductID,
-                                "productPattern" : result[i].ProductPattern,
-                                "Qty" : result[i].Qty });
-              }
-              var productSizes = new Bloodhound({
-                  datumTokenizer: Bloodhound.tokenizers.whitespace,
-                  queryTokenizer: Bloodhound.tokenizers.whitespace,
-                  local: keyVal,
-              });
-              // Initializing the typeahead
-              $('.typeahead').typeahead({
-                  hint: true,
-                  highlight: true, /* Enable substring highlighting */
-                  minLength: 2,/* Specify minimum characters required for showing result */
-              },
-              {
-                  name: 'productSizes',
-                  source: productSizes
-              });
-          }
-      });
-  });
-
-
-  $('#productSize').on('blur', function() {
-    $('.product-Pattern').empty();
-    var selectedSize = $('#productSize').val();
-    for (var i = 0; i < patterns.length; i++) {
-      if(patterns[i].productSize == selectedSize)
-       $('.product-Pattern').append(new Option(patterns[i].productPattern, patterns[i].productID));
-    }
-  });
-
-});
-</script>
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
   <div id='message' style='display: none;'></div>
@@ -94,14 +39,12 @@ $(document).ready(function() {
       if(@$_POST['akey'] == $_SESSION['AUTH_KEY'])
       {
         ChromePhp::log("sbumitting ");
-        if( isset($_POST['BrandID']) && !empty($_POST['BrandID']) &&
-            isset($_POST['productSize']) && !empty($_POST['productSize']) &&
-            isset($_POST['Pattern']) && !empty($_POST['Pattern']) &&
+        if( isset($_POST['ProductID']) && !empty($_POST['ProductID']) &&
             isset($_POST['Qty']) && !empty($_POST['Qty'])  )
           {
 
              $qty = FilterInput($_POST['Qty']);
-             $productID = FilterInput($_POST['Pattern']);
+             $productID = FilterInput($_POST['ProductID']);
          
              $Stock = new Stock();
              $Stock->ProductID = $productID;
@@ -131,7 +74,22 @@ $(document).ready(function() {
     <!-- Default box -->
     <div class="box">
       <div class="box-header with-border">
-        <h3 class="box-title">Add</h3>
+        <?php
+          $isValidProduct = false;
+          $title="Add stock";
+          $Product = NULL;
+          if(isset($_GET['id'])) {
+            $Product = GetProductInventoryByID2(FilterInput($_GET['id']));
+            if($Product == NULL) {
+              $title="Product Not Found";
+            }
+            else {
+              $title="Add stock";
+              $isValidProduct = true;
+            }
+          }
+        ?>      
+        <h3 class="box-title"><?php echo $title ?></h3>
        <!--  <div class="box-tools pull-right">
           <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
             <i class="fa fa-minus"></i></button>
@@ -145,39 +103,77 @@ $(document).ready(function() {
           <form class="form-horizontal"  name="addstock" id="addstock" action="addstock.php?_auth=<?php echo $_SESSION['AUTH_KEY']; ?>" method="post">
               <input type="hidden" value="<?php echo $_SESSION['AUTH_KEY']; ?>" name="akey" id="ID_akey" >
 
+
+            <div class="form-group">
+              <label for="ProductType" class="control-label col-sm-3 lables">Product Type<span class="mandatoryLabel">*</span></label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control" name="ProductType" readonly placeholder="Product Type" value="<?php if($isValidProduct) echo $Product->productTypeName ?>" >
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="Supplier" class="control-label col-sm-3 lables">Supplier<span class="mandatoryLabel">*</span></label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control" name="Supplier" readonly placeholder="Supplier" value="<?php if($isValidProduct) echo $Product->supplierName ?>" >
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="Brand" class="control-label col-sm-3 lables">Brand<span class="mandatoryLabel">*</span></label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control" name="Brand" readonly placeholder="Brand"  value="<?php if($isValidProduct) echo $Product->brandName ?>" >
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="ProductSize" class="control-label col-sm-3 lables"><span class="product-size-lable" >Size</span><span class="mandatoryLabel">*</span></label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control product-size" name="ProductSize" readonly placeholder="Product Size" data-inputmask='"mask": "999/99 R99"' data-mask value="<?php if($isValidProduct) echo $Product->productSize ?>" >
+              </div>
+            </div>
+              
+            <div class="form-group">
+              <label for="ProductPattern" class="control-label col-sm-3 lables"><span class="product-pattern-lable">Pattern</span><span class="mandatoryLabel">*</span></label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control product-pattern" name="ProductPattern" readonly placeholder="Product Pattern" value="<?php if($isValidProduct) echo $Product->productPattern ?>" >
+              </div>
+            </div>
+
               <div class="form-group">
-                  <label for="BrandID" class="control-label col-sm-3 lables">Brand<span class="mandatoryLabel">*</span></label>
-                  <div class="col-sm-4">
-                      <select class="form-control product-brand" name="BrandID" id="BrandID"  >
-                      <option selected="true" disabled="disabled" style="display: none" value="default">Select Brand</option>
-                      <?php
-                          $brands = GetBrands();
-                          if(mysql_num_rows($brands)!=0) {
-                              while($brand = mysql_fetch_assoc($brands)) {
-                                echo '<option value="' . $brand['BrandID'] . '">' . $brand['BrandName'] . '</option>';
-                              }
-                          }
-                      ?>
-                      </select>
+                <label for="CostPrice" class="control-label col-sm-3 lables">Cost Price<span class="mandatoryLabel">*</span></label>
+                <div class="col-sm-4">
+                  <div class='input-group'>
+                    <span class="input-group-addon">
+                        <span class="fa fa-inr"></span>
+                    </span>
+                    <input type="text" class="form-control rate currency" readonly name="CostPrice" maskedFormat="10,2" placeholder="0.00" value="<?php if($isValidProduct) echo $Product->costPrice ?>" >
                   </div>
+                </div>
               </div>
 
               <div class="form-group">
-                <label for="productSize" class="control-label col-sm-3 lables" >product Size<span class="mandatoryLabel">*</span></label>
+                <label for="MinSellingPrice" class="control-label col-sm-3 lables">Min Selling Price<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" id="productSize" name="productSize" class="form-control typeahead tt-query" autocomplete="on" spellcheck="false" >
-                </div>
-                <div id="errorMsgMN" name="errorMsgMN" style="font:10px Tahoma,sans-serif;margin-left:5px;display:inline;color:red;" role="error"></div>
-              </div>
-              
-              <div class="form-group">
-                  <label for="Pattern" class="control-label col-sm-3 lables">Pattern<span class="mandatoryLabel">*</span></label>
-                  <div class="col-sm-4">
-                      <select class="form-control product-Pattern" name="Pattern" id="Pattern"  >
-                      <option selected="true" disabled="disabled" style="display: none" value="default">Select Pattern</option>
-                      </select>
+                  <div class='input-group'>
+                    <span class="input-group-addon">
+                        <span class="fa fa-inr"></span>
+                    </span>
+                    <input type="text" class="form-control rate currency" readonly name="MinSellingPrice" maskedFormat="10,2" placeholder="0.00" value="<?php if($isValidProduct) echo $Product->minSellingPrice ?>" >
                   </div>
+                </div>
               </div>
+
+              <div class="form-group">
+                <label for="MaxSellingPrice" class="control-label col-sm-3 lables">Max Selling Price<span class="mandatoryLabel">*</span></label>
+                <div class="col-sm-4">
+                  <div class='input-group'>
+                    <span class="input-group-addon">
+                        <span class="fa fa-inr"></span>
+                    </span>
+                    <input type="text" class="form-control rate currency" readonly name="MaxSellingPrice" maskedFormat="10,2" placeholder="0.00" value="<?php if($isValidProduct) echo $Product->maxSellingPrice ?>" >
+                  </div>
+                </div>
+              </div>             
 
               <div class="form-group">
                 <label for="Qty" class="control-label col-sm-3 lables">Qty</label>
@@ -189,9 +185,9 @@ $(document).ready(function() {
               <div class="form-group">
                 <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> </label>
                 <div class="col-sm-9">
-                  <input type="submit" name="nc_submit" value="submit" id="ID_Sub" class="btn btn-sm btn-success" style="margin-left:50px" />
                   <input type="hidden" name="UKey" value="1" id="ID_UKey" />
-                  <button type="reset" class="btn btn-sm btn-default" style="visibility:visible">Clear</button>
+                  <input type="hidden" value="<?php if($isValidProduct) echo $Product->productID; ?>" name="ProductID" >
+                  <input type="submit" name="nc_submit" value="submit" id="ID_Sub" class="btn btn-sm btn-success" style="margin-left:50px" />
                 </div>
               </div>
 

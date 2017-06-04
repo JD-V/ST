@@ -8,6 +8,40 @@ if(isLogin() && isAdmin())
 require '_header.php'
 
 ?>
+<script type="text/javascript">
+
+  function ProductTypechanged(e) {
+    var type = $(e).val();
+    
+    if(type <=4) {
+      // $(e).closest('fieldset').find('.product-brand-lable').html('Brand');
+      $('.product-size-lable').html('Size');
+      $('.product-pattern-lable').html('Pattern');
+
+      $(".product-pattern").rules("add", {
+         required: true,
+      });
+    } else {
+      // $(e).closest('fieldset').find('.product-brand-lable').html('Description Line 1');
+      $('.product-size-lable').html('Description Line 1');
+      $('.product-pattern-lable').html('Description Line 2');
+
+      $('.product-pattern').rules( "remove", "required" );
+      
+    }
+
+    if(type == 1) {
+        $("[data-mask]").inputmask();
+        $("[data-mask]").rules("add", {
+          productSizeFormat: true,
+        });
+    } else {
+      $("[data-mask]").inputmask('remove');    
+      $("[data-mask]").rules( "remove", "productSizeFormat" );
+    }
+  }
+</script>
+
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
@@ -39,7 +73,7 @@ require '_header.php'
         if( isset($_POST['SupplierID']) && !empty($_POST['SupplierID']) &&
             isset($_POST['BrandID']) && !empty($_POST['BrandID']) &&
             isset($_POST['ProductSize']) && !empty($_POST['ProductSize']) &&
-            isset($_POST['ProductPattern']) && !empty($_POST['ProductPattern']) &&
+            // isset($_POST['ProductPattern']) && !empty($_POST['ProductPattern']) &&
             isset($_POST['ProductTypeID']) && !empty($_POST['ProductTypeID']) &&
             isset($_POST['CostPrice']) && !empty($_POST['CostPrice']) &&
             isset($_POST['MaxSellingPrice']) && !empty($_POST['MaxSellingPrice']) &&
@@ -53,7 +87,12 @@ require '_header.php'
             $ProductInventory->supplierID = FilterInput($_POST['SupplierID']);
             $ProductInventory->brandID = FilterInput($_POST['BrandID']);
             $ProductInventory->productSize = FilterInput($_POST['ProductSize']);
-            $ProductInventory->productPattern = FilterInput($_POST['ProductPattern']);
+
+            $ProductInventory->productPattern ='';
+            if(isset($_POST['ProductPattern'])){
+              $ProductInventory->productPattern = FilterInput($_POST['ProductPattern']);
+            } 
+            
             $ProductInventory->productTypeID = FilterInput($_POST['ProductTypeID']);
             $ProductInventory->costPrice = FilterInput($_POST['CostPrice']);
             $ProductInventory->minSellingPrice = FilterInput($_POST['MinSellingPrice']);
@@ -168,6 +207,26 @@ require '_header.php'
             <input type="hidden" value="14.5" name="VatPer">
 
             <div class="form-group">
+                <label for="ProductTypeID" class="control-label col-sm-3 lables">Product Type<span class="mandatoryLabel">*</span></label>
+                <div class="col-sm-4">
+                    <select class="form-control" name="ProductTypeID" onchange="ProductTypechanged(this)" >
+                    <option selected="true" disabled="disabled" style="display: none" value="default" >Select Product Type</option>
+                    <?php
+                        $prodcutTypes = GetProdcutTypes();
+                        if(mysql_num_rows($prodcutTypes)!=0) {
+                            while($prodcutType = mysql_fetch_assoc($prodcutTypes)) {
+                              if($isValidProduct && $prodcutType['ProductTypeID'] == $Product->productTypeID )
+                                  echo '<option value="' . $prodcutType['ProductTypeID'] . '" selected >' . $prodcutType['ProductTypeName'] . '</option>';
+                              else
+                                  echo '<option value="' . $prodcutType['ProductTypeID'] . '" >' . $prodcutType['ProductTypeName'] . '</option>';
+                            }
+                        }
+                    ?>
+                    </select>
+                </div>
+              </div>
+
+            <div class="form-group">
                 <label for="SupplierID" class="control-label col-sm-3 lables">Supplier<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
                   <select class="form-control"  name="SupplierID" >
@@ -176,10 +235,10 @@ require '_header.php'
                         $suppliers = GetSuppliers();
                         if(mysql_num_rows($suppliers)!=0) {
                             while($supplier = mysql_fetch_assoc($suppliers)) {
-                                if($isValidProduct && $supplier['SupplierID'] == $Product->supplierID )
-                                    echo '<option value="' . $supplier['SupplierID'] . '" selected >' . $supplier['SupplierName'] . '</option>';
-                                else
-                                    echo '<option value="' . $supplier['SupplierID'] . '" >' . $supplier['SupplierName'] . '</option>';
+                              if($isValidProduct && $supplier['SupplierID'] == $Product->supplierID )
+                                  echo '<option value="' . $supplier['SupplierID'] . '" selected >' . $supplier['SupplierName'] . '</option>';
+                              else
+                                  echo '<option value="' . $supplier['SupplierID'] . '" >' . $supplier['SupplierName'] . '</option>';
                             }
                         }
                     ?>
@@ -188,9 +247,9 @@ require '_header.php'
             </div>
 
             <div class="form-group">
-                <label for="BrandID" class="control-label col-sm-3 lables">Brand<span class="mandatoryLabel">*</span></label>
+                <label for="BrandID" class="control-label col-sm-3 lables product-brand-lable">Brand<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                    <select class="form-control" name="BrandID" >
+                    <select class="form-control product-brand" name="BrandID" >
                     <option selected="true" disabled="disabled" style="display: none" value="default" >Select Brand</option>
                     <?php
                         $brands = GetBrands();
@@ -208,39 +267,18 @@ require '_header.php'
             </div>
 
             <div class="form-group">
-              <label for="ProductSize" class="control-label col-sm-3 lables">Product Size<span class="mandatoryLabel">*</span></label>
+              <label for="ProductSize" class="control-label col-sm-3 lables"><span class="product-size-lable">Size</span><span class="mandatoryLabel">*</span></label>
               <div class="col-sm-4">
-                <input type="text" class="form-control" name="ProductSize" placeholder="Product Size" data-inputmask='"mask": "999/99 R99"' data-mask value="<?php if($isValidProduct) echo $Product->productSize ?>" >
+                <input type="text" class="form-control product-size" name="ProductSize" placeholder="Product Size" data-inputmask='"mask": "999/99 R99"' data-mask value="<?php if($isValidProduct) echo $Product->productSize ?>" >
               </div>
             </div>
 
             <div class="form-group">
-              <label for="ProductPattern" class="control-label col-sm-3 lables">Product Pattern<span class="mandatoryLabel">*</span></label>
+              <label for="ProductPattern" class="control-label col-sm-3 lables"><span class="product-pattern-lable">Pattern</span><span class="mandatoryLabel">*</span></label>
               <div class="col-sm-4">
-                <input type="text" class="form-control" name="ProductPattern" placeholder="Product Pattern" value="<?php if($isValidProduct) echo $Product->productPattern ?>" >
+                <input type="text" class="form-control product-pattern" name="ProductPattern" placeholder="Product Pattern" value="<?php if($isValidProduct) echo $Product->productPattern ?>" >
               </div>
-            </div>            
-
-
-            <div class="form-group">
-                <label for="ProductTypeID" class="control-label col-sm-3 lables">Product Type<span class="mandatoryLabel">*</span></label>
-                <div class="col-sm-4">
-                    <select class="form-control" name="ProductTypeID" >
-                    <option selected="true" disabled="disabled" style="display: none" value="default" >Select Product Type</option>
-                    <?php
-                        $prodcutTypes = GetProdcutTypes();
-                        if(mysql_num_rows($prodcutTypes)!=0) {
-                            while($prodcutType = mysql_fetch_assoc($prodcutTypes)) {
-                                if($isValidProduct && $prodcutType['ProductTypeID'] == $Product->productTypeID )
-                                    echo '<option value="' . $prodcutType['ProductTypeID'] . '" selected >' . $prodcutType['ProductTypeName'] . '</option>';
-                                else
-                                    echo '<option value="' . $prodcutType['ProductTypeID'] . '" >' . $prodcutType['ProductTypeName'] . '</option>';
-                            }
-                        }
-                    ?>
-                    </select>
-                </div>
-              </div>
+            </div>
 
               <div class="form-group">
                 <label for="CostPrice" class="control-label col-sm-3 lables">Cost Price<span class="mandatoryLabel">*</span></label>

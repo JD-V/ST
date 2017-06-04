@@ -150,31 +150,39 @@ require '_header.php'
                   <tr ng-repeat="item in serviceItem">
                     <td>
                     <div ng-class="{'edited': item.itemEdited, 'error' : item.itemInvalid }">
-                      <label ng-hide="item.editing" >{{item.Item}}</label>
-                        <input ng-change="item.itemEdited = true;" ng-click="item.editing = true" ng-blur="item.editing = false; item.itemInvalid = validateInput(item.Item); item.itemEdited = !item.itemInvalid" type="text" ng-show="item.editing" ng-model="item.Item;"  />
+                      <label ng-hide="item.editingName" >{{item.Item}}</label>
+                        <input ng-change="item.itemEdited = true;" ng-click="item.editingName = true"
+                         ng-blur="item.editingName = false; item.itemInvalid = validateInput(item.Item); 
+                         item.itemEdited = !item.itemInvalid" type="text" ng-show="item.editingName" ng-model="item.Item;"  />
                     </div>
                     </td>
                     <td>
                     <div ng-class="{'edited': item.priceEdited, 'error' : item.priceInvalid}">
-                      <label  ng-hide="item.editing" >{{item.Price}}</label>
-                        <input ng-change="item.priceEdited = true" ng-click="item.editing = true" ng-blur=" item.editing = false; item.priceInvalid = validateInput(item.Price  ); item.priceEdited = !item.priceInvalid" onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editing" ng-model="item.Price"  />
+                      <label  ng-hide="item.editingPrice" >{{item.Price}}</label>
+                        <input ng-change="item.priceEdited = true" ng-click="item.editingPrice = true" 
+                          ng-blur=" item.editingPrice = false; item.priceInvalid = validateInput(item.Price); 
+                          item.priceEdited = !item.priceInvalid" onkeypress='return event.charCode >= 48 && event.charCode <= 57' 
+                          type="text" ng-show="item.editingPrice" ng-model="item.Price"  />
                     </div>
                     </td>
                     <td>
                     <div ng-class="{'edited': item.QtyEdited, 'error' : item.QtyInvalid}">
-                      <label  ng-hide="item.editing" >{{item.Qty}}</label>
-                      <input ng-change="item.QtyEdited = true" ng-click="item.editing = true" ng-blur=" item.editing = false; item.QtyInvalid = validateInput(item.Qty  );  item.QtyEdited = !item.QtyInvalid" onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editing" ng-model="item.Qty"  />
+                      <label  ng-hide="item.editingQty" >{{item.Qty}}</label>
+                      <input ng-change="item.QtyEdited = true" ng-click="item.editingQty = true" 
+                        ng-blur="item.editingQty = false; item.QtyInvalid = validateInput(item.Qty); 
+                        item.QtyEdited = !item.QtyInvalid" onkeypress='return event.charCode >= 48 && event.charCode <= 57' 
+                        type="text" ng-show="item.editingQty" ng-model="item.Qty"  />
                     </div>
                     </td>
 
                     <td>
                     <div>
-                      <label  ng-model="item.Amount" >{{item.Qty*item.Price}}</label>
+                      <label ng-model="item.Amount" >{{item.Qty*item.Price}}</label>
                     </div>
                     </td>
 
                     <td>
-                    <a ng-click="item.editing = !item.editing;" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>&nbsp;&nbsp;&nbsp;
+                    <a ng-click="item.editingQty = !item.editingQty; item.editingPrice = !item.editingPrice; item.editingName = !item.editingName; " ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>&nbsp;&nbsp;&nbsp;
                     <a ng-click="RemoveItem(item.ItemID, $index);" ><i class="fa fa-times" aria-hidden="true"></i></a>
                     </td>
                   </tr>

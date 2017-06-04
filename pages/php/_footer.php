@@ -1,6 +1,6 @@
 <footer class="main-footer">
 	<div class="pull-right hidden-xs">
-		<a href="https://www.facebook.com/jrvaghasiya" target="_blank"><i class="ace-icon fa fa-facebook-square text-primary pikesAceFooterIcons"></i></a>
+		<!--<a href="https://www.facebook.com/jrvaghasiya" target="_blank"><i class="ace-icon fa fa-facebook-square text-primary pikesAceFooterIcons"></i></a>-->
 	</div>
 	<span>
 		<a href="http://www.pikesace.com" target="_blank">

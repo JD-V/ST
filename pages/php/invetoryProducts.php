@@ -32,34 +32,6 @@ require '_header.php';
         is bigger than your content because it prevents extra unwanted scrolling.</p>
     </div> -->
     <div id="messages">
-      <?php
-
-        if(@$_GET['act'] == 'delete' && $http_referer != 'direct_link' && !empty($_GET['del']))
-        {
-          $DELEventID = mysql_real_escape_string($_GET['del']);
-
-          if($DelCase = mysql_query("DELETE FROM subevent WHERE subeventId = '$DELEventID' "))
-          {
-          echo '<div class="alert alert-block alert-success">
-                <button type="button" class="close" data-dismiss="alert">
-                  <i class="ace-icon fa fa-times"></i>
-                </button>
-                <i class="ace-icon fa fa-tick red"></i>
-                Event deleted successfully.
-              </div>';
-          }
-          else
-          {
-          echo '<div class="alert alert-block alert-danger">
-                <button type="button" class="close" data-dismiss="alert">
-                  <i class="ace-icon fa fa-times"></i>
-                </button>
-                <i class="ace-icon fa fa-ban red"></i>
-                Something went wrong, try later.
-              </div>';
-          }
-        }
-      ?>
     </div>
     <!-- Default box -->
 
@@ -92,7 +64,8 @@ require '_header.php';
                 <th>Stock Alert</th>
                 <th>Notes</th>
                 <th>Last Modified</th>                
-                <th><i class="fa fa-pencil" aria-hidden="true"></i></th>
+                <th>Edit</th>
+                <th>Add Stock</th>
               </tr>
             </thead>
             <tbody>
@@ -115,6 +88,8 @@ require '_header.php';
                     <td><?php echo $product->productNotes; ?></td>
                     <td><?php echo $product->lastModified; ?></td>
                     <td><?php echo '<a href="addproduct.php?id='.$product->productID.'"  class=""><i class="fa fa-pencil" aria-hidden="true"></i></a>'; ?></td>
+                    <th><a href="addstock.php?id=<?php echo $product->productID ?>" class="btn btn-sm btn-info">ADD</a></th>
+                    
                   </tr>
                   <?php
                 }

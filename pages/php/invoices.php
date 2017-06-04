@@ -133,8 +133,10 @@ require '_header.php';
               <tr>
                 <th>#</th>
                 <th>Invoice No</th>
+                <th>Type</th>
                 <th>Brand</th>
-                <th>Product Size</th>
+                <th>Size</th>
+                <th>Pattern</th>
                 <th>Qty</th>
                 <td align="right" style="font-weight:bold">Unit price</td>
                 <td align="right" style="font-weight:bold">Amount</td>
@@ -150,8 +152,10 @@ require '_header.php';
                   <tr>
                     <th><?php echo '<a href="addproduct.php?id='. $Product['ProductID'].'">' . $i+=1  . '</a>'; ?></th>
                     <td><?php echo $Product['InvoiceNumber']; ?></td>
+                    <td><?php echo $Product['ProductTypeName']; ?></td>
                     <td><?php echo $Product['ProductBrand']; ?></td>
                     <td><?php echo $Product['ProductSize'] ?></td>
+                    <td><?php echo $Product['Pattern'] ?></td>
                     <td><?php echo $Product['ProductQty']; ?></td>
                     <td align="right"><?php echo $Product['UnitPrice']; ?></td>
                     <td align="right"><?php echo $Product['Amount']; ?></td>

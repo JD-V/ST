@@ -148,17 +148,18 @@ $(document).ready(function () {
       InvoiceNumber: {
         required: true,
       },
+      'ProductTypeID[]' :{
+        required: true,
+      },
       'ProductSize[]': {
         productSizeFormat: true,
         required: true,
       },
       'Brand[]': {
         required: true,
-        valueNotEquals: 'default',
       },
       'ProductPattern[]': {
         required: true,
-        valueNotEquals: 'default',
       },      
       'Quantity[]': {
         required: true,
@@ -166,7 +167,6 @@ $(document).ready(function () {
       },
       'Rate[]': {
         required: true,
-        valueNotEquals: 'default',
       },
       'Amount[]': {
         required: true,
@@ -193,14 +193,18 @@ $(document).ready(function () {
       InvoiceNumber: {
         required: "Please enter Invoice number",
       },
+      'ProductTypeID[]' :{
+        required: "Required",
+      },      
       'ProductSize[]': {
-        required: "Please specify Product size",
+        required: "Required",
+        productSizeFormat: "Invalid product size",
       },
       'Brand[]': {
-        required: "Please specify Brand name",
+        required: "Required",
       },
       'ProductPattern[]': {
-        required: "Please specify Pattern",
+        required: "Required",
       },
       'Quantity[]': {
         required: "Please specify Product quantity",
@@ -236,6 +240,7 @@ $(document).ready(function () {
       removeMultiInputNamingRules(form, 'input[alt="Quantity[]"]');
       removeMultiInputNamingRules(form, 'input[alt="Rate[]"]');
       removeMultiInputNamingRules(form, 'input[alt="Amount[]"]');
+      removeMultiInputNamingRules(form, 'select[alt="ProductTypeID[]"]');
       form.submit();
     }
   });
@@ -283,10 +288,10 @@ $("#AddorUpdateProduct").submit(function (e) {}).validate({
       required: "Please select brand ",
     },
     ProductSize: {
-      required: "Please provide product size",
+      required: "Required",
     },
     ProductPattern: {
-      required: "Please Provide product pattern",
+      required: "Required",
     },    
     ProductTypeID: {
       required: "Please select product type ",
@@ -612,13 +617,7 @@ $("#Service").submit(function (e) {}).validate({
 $("#addstock").submit(function (e) {}).validate({
 
   rules: {
-    BrandID: {
-      required: true,
-    },
-    productSize: {
-      required: true,
-    },
-    Pattern: {
+    ProductID: {
       required: true,
     },
     Qty: {
@@ -628,14 +627,8 @@ $("#addstock").submit(function (e) {}).validate({
   },
   // Specify the validation error messages
   messages: {
-    BrandID: {
-      required: "Please select a valid brand",
-    },
-    productSize: {
-      required: "Please select valid size",
-    },
-    Pattern: {
-      required: "Please select valid pattern",
+    ProductID: {
+      required: "Please select a valid Product",
     },
     Qty: {
       required: "Please enter valid Quantity",

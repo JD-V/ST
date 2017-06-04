@@ -13,7 +13,7 @@ $(document).ready(function() {
     "paging":   false,
     "info":     false,
     "order": [[ 0, "asc" ]],
-    "columnDefs": [{ "orderable": false, "targets": [ 5,6] }]
+    "columnDefs": [{ "orderable": false, "targets": [ 5,6,7,8] }]
   });
 
   $('#productInventoryTable').DataTable({
@@ -66,5 +66,4 @@ $('#salesTable').DataTable({
   $('*[name=ChequeDate]').appendDtpicker({"dateOnly": true, "dateFormat":'DD-MM-YYYY'});
   $('*[name=FromDate]').appendDtpicker({"dateOnly": true, "dateFormat":'DD-MM-YYYY' });
   $('*[name=ToDate]').appendDtpicker({"dateOnly": true, "dateFormat":'DD-MM-YYYY' });
-  $("[data-mask]").inputmask();
 });

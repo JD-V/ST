@@ -60,6 +60,13 @@ require '_header.php';
         <table id="StockTable" class="table table-striped table-hover" datatable="ng" >
           <thead>
             <tr>
+             <th>
+                <a href="#" ng-click="sortType = 'ProductType'; sortReverse = !sortReverse">
+                Product Type
+                <span ng-show="sortType == 'ProductType' && !sortReverse" class="fa fa-caret-down"></span>
+                <span ng-show="sortType == 'ProductType' && sortReverse" class="fa fa-caret-up"></span>
+                </a>
+              </th>            
               <th>
                 <a href="#" ng-click="sortType = 'ProductBrand'; sortReverse = !sortReverse">
                 Product Brand
@@ -101,41 +108,50 @@ require '_header.php';
                   <span ng-show="sortType == 'MaxSellPrice' && !sortReverse" class="fa fa-caret-down"></span>
                   <span ng-show="sortType == 'MaxSellPrice' && sortReverse" class="fa fa-caret-up"></span>
               </a>
-            </th>            
+            </th>
+            <th><a href="#">Add Stock</a></th>            
               <!--<th><i class="fa fa-pencil-square-o" aria-hidden="true"></i></th>-->
             </tr>
           </thead>
           <tr ng-repeat="item in stocks | orderBy:sortType:sortReverse | filter:serchProduct ">
-            <td>
+            <td ng-class="{'red' : item.Qty==0}">
+            <div>
+              <label>{{item.ProductType}}</label>
+            </div>
+            </td>
+            <td ng-class="{'red' : item.Qty==0}">
             <div>
               <label>{{item.ProductBrand}}</label>
             </div>
             </td>
-            <td>
+            <td ng-class="{'red' : item.Qty==0}">
             <div>
               <label>{{item.ProductSize}}</label>
             </div>
             </td>
-            <td>
+            <td ng-class="{'red' : item.Qty==0}">
             <div>
               <label>{{item.ProductPattern}}</label>
             </div>
             </td>
-            <td>
-            <div ng-class="{'edited': item.qtyEdited, 'error' : item.qtyInvalid}">
+            <td ng-class="{'red' : item.Qty==0}">
+            <div>
               <label  ng-hide="item.editing"  class='normal' >{{item.Qty}}</label>
-                <input id="someid" ng-change="item.qtyEdited = true" ng-click="item.editing = true" ng-blur=" item.editing = false; item.qtyInvalid = validateInput(item.Qty); item.qtyEdited = !item.qtyInvalid" onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editing" auto-focus="{{ item.editing }}" ng-model="item.Qty"  />
+                <!--<input id="someid" ng-change="item.qtyEdited = true" ng-click="item.editing = true" ng-blur=" item.editing = false; item.qtyInvalid = validateInput(item.Qty); item.qtyEdited = !item.qtyInvalid" onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editing" auto-focus="{{ item.editing }}" ng-model="item.Qty"  />-->
             </div>
             </td>
-            <td align:right>
+            <td align:right ng-class="{'red' : item.Qty==0}">
             <div>
               <label>{{item.MinSellPrice}}</label>
             </div>
             </td>
-            <td align:right>
+            <td align:right ng-class="{'red' : item.Qty==0}">
             <div>
               <label>{{item.MaxSellPrice}}</label>
             </div>
+            </td>
+            <td>
+              <a href="addstock.php?id={{item.ProductID}}" class="btn btn-sm btn-info">ADD</a>
             </td>
                     
             <!--<td>
@@ -214,13 +230,11 @@ require '_header.php';
         
           if( $scope.stocks[i].hasOwnProperty('qtyInvalid') &&  $scope.stocks[i].qtyInvalid )
               {
-                document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
-                alert-warning\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\"> \
-                <i class=\"ace-icon fa fa-times\"></i></button><i class=\"ace-icon fa fa-hand-paper-o\"></i>&nbsp;&nbsp; Please correct the errors.</div>";
+                document.getElementById("messages").innerHTML = MessageTemplate(1, "Please correct all the errors.");
                 autoClosingAlert(".alert-block", 2000);
                 return;
               }
-       }  
+       }
     }
 
     if(ItemArr.length == 0) {
@@ -234,18 +248,12 @@ require '_header.php';
 
     dataService.saveAll(ItemArr, function(response) {
       if(parseInt(response.data, 10)) {
-         document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
-          alert-success\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\"> \
-          <i class=\"ace-icon fa fa-times\"></i></button><i class=\"ace-icon fa fa-check \
-          green\"></i>&nbsp;&nbsp;" + response.data +" Item(s) saved successfully.</div>";
+         document.getElementById("messages").innerHTML = MessageTemplate(0, response.data+" Item(s) saved successfully");
           $scope.RefreshView();
           autoClosingAlert(".alert-block", 2000);
       }
       else {
-          document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
-          alert-danger\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">  \
-          <i class=\"ace-icon fa fa-times\"></i> </button><i class=\"ace-icon fa fa-ban \
-          red\"></i> &nbsp; &nbsp;" + response.data + " </div>";
+          document.getElementById("messages").innerHTML = MessageTemplate(1, response.data);
           autoClosingAlert(".alert-block", 4000);
       }
     });
@@ -253,10 +261,7 @@ require '_header.php';
   // Over
   $scope.validateInput = function($inputValue) {
     if($inputValue === "") {
-      document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
-      alert-danger\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">  \
-      <i class=\"ace-icon fa fa-times\"></i> </button><i class=\"ace-icon fa fa-ban \
-      red\"></i> &nbsp; &nbsp;can not be blank</div>";
+      document.getElementById("messages").innerHTML = MessageTemplate(1, "can not be blank.");
       autoClosingAlert(".alert-block", 2000);
       return true;
     }

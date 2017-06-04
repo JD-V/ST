@@ -16,25 +16,32 @@ require '_header.php'
   var $fieldset =  $(e).closest( 'fieldset' ).clone();
   $( $fieldset ).find( "input" ).val('');   //clears out input field
   $fieldsetmain.parent().append($fieldset);
-  
+
+  addMultiInputNamingRules('#AddorUpdateInvoice','ProductTypeID[]', 'select[name="ProductTypeID[]"]', {
+      required: true,
+      messages: {
+          required: "Required",
+      }
+  } );
+
   addMultiInputNamingRules('#AddorUpdateInvoice','ProductSize[]', 'input[name="ProductSize[]"]', {
       required: true,
       messages: {
-          required: "Please spcify Product size",
+          required: "Required",
       }
   } );
 
   addMultiInputNamingRules('#AddorUpdateInvoice','Brand[]', 'input[name="Brand[]"]', {
       required: true,
       messages: {
-          required: "Please specify Product Brand",
+          required: "Required",
       }
   } );
 
   addMultiInputNamingRules('#AddorUpdateInvoice','ProductPattern[]', 'input[name="ProductPattern[]"]', {
       required: true,
       messages: {
-          required: "Please specify Product Pattern",
+          required: "Required",
       }
   } );  
 
@@ -60,6 +67,42 @@ require '_header.php'
   });
 
 }
+
+  function ProductTypechanged(e) {
+    var type = $(e).val();
+    
+    if(type <=4) {
+      // $(e).closest('fieldset').find('.product-brand-lable').html('Brand');
+      $(e).closest('fieldset').find('.product-size-lable').html('Size');
+      $(e).closest('fieldset').find('.product-pattern-lable').html('Pattern');
+
+
+      // $(e).closest('fieldset').find(".product-size").rules("add", {
+      //   required: true,
+      // });
+      $(e).closest('fieldset').find(".product-pattern").rules("add", {
+         required: true,
+      });
+    } else {
+      // $(e).closest('fieldset').find('.product-brand-lable').html('Description Line 1');
+      $(e).closest('fieldset').find('.product-size-lable').html('Description Line 1');
+      $(e).closest('fieldset').find('.product-pattern-lable').html('Description Line 2');
+
+      // $(e).closest('fieldset').find('.product-size').rules( "remove", "required" );
+      $(e).closest('fieldset').find('.product-pattern').rules( "remove", "required" );
+      
+    }
+
+    if(type == 1) {
+        $(e).closest('fieldset').find("[data-mask]").inputmask();
+        $(e).closest('fieldset').find("[data-mask]").rules("add", {
+          productSizeFormat: true,
+        });
+    } else {
+      $(e).closest('fieldset').find("[data-mask]").inputmask('remove');    
+      $(e).closest('fieldset').find("[data-mask]").rules( "remove", "productSizeFormat" );
+    }
+  }
 
 function CalculateAmount(e) {
 
@@ -91,7 +134,7 @@ function UpdateFinalSubtotal() {
       finalSubtotal += + $(this).val();
   }); 
 
-if($.isNumeric(finalSubtotal)) {
+  if($.isNumeric(finalSubtotal)) {
     $('#AddorUpdateInvoice').find('.subtotal').val( finalSubtotal.toFixed(2) );
     $('#AddorUpdateInvoice').find('.vat-amount').val( (finalSubtotal*VatRate/100).toFixed(2)  );
     $('#AddorUpdateInvoice').find('.total-paid').val( (finalSubtotal + finalSubtotal*VatRate/100  ).toFixed(2) );
@@ -102,7 +145,6 @@ if($.isNumeric(finalSubtotal)) {
     $('#AddorUpdateInvoice').find('.total-paid').val('0.00');    
   }
 }
-
 
 function RemoveProductFieldset(e) {
 
@@ -148,7 +190,6 @@ $(document).ready(function () {
             }
         });
       }
-
   });
 });
 </script>
@@ -222,6 +263,7 @@ $(document).ready(function () {
             if(AddInvoice($Invoice))
             {
               $successCount = 0;
+              $ProductTypeID = $_POST['ProductTypeID'];
               $productSize = $_POST['ProductSize'];
               $ProductPattern = $_POST['ProductPattern'];
               $brand = $_POST['Brand'];
@@ -232,6 +274,7 @@ $(document).ready(function () {
               for ($i=0; $i < count($productSize); $i++) {
                 $Product =  new Product();
                 $Product->invoiceID = $Invoice->invoiceID;
+                $Product->productTypeID = $ProductTypeID[$i];
                 $Product->productSize = $productSize[$i];
                 $Product->productPattern = $ProductPattern[$i];
                 $Product->brand = $brand[$i];
@@ -310,24 +353,44 @@ $(document).ready(function () {
             <fieldset class="col-sm-9 col-xs-offset-1">
                 <legend>Products<span class="mandatoryLabel">*</span></legend>
 
-              <div class="form-group">
-                <label for="Brand" class="control-label col-sm-3 lables">Brand<span class="mandatoryLabel">*</span></label>
+            <div class="form-group">
+                <label for="ProductTypeID" class="control-label col-sm-3 lables">Product Type<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" name="Brand[]" placeholder="" >
+                    <select class="form-control" name="ProductTypeID[]" onchange="ProductTypechanged(this)" >
+                    <option selected="true" disabled="disabled" style="display: none" value="default" >Select Product Type</option>
+                    <?php
+                        $prodcutTypes = GetProdcutTypes();
+                        if(mysql_num_rows($prodcutTypes)!=0) {
+                            while($prodcutType = mysql_fetch_assoc($prodcutTypes)) {
+                              if($isValidProduct && $prodcutType['ProductTypeID'] == $Product->productTypeID )
+                                  echo '<option value="' . $prodcutType['ProductTypeID'] . '" selected >' . $prodcutType['ProductTypeName'] . '</option>';
+                              else
+                                  echo '<option value="' . $prodcutType['ProductTypeID'] . '" >' . $prodcutType['ProductTypeName'] . '</option>';
+                            }
+                        }
+                    ?>
+                    </select>
                 </div>
               </div>
 
               <div class="form-group">
-                <label for="ProductSize" class="control-label col-sm-3 lables">Product Size<span class="mandatoryLabel">*</span></label>
+                <label for="Brand" class="control-label col-sm-3 lables"><span class="product-brand-lable">Brand</span><span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" name="ProductSize[]" data-inputmask='"mask": "999/99 R99"' data-mask>
+                  <input type="text" class="form-control product-brand" name="Brand[]" placeholder="" >
                 </div>
               </div>
 
               <div class="form-group">
-                <label for="ProductPattern" class="control-label col-sm-3 lables">Product Pattern<span class="mandatoryLabel">*</span></label>
+                <label for="ProductSize" class="control-label col-sm-3 lables"><span class="product-size-lable">Size</span><span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" name="ProductPattern[]" placeholder="" >
+                  <input type="text" class="form-control product-size" name="ProductSize[]" data-inputmask='"mask": "999/99 R99"' data-mask>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="ProductPattern" class="control-label col-sm-3 lables"><span class="product-pattern-lable">Pattern</span><span class="mandatoryLabel">*</span></label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control product-pattern" name="ProductPattern[]" placeholder="" >
                 </div>
               </div>
 

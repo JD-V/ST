@@ -695,9 +695,9 @@ function AddProduct($Product){
   ChromePhp::log('amount ' . $Product->amount);
 
   $addProduct = mysql_query(
-          "INSERT INTO `products` (`InvoiceID`, `ProductSize`, `ProductBrand`, 
+          "INSERT INTO `products` (`InvoiceID`, `ProductSize`,`ProductType`,`ProductBrand`, 
           `Pattern`, `ProductQty`, `UnitPrice`, `Amount` ) VALUES 
-          ('$Product->invoiceID','$Product->productSize', '$Product->brand', 
+          ('$Product->invoiceID','$Product->productSize',$Product->productTypeID, '$Product->brand', 
           '$Product->productPattern', '$Product->units', '$Product->rate', 
           '$Product->amount' )" );
 
@@ -721,7 +721,8 @@ function GetInvoices(){
 
 function GetProducts() {
 
-  if($getProducts = mysql_query("SELECT p.*, pi.InvoiceNumber FROM products p JOIN purchaseinvoice pi ON pi.InvoiceID = p.InvoiceID")) {
+  if($getProducts = mysql_query("SELECT p.*, pi.InvoiceNumber, pt.ProductTypeName FROM products p 
+      JOIN purchaseinvoice pi ON pi.InvoiceID = p.InvoiceID JOIN producttype pt ON p.ProductType = pt.ProductTypeID")) {
     if(mysql_num_rows($getProducts) >= 1) {
       return $getProducts;
     }
@@ -876,8 +877,10 @@ This Method retruns productInvenytory Object
 function GetProductInventoryByID2($productID){
   $ProductInventory = new ProductInventory();
   
-  if($getProductInventory = mysql_query("select p.*, pt.ProductTypeName, b.BrandName, s.SupplierName from productinvetory p JOIN brands b ON p.BrandID = b.BrandID JOIN supplier s ON p.SupplierID = s.SupplierID JOIN producttype pt ON p.ProductTypeID = pt.ProductTypeID WHERE p.ProductID = '$productID' ")) {
-    if(mysql_num_rows($getProductInventory) >= 1) {
+  if($getProductInventory = mysql_query("select p.*, pt.ProductTypeName, b.BrandName, s.SupplierName 
+  from productinvetory p JOIN brands b ON p.BrandID = b.BrandID JOIN supplier s ON p.SupplierID = 
+  s.SupplierID JOIN producttype pt ON p.ProductTypeID = pt.ProductTypeID WHERE p.ProductID = '$productID' " )) {
+    if(mysql_num_rows($getProductInventory) == 1) {
       while ($product = mysql_fetch_assoc($getProductInventory)) {
         $ProductInventory->productID = $product['ProductID'];
         $ProductInventory->supplierID = $product['SupplierID'];
@@ -917,7 +920,10 @@ function GetProductInventoryByID($productID){
 
 function GetProductStocks() {
 
-  if($getProductInventory = mysql_query("SELECT pr.ProductID, br.BrandName, pr.ProductSize, pr.ProductPattern ,SUM(st.Qty) AS Qty, pr.MinSellPrice,pr.MaxSellPrice FROM productinvetory pr LEFT JOIN stockentries st ON pr.ProductID = st.ProductID JOIN brands br ON br.BrandID = pr.BrandID GROUP BY ProductID")) {
+  if($getProductInventory = mysql_query("SELECT pr.ProductID, br.BrandName, pr.ProductSize, pr.ProductPattern, 
+    SUM(st.Qty) AS Qty, pr.MinSellPrice,pr.MaxSellPrice, pt.ProductTypeName FROM productinvetory pr LEFT JOIN 
+    stockentries st ON pr.ProductID = st.ProductID JOIN brands br ON br.BrandID = pr.BrandID JOIN producttype 
+    pt ON pt.ProductTypeID = pr.ProductTypeID GROUP BY ProductID")) {
     if(mysql_num_rows($getProductInventory) >= 1) {
       return $getProductInventory;
     }
@@ -1186,6 +1192,7 @@ function MessageTemplate($MessageType, $text) {
  class Product
  {
    public $invoiceID;
+   public $productTypeID;
    public $productSize;
    public $brand;
    public $productPattern;
