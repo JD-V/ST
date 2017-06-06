@@ -3,16 +3,18 @@
 $(document).ready(function() {
 
   $('#invoiceTable').DataTable({
-  "paging":   false,
+  "paging":   true,
   "info":     false,
   "order": [[ 2, "desc" ]],
+  "pagingType": "full_numbers",
   "columnDefs": [{ "orderable": false, "targets": [ 4,5,6,7,8,9,11] }]
 });
 
   $('#productsTable').DataTable({
-    "paging":   false,
+    "paging":   true,
     "info":     false,
     "order": [[ 0, "asc" ]],
+    "pagingType": "full_numbers",
     "columnDefs": [{ "orderable": false, "targets": [ 5,6,7,8] }]
   });
 
@@ -20,7 +22,7 @@ $(document).ready(function() {
     "paging":   false,
     "info":     false,
     "order": [[ 11, "desc" ]],
-    "columnDefs": [{ "orderable": false, "targets": [ 6,7,8,9,10,12 ] }]
+    "columnDefs": [{ "orderable": false, "targets": [ 6,7,8,9,10,12,13 ] }]
   });
 
 $('#stockEntryTable').DataTable({

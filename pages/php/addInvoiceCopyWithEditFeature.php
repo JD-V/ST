@@ -275,7 +275,7 @@ $(document).ready(function () {
                 $Product->productTypeID = $ProductTypeID[$i];
                 $Product->productSize = $productSize[$i];
                 $Product->productPattern = $ProductPattern[$i];
-                $Product->brandID = $brand[$i];
+                $Product->brand = $brand[$i];
                 $Product->units = $units[$i];
                 $Product->rate = $rate[$i];
                 $Product->amount = $amount[$i];
@@ -304,7 +304,24 @@ $(document).ready(function () {
     <div class="box">
       <div class="box-header with-border">
         <h3 class="box-title">
-        <h3 class="box-title">Add</h3>
+
+        <?php
+          $isValidInvoice = false;
+          $title="Add";
+          $Invoice = NULL;
+          if(isset($_GET['id'])) {
+            $Invoice = GetPuchaseInvoiceByID($_GET['id']);
+            ChromePhp::log($Invoice);
+            if(is_null($Invoice)) {
+              $title="Invoice Not Found";
+            }
+            else {
+              $title="Update";
+              $isValidInvoice = true;
+            }
+          }
+        ?>
+        <h3 class="box-title"><?php echo $title; ?></h3>
        <!--  <div class="box-tools pull-right">
           <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
             <i class="fa fa-minus"></i></button>
@@ -335,6 +352,9 @@ $(document).ready(function () {
                           $suppliers = GetSuppliers();
                           if(mysql_num_rows($suppliers)!=0) {
                               while($supplier = mysql_fetch_assoc($suppliers)) {
+                                if($isValidInvoice && $supplier['SupplierID'] == $Invoice->supplierID )
+                                    echo '<option value="' . $supplier['SupplierID'] . '" selected >' . $supplier['SupplierName'] . '</option>';
+                                else
                                     echo '<option value="' . $supplier['SupplierID'] . '" >' . $supplier['SupplierName'] . '</option>';
                               }
                           }
@@ -346,16 +366,35 @@ $(document).ready(function () {
               <div class="form-group">
                 <label for="InvoiceNumber" class="control-label col-sm-3 lables">Invoice number<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" name="InvoiceNumber" placeholder="Invoice Number" >
+                  <input type="text" class="form-control" name="InvoiceNumber" placeholder="Invoice Number" value="<?php if($isValidInvoice) echo $Invoice->invoiceNumber; ?>"   />
                 </div>
               </div>
 
           <div id="products" class="col-sm-12">
+
+            <?php
+
+                    $productsList = @GetProductsInInvoices($_GET['id']);
+                    $i=0;
+                    if(count($productsList) >= 1) {
+                        $isValidProduct = true;
+                        ChromePhp::log("yes got some product records");
+                        $totalProducts = count($productsList);
+                    } else {
+                      $isValidProduct = false;
+                      $totalProducts = 1;
+                    }
+                        
+                    for($iter=0; $iter <$totalProducts; $iter++) {
+                        $product = @$productsList[$iter];
+
+            ?>
+
           
             <fieldset class="col-sm-9 col-xs-offset-1">
                 <legend>Products<span class="mandatoryLabel">*</span></legend>
 
-              <div class="form-group">
+            <div class="form-group">
                 <label for="ProductTypeID" class="control-label col-sm-3 lables">Product Type<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
                     <select class="form-control" name="ProductTypeID[]" onchange="ProductTypechanged(this)" >
@@ -364,6 +403,9 @@ $(document).ready(function () {
                         $prodcutTypes = GetProdcutTypes();
                         if(mysql_num_rows($prodcutTypes)!=0) {
                             while($prodcutType = mysql_fetch_assoc($prodcutTypes)) {
+                              if($isValidProduct && $prodcutType['ProductTypeID'] == $product->productTypeID )
+                                  echo '<option value="' . $prodcutType['ProductTypeID'] . '" selected >' . $prodcutType['ProductTypeName'] . '</option>';
+                              else
                                   echo '<option value="' . $prodcutType['ProductTypeID'] . '" >' . $prodcutType['ProductTypeName'] . '</option>';
                             }
                         }
@@ -372,48 +414,31 @@ $(document).ready(function () {
                 </div>
               </div>
 
-              <!--<div class="form-group">
+              <div class="form-group">
                 <label for="Brand" class="control-label col-sm-3 lables"><span class="product-brand-lable">Brand</span><span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control product-brand" name="Brand[]" placeholder="" >
+                  <input type="text" class="form-control product-brand" name="Brand[]" placeholder="" value="<?php if($isValidProduct) echo $product->brand; ?>" >
                 </div>
-              </div>-->
-
-              <div class="form-group">
-                  <label for="Brand" class="control-label col-sm-3 lables product-brand-lable">Brand<span class="mandatoryLabel">*</span></label>
-                  <div class="col-sm-4">
-                      <select class="form-control product-brand" name="Brand[]" >
-                      <option selected="true" disabled="disabled" style="display: none" value="default" >Select Brand</option>
-                      <?php
-                          $brands = GetBrands();
-                          if(mysql_num_rows($brands)!=0) {
-                              while($brand = mysql_fetch_assoc($brands)) {
-                                  echo '<option value="' . $brand['BrandID'] . '">' . $brand['BrandName'] . '</option>';
-                              }
-                          }
-                      ?>
-                      </select>
-                  </div>
-              </div>              
+              </div>
 
               <div class="form-group">
                 <label for="ProductSize" class="control-label col-sm-3 lables"><span class="product-size-lable">Size</span><span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control product-size" name="ProductSize[]" data-inputmask='"mask": "999/99 R99"' data-mask>
+                  <input type="text" class="form-control product-size" name="ProductSize[]" data-inputmask='"mask": "999/99 R99"' data-mas value="<?php if($isValidProduct) echo $product->productSize; ?>">
                 </div>
               </div>
 
               <div class="form-group">
                 <label for="ProductPattern" class="control-label col-sm-3 lables"><span class="product-pattern-lable">Pattern</span><span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control product-pattern" name="ProductPattern[]" placeholder="" >
+                  <input type="text" class="form-control product-pattern" name="ProductPattern[]" placeholder="" value="<?php if($isValidProduct) echo $product->productPattern; ?>" >
                 </div>
               </div>
 
               <div class="form-group">
                 <label for="Quantity" class="control-label col-sm-3 lables ">Quantity<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control quantity" name="Quantity[]" placeholder="0" onchange="CalculateAmount(this)"  onkeypress="return isNumberKey(event)">
+                  <input type="text" class="form-control quantity" name="Quantity[]" placeholder="0" onchange="CalculateAmount(this)"  onkeypress="return isNumberKey(event)" value="<?php if($isValidProduct) echo $product->units; ?>">
                 </div>
               </div>
 
@@ -424,7 +449,7 @@ $(document).ready(function () {
                     <span class="input-group-addon">
                         <span class="fa fa-inr"></span>
                     </span>
-                    <input type="text" class="form-control rate currency" name="Rate[]" maskedFormat="10,2" placeholder="0.00" onchange="CalculateAmount(this)" >
+                    <input type="text" class="form-control rate currency" name="Rate[]" maskedFormat="10,2" placeholder="0.00" onchange="CalculateAmount(this)" value="<?php if($isValidProduct) echo $product->rate; ?>">
                   </div>
                 </div>
               </div>
@@ -436,7 +461,7 @@ $(document).ready(function () {
                     <span class="input-group-addon">
                         <span class="fa fa-inr"></span>
                     </span>
-                    <input type="text" class="form-control amount currency" name="Amount[]" maskedFormat="10,2" placeholder="0.00" >
+                    <input type="text" class="form-control amount currency" name="Amount[]" maskedFormat="10,2" placeholder="0.00" value="<?php if($isValidProduct) echo $product->Amount; ?>" >
                   </div>
                 </div>
               </div>
@@ -450,6 +475,9 @@ $(document).ready(function () {
               </div>
 
           </fieldset>
+          <?php
+            }
+          ?>              
           </div>
 
           <div class="form-group">
@@ -459,7 +487,7 @@ $(document).ready(function () {
                 <span class="input-group-addon">
                     <span class="fa fa-inr"></span>
                 </span>
-                <input type="text" class="form-control subtotal currency" maskedFormat="10,2" name="SubTotalAmount" placeholder="0.00" >
+                <input type="text" class="form-control subtotal currency" maskedFormat="10,2" name="SubTotalAmount" placeholder="0.00" value="<?php if($isValidInvoice) echo $Invoice->subTotalAmount; ?>" >
               </div>
             </div>
           </div>
@@ -471,7 +499,7 @@ $(document).ready(function () {
                 <span class="input-group-addon">
                     <span class="fa fa-inr"></span>
                 </span>
-                <input type="text" class="form-control vat-amount currency" maskedFormat="10,2" name="VatAmount" placeholder="0.00" >
+                <input type="text" class="form-control vat-amount currency" maskedFormat="10,2" name="VatAmount" placeholder="0.00" value="<?php if($isValidInvoice) echo $Invoice->vatAmount; ?>" >
               </div>
             </div>
           </div>
@@ -495,7 +523,7 @@ $(document).ready(function () {
                 <span class="input-group-addon">
                     <span class="fa fa-inr"></span>
                 </span>
-                <input type="text" class="form-control total-paid currency" maskedFormat="10,2" name="TotalAmount" placeholder="0.00" >
+                <input type="text" class="form-control total-paid currency" maskedFormat="10,2" name="TotalAmount" placeholder="0.00" value="<?php if($isValidInvoice) echo $Invoice->totalAmount; ?>" >
               </div>
             </div>
           </div>
@@ -503,24 +531,24 @@ $(document).ready(function () {
               <div class="form-group">
                 <label class="control-label col-sm-3 lables">Payment Type<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <label class="radio-inline"> <input type="radio" class="paymentType" name="paymentType" id="cash" value="1" checked > Cash </label>
-                  <label class="radio-inline"> <input type="radio" class="paymentType" name="paymentType" id="card" value="2" > Card </label>
-                  <label class="radio-inline"> <input type="radio" class="paymentType" name="paymentType" id="cheque" value="3" > Cheque </label>
+                  <label class="radio-inline"> <input type="radio" class="paymentType" name="paymentType" id="cash" value="1" checked <?php if($isValidInvoice && $Invoice->paymentType==1) echo 'checked' ?> > Cash </label>
+                  <label class="radio-inline"> <input type="radio" class="paymentType" name="paymentType" id="card" value="2" <?php if($isValidInvoice && $Invoice->paymentType==2) echo 'checked' ?> > Card </label>
+                  <label class="radio-inline"> <input type="radio" class="paymentType" name="paymentType" id="cheque" value="3" <?php if($isValidInvoice && $Invoice->paymentType==3) echo 'checked' ?>> Cheque </label>
                 </div>
               </div>
 
-              <div class="form-group" id="ChequeNoDiv" hidden>
+              <div class="form-group" id="ChequeNoDiv" <?php if($isValidInvoice && $Invoice->paymentType!=3) echo 'hidden' ?> >
                 <label for="ChequeNo" class="control-label col-sm-3 lables">cheque No<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                    <input type="text" class="form-control cheque-no" onkeypress='return event.charCode >= 48 && event.charCode <= 57' name="ChequeNo" >
+                    <input type="text" class="form-control cheque-no" onkeypress='return event.charCode >= 48 && event.charCode <= 57' name="ChequeNo"  value="<?php if($isValidInvoice && $Invoice->paymentType==3) echo $Invoice->chequeNo ?>" >
                 </div>
                 <div class="errorMessage"></div>
               </div>
 
-              <div class="form-group" id="ChequeDateDiv" hidden>
+              <div class="form-group" id="ChequeDateDiv" <?php if($isValidInvoice && $Invoice->paymentType!=3) echo 'hidden'?> >
                 <label for="ChequeDate"  class="control-label col-sm-3 lables">cheque Date<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                    <input type="text" class="form-control cheque-date" name="ChequeDate">
+                    <input type="text" class="form-control cheque-date" name="ChequeDate" value="<?php if($isValidInvoice && $Invoice->paymentType==3) echo $Invoice->chequeDate ?>" >
                 </div>
                 <div class="errorMessage"></div>
               </div>
@@ -528,7 +556,7 @@ $(document).ready(function () {
           <div class="form-group">
             <label for="InvoiceNotes" class="control-label col-sm-3 lables">Notes</label>
             <div class="col-sm-4">
-              <textarea  class="form-control" name="InvoiceNotes" placeholder="Notes"></textarea>
+              <textarea  class="form-control" name="InvoiceNotes" placeholder="Notes"><?php if($isValidInvoice) echo $Invoice->invoiceNotes; ?></textarea>
             </div>
           </div>
 

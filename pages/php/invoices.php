@@ -74,17 +74,17 @@ require '_header.php';
                 while ($Invoice = mysql_fetch_assoc($Invoices)) {
                   ?>
                   <tr>
-                    <th><?php echo '<a href="addproduct.php?id='. $Invoice['InvoiceID'].'">' . $i+=1  . '</a>'; ?></th>
+                    <th><?php echo $i+=1; ?></th>
                     <td><?php echo $Invoice['Company']; ?></td>
-                    <td><?php $date = date_create($Invoice['InvoiceDate']); echo date_format($date, 'm-d-Y'); ?></td>
-                    <td><?php echo $Invoice['InvoiceNumber']; ?></td>
+                    <td><?php $date = date_create($Invoice['InvoiceDate']); echo date_format($date, 'd-m-Y'); ?></td>
+                    <td><?php echo '<a href="viewinvoice.php?id='. $Invoice['InvoiceID']. ' ">' . $Invoice['InvoiceNumber'] . '</a>'; ?></td>
                     <td><?php echo $Invoice['TinNumber'] ?></td>
                     <td align="right"><?php echo $Invoice['SubTotal'] ?></td>
                     <td align="right"><?php echo $Invoice['VatAmount'] ?></td>
                     <td align="right"><?php echo $Invoice['TotalPaid']; ?></td>
                     <td align="center">
-                      <?php 
-                        if($Invoice['PaymentType'] == 3) 
+                      <?php
+                        if($Invoice['PaymentType'] == 3)
                           echo 'Cheque';  
                         else if ($Invoice['PaymentType'] == 2)
                           echo 'Card';
@@ -105,8 +105,8 @@ require '_header.php';
                     <td><?php echo $Invoice['Notes']; ?></td>
                   </tr>
                   <?php
-                }
-              ?>
+                  }
+                  ?>
             </tbody>
           </table>
       </div>
@@ -145,7 +145,6 @@ require '_header.php';
             <tbody>
               <?php
                 $i = 0;
-
                 $Products = GetProducts();
                 while ($Product = mysql_fetch_assoc($Products)) {
                   ?>

@@ -25,9 +25,7 @@ require '_header.php'
       // $(e).closest('fieldset').find('.product-brand-lable').html('Description Line 1');
       $('.product-size-lable').html('Description Line 1');
       $('.product-pattern-lable').html('Description Line 2');
-
       $('.product-pattern').rules( "remove", "required" );
-      
     }
 
     if(type == 1) {
@@ -269,14 +267,14 @@ require '_header.php'
             <div class="form-group">
               <label for="ProductSize" class="control-label col-sm-3 lables"><span class="product-size-lable">Size</span><span class="mandatoryLabel">*</span></label>
               <div class="col-sm-4">
-                <input type="text" class="form-control product-size" name="ProductSize" placeholder="Product Size" data-inputmask='"mask": "999/99 R99"' data-mask value="<?php if($isValidProduct) echo $Product->productSize ?>" >
+                <input type="text" class="form-control product-size" name="ProductSize" data-inputmask='"mask": "999/99 R99"' data-mask value="<?php if($isValidProduct) echo $Product->productSize ?>" >
               </div>
             </div>
 
             <div class="form-group">
               <label for="ProductPattern" class="control-label col-sm-3 lables"><span class="product-pattern-lable">Pattern</span><span class="mandatoryLabel">*</span></label>
               <div class="col-sm-4">
-                <input type="text" class="form-control product-pattern" name="ProductPattern" placeholder="Product Pattern" value="<?php if($isValidProduct) echo $Product->productPattern ?>" >
+                <input type="text" class="form-control product-pattern" name="ProductPattern" value="<?php if($isValidProduct) echo $Product->productPattern ?>" >
               </div>
             </div>
 

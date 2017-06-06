@@ -508,18 +508,18 @@
                       </a>
                     </li>";
                     
-          $isActive = "";
-          if($CDATA['PAGE_NAME'] == 'ADDSTOCK') { $isActive =  'active';  }
+          // $isActive = "";
+          // if($CDATA['PAGE_NAME'] == 'ADDSTOCK') { $isActive =  'active';  }
   
-                echo "<li class=\"hover " . $isActive . " \">
-                        <a href=\"addstock.php\" >
-                          <i class=\"fa fa-plus\"></i>
-                          <span>Add Stock</span>
-                          <span class=\"pull-right-container\">
-                          <i class=\"fa fa-angle-right pull-right\"></i>
-                          </span>
-                        </a>
-                      </li>";                                                      
+          //       echo "<li class=\"hover " . $isActive . " \">
+          //               <a href=\"addstock.php\" >
+          //                 <i class=\"fa fa-plus\"></i>
+          //                 <span>Add Stock</span>
+          //                 <span class=\"pull-right-container\">
+          //                 <i class=\"fa fa-angle-right pull-right\"></i>
+          //                 </span>
+          //               </a>
+          //             </li>";                                                      
             ?>
 
           </ul>

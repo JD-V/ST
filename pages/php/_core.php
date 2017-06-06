@@ -614,6 +614,57 @@ function GetServiceInvoice($InvoiceNumber) {
 
 function GetServiceablesInInvoice($InvoiceNumber) {
     return mysql_query("SELECT * FROM serviceitems WHERE InvoiceNumber='$InvoiceNumber' ");
+
+    
+}
+
+function GetPuchaseInvoiceByID($InvoiceID) {
+  $GetInvoice = mysql_query("SELECT p.*, s.TinNumber,s.SupplierName FROM purchaseinvoice p LEFT JOIN supplier s ON s.SupplierID=p.SupplierID WHERE p.InvoiceID = '$InvoiceID' ");
+
+  if(mysql_num_rows($GetInvoice)==1) {
+    $ShowData = mysql_fetch_assoc($GetInvoice);
+    $Invoice  = new Invoice();
+    $Invoice->invoiceID = $ShowData['InvoiceID'];
+    $Invoice->invoiceDate = $ShowData['InvoiceDate'];
+    $Invoice->invoiceNumber = $ShowData['InvoiceNumber'];
+    $Invoice->supplierID = $ShowData['SupplierID'];
+    $Invoice->tinNumber = $ShowData['TinNumber'];
+    $Invoice->vatAmount = $ShowData['VatAmount'];
+    $Invoice->totalAmount = $ShowData['TotalPaid']; 
+    $Invoice->subTotalAmount = $ShowData['SubTotal'];
+    $Invoice->paymentType = $ShowData['PaymentType'];
+    $Invoice->chequeNo=$ShowData['ChequeNo'];
+    $Invoice->chequeDate=$ShowData['ChequeDate'];
+    $Invoice->invoiceNotes = $ShowData['Notes'];
+    $Invoice->supplierName = $ShowData['SupplierName'];
+    return $Invoice;
+  } else return NULL;
+}
+
+
+function GetProductsInInvoices($InvoiceID) {
+  $GetProducts = mysql_query("SELECT p.*, pt.ProductTypeName, br.BrandName AS ProductBrand 
+  FROM products p JOIN producttype pt ON p.ProductType = pt.ProductTypeID LEFT JOIN brands 
+  br ON br.BrandID = p.ProductBrandID WHERE p.InvoiceID = '$InvoiceID'");
+  $ProductArr = array();
+
+  if(mysql_num_rows($GetProducts)>=1) {
+    while($ShowData = mysql_fetch_assoc($GetProducts)) {
+      $Product = new Product();
+      $Product->invoiceID = $ShowData['InvoiceID'];
+      $Product->productTypeID = $ShowData['ProductType'];
+      $Product->productTypeName = $ShowData['ProductTypeName'];
+      $Product->productSize = $ShowData['ProductSize'];
+      $Product->brand = $ShowData['ProductBrand'];
+      $Product->productPattern = $ShowData['Pattern'];
+      $Product->units= $ShowData['ProductQty'];
+      $Product->rate = $ShowData['UnitPrice'];
+      $Product->Amount = $ShowData['Amount'];
+
+      $ProductArr[] = $Product;
+    }
+  }
+  return $ProductArr;
 }
 
 
@@ -662,18 +713,16 @@ function AddInvoice($Invoice){
   ChromePhp::log('InvoiceDate ' . $Invoice->invoiceDate );
   ChromePhp::log('InvoiceID ' . $Invoice->invoiceID );
   ChromePhp::log('InvoiceNumber ' . $Invoice->invoiceNumber );
-  ChromePhp::log('Company ' . $Invoice->companyName );
-  ChromePhp::log('TinNumber '. $Invoice->tinNumber);
   ChromePhp::log('TotalPaid ' . $Invoice->totalAmount);
   ChromePhp::log('Notes' .$Invoice->invoiceNotes);
 
 
   $addInvoice = mysql_query(
-              "INSERT INTO `purchaseinvoice` (`InvoiceID`, `InvoiceDate`, `Company`,
-              `InvoiceNumber`, `TinNumber`, `SubTotal`, `VatAmount`, `TotalPaid`,
+              "INSERT INTO `purchaseinvoice` (`InvoiceID`, `InvoiceDate`, `SupplierID`,
+              `InvoiceNumber`,`SubTotal`, `VatAmount`, `TotalPaid`,
               `PaymentType`, `ChequeNo`, `ChequeDate`, `Notes` ) VALUES 
-              ('$Invoice->invoiceID', '$Invoice->invoiceDate', '$Invoice->companyName', 
-              '$Invoice->invoiceNumber', '$Invoice->tinNumber', '$Invoice->subTotalAmount', 
+              ('$Invoice->invoiceID', '$Invoice->invoiceDate', '$Invoice->supplierID', 
+              '$Invoice->invoiceNumber','$Invoice->subTotalAmount',
               '$Invoice->vatAmount', '$Invoice->totalAmount', '$Invoice->paymentType',
               '$Invoice->chequeNo', '$Invoice->chequeDate', '$Invoice->invoiceNotes' )" );
 
@@ -688,16 +737,16 @@ function AddProduct($Product){
 
   ChromePhp::log('InvoiceID ' . $Product->invoiceID );
   ChromePhp::log('productSize ' . $Product->productSize );
-  ChromePhp::log('brand ' . $Product->brand );
+  ChromePhp::log('brand ' . $Product->brandID );
   ChromePhp::log('productPattern ' . $Product->productPattern );
   ChromePhp::log('units '. $Product->units);
   ChromePhp::log('rate ' . $Product->rate);
   ChromePhp::log('amount ' . $Product->amount);
 
   $addProduct = mysql_query(
-          "INSERT INTO `products` (`InvoiceID`, `ProductSize`,`ProductType`,`ProductBrand`, 
+          "INSERT INTO `products` (`InvoiceID`, `ProductSize`,`ProductType`,`ProductBrandID`, 
           `Pattern`, `ProductQty`, `UnitPrice`, `Amount` ) VALUES 
-          ('$Product->invoiceID','$Product->productSize',$Product->productTypeID, '$Product->brand', 
+          ('$Product->invoiceID','$Product->productSize','$Product->productTypeID', '$Product->brandID', 
           '$Product->productPattern', '$Product->units', '$Product->rate', 
           '$Product->amount' )" );
 
@@ -1193,8 +1242,10 @@ function MessageTemplate($MessageType, $text) {
  {
    public $invoiceID;
    public $productTypeID;
+   public $productTypeName;
    public $productSize;
    public $brand;
+   public $brandID;
    public $productPattern;
    public $units;
    public $rate;
@@ -1232,6 +1283,8 @@ function MessageTemplate($MessageType, $text) {
     public $invoiceDate;
     public $companyName;
     public $invoiceNumber;
+    public $supplierID;
+    public $supplierName;
     public $tinNumber ="";
     public $vatAmount;
     public $vatPer;
