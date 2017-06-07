@@ -34,6 +34,11 @@ function RetriveInvoice($InvoiceID) {
         $InvoiceData->Status = '1';
         $date = date_create($InvoiceData->invoiceDate);
         $InvoiceData->invoiceDate = date_format($date,'d-m-Y');
+
+        if($InvoiceData->paymentType == 3) {
+            $date = date_create($InvoiceData->chequeDate);
+            $InvoiceData->chequeDate = date_format($date,'d-m-Y');
+        }
     }
      print json_encode($InvoiceData);
 }

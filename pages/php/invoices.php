@@ -76,7 +76,7 @@ require '_header.php';
                   <tr>
                     <th><?php echo $i+=1; ?></th>
                     <td><?php echo $Invoice['Company']; ?></td>
-                    <td><?php $date = date_create($Invoice['InvoiceDate']); echo date_format($date, 'd-m-Y'); ?></td>
+                    <td><span hidden><?php echo $Invoice['InvoiceDate'] ?></span><?php $date = date_create($Invoice['InvoiceDate']); echo date_format($date, 'd-m-Y'); ?></td>
                     <td><?php echo '<a href="viewinvoice.php?id='. $Invoice['InvoiceID']. ' ">' . $Invoice['InvoiceNumber'] . '</a>'; ?></td>
                     <td><?php echo $Invoice['TinNumber'] ?></td>
                     <td align="right"><?php echo $Invoice['SubTotal'] ?></td>
@@ -93,12 +93,13 @@ require '_header.php';
                       ?>
                     </td>
                     <td ><?php echo $Invoice['ChequeNo']; ?></td>
-                    <td >
+                    <td>
                       <?php 
                         $chequeDate = $Invoice['ChequeDate'];
                         if ($chequeDate != '0000-00-00') {
+                          echo "<span hidden>". $Invoice['InvoiceDate'] . "</span>";
                           $chequeDate = date_create($chequeDate); 
-                          echo date_format($chequeDate, 'm-d-Y');
+                          echo date_format($chequeDate, 'd-m-Y');
                         }
                       ?>
                     </td>

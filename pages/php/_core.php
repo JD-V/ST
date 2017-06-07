@@ -619,7 +619,10 @@ function GetServiceablesInInvoice($InvoiceNumber) {
 }
 
 function GetPuchaseInvoiceByID($InvoiceID) {
-  $GetInvoice = mysql_query("SELECT p.*, s.TinNumber,s.SupplierName FROM purchaseinvoice p LEFT JOIN supplier s ON s.SupplierID=p.SupplierID WHERE p.InvoiceID = '$InvoiceID' ");
+  $GetInvoice = mysql_query("SELECT p.InvoiceID, p.InvoiceDate, p.InvoiceNumber, p.Company AS 
+  SupplierName, p.TinNumber, p.VatAmount, p.TotalPaid, p.SubTotal, p.PaymentType, p.ChequeNo, 
+  p.ChequeDate, p.SupplierID, p.Notes, s.TinNumber, s.SupplierName FROM purchaseinvoice p 
+  LEFT JOIN supplier s ON s.SupplierID=p.SupplierID WHERE p.InvoiceID = '$InvoiceID' ");
 
   if(mysql_num_rows($GetInvoice)==1) {
     $ShowData = mysql_fetch_assoc($GetInvoice);
