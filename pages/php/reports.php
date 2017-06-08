@@ -41,7 +41,7 @@ require '_header.php';
           <div class="box-body">
             
              <div id="Report1">
-              <form class="form-horizontal"  role="form" name="reportsForm" id="reportsForm" action="AsyncGenerateReports.php"  method="post" >
+              <form class="form-horizontal"  role="form" name="reportsForm" id="reportsForm" action="asyncgeneratereports.php"  method="post" >
                 <input type="hidden" value="<?php echo $_SESSION['AUTH_KEY']; ?>" name="akey" id="ID_akey" required="true">
 
                 <div class="form-group">

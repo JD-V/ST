@@ -705,6 +705,15 @@ function GetSalesReport($fromDate,$toDate) {
                      ORDER BY sa.InvoiceNumber, sa.InvoiceDateTime asc");
 }
 
+function GetPurchaseReport($fromDate,$toDate) {
+ return mysql_query("SELECT pi.*, p.*,s.SupplierName,s.TinNumber,b.BrandName,pt.ProductTypeName FROM purchaseinvoice pi 
+                      JOIN products p ON pi.InvoiceID = p.InvoiceID INNER JOIN supplier s ON s.SupplierID = pi.SupplierID 
+                      INNER JOIN brands b ON b.BrandID = p.ProductBrandID INNER JOIN producttype pt ON p.ProductType = pt.ProductTypeID WHERE 
+                      pi.InvoiceDate>='$fromDate' AND pi.InvoiceDate <='$toDate' 
+                      ORDER BY pi.InvoiceID, pi.InvoiceDate asc");
+}
+
+
 function GetServiceReport($fromDate,$toDate) {
  return mysql_query("SELECT se.*, si.* FROM service se JOIN serviceitems si ON se.InvoiceNumber = si.InvoiceNumber WHERE 
                       se.InvoiceDateTime>='$fromDate' AND se.InvoiceDateTime <='$toDate' 

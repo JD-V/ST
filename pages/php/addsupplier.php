@@ -156,7 +156,7 @@ require '_header.php'
       <div class="box-body">
 
       <div id="AddOrUpdateSupplier">
-          <form class="form-horizontal"  name="Supplier" id="Supplier" action="addSupplier.php?_auth=<?php echo $_SESSION['AUTH_KEY']; ?>" method="post">
+          <form class="form-horizontal"  name="Supplier" id="Supplier" action="addsupplier.php?_auth=<?php echo $_SESSION['AUTH_KEY']; ?>" method="post">
               <input type="hidden" value="<?php echo $_SESSION['AUTH_KEY']; ?>" name="akey" id="ID_akey" >
 
               <div class="form-group">

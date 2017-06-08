@@ -177,8 +177,9 @@ if(isLogin() && isAdmin())
                     }
                     
                     if(isset($array['InvoiceDateTime'][$i])) {
+                        $date = date_create($array['InvoiceDateTime'][$i]);
                         $objPHPExcel->setActiveSheetIndex(0)
-                                    ->setCellValue('B'.$currentRow, $array['InvoiceDateTime'][$i]);
+                                    ->setCellValue('B'.$currentRow, date_format($date,'d-m-y H:i'));
                     }
 
                     if(isset($array['CustomerName'][$i])) {
@@ -256,8 +257,9 @@ if(isLogin() && isAdmin())
                         }
 
                         if(isset($array['chequeDate'][$i])){
-                                $objPHPExcel->setActiveSheetIndex(0)
-                                            ->setCellValue('P'.$currentRow, $array['chequeDate'][$i]);
+                            $date = date_create($array['chequeDate'][$i]);
+                            $objPHPExcel->setActiveSheetIndex(0)
+                                        ->setCellValue('P'.$currentRow, date_format($date,'d-m-Y'));
                         }
                     }
 
@@ -417,7 +419,7 @@ if(isLogin() && isAdmin())
                         $currentRow++;
                         continue;
                     }
-                        
+
 
                     if(isset($array['InvoiceNumber'][$i])) {
                         $objPHPExcel->setActiveSheetIndex(0)
@@ -425,8 +427,9 @@ if(isLogin() && isAdmin())
                     }
                     
                     if(isset($array['InvoiceDateTime'][$i])) {
+                        $date = date_create($array['InvoiceDateTime'][$i]);
                         $objPHPExcel->setActiveSheetIndex(0)
-                                    ->setCellValue('B'.$currentRow, $array['InvoiceDateTime'][$i]);
+                                    ->setCellValue('B'.$currentRow, date_format($date,'d-m-y H:i'));
                     }
 
                     if(isset($array['CustomerName'][$i])) {
@@ -560,13 +563,239 @@ if(isLogin() && isAdmin())
             }
             $objPHPExcel->setActiveSheetIndex(0)
                         ->setCellValue('B4', $total);            
+        } else if($ReportTypeID == 4) {
+            //sale
+            $ReportType = "Purchase Invoices";
+            // Add some data
+            $objPHPExcel->setActiveSheetIndex(0)
+                        ->setCellValue('A1', 'From')
+                        ->setCellValue('B1', $_POST['FromDate'])
+                        ->setCellValue('A2', 'To')                    
+                        ->setCellValue('B2', $_POST['ToDate'])
+                        ->setCellValue('A3', 'Report type')
+                        ->setCellValue('B3', $ReportType)
+                        ->setCellValue('A4', 'Total')
+                        ->setCellValue('A6', 'ID')
+                        ->setCellValue('B6', 'Invoice Number')
+                        ->setCellValue('C6', 'Invoice Date')
+                        ->setCellValue('D6', 'Supplier')
+                        ->setCellValue('E6', 'Tin Number')
+                        ->setCellValue('F6', 'Sub Total')
+                        ->setCellValue('G6', 'Vat')
+                        ->setCellValue('H6', 'Total PAid')
+                        ->setCellValue('I6', 'Payment Type')
+                        ->setCellValue('J6', 'Cheque No')
+                        ->setCellValue('K6', 'Cheque Date')
+                        ->setCellValue('L6', 'Resolved')
+                        ->setCellValue('M6', 'Notes')
+                        ->setCellValue('O6', 'Brand')
+                        ->setCellValue('P6', 'Size')
+                        ->setCellValue('Q6', 'Pattern')
+                        ->setCellValue('R6', 'Product Type')
+                        ->setCellValue('S6', 'Qty')
+                        ->setCellValue('T6', 'Price')
+                        ->setCellValue('U6', 'Amount');
+
+            // Rename worksheet
+            $objPHPExcel->getActiveSheet()->setTitle('Purchase');
+            // Set active sheet index to the first sheet, so Excel opens this as the first sheet
+            $objPHPExcel->setActiveSheetIndex(0);
+            //end of printing column names
+            //start while loop to get data
+            $result = GetPurchaseReport($FromDateTime, $ToDateTime);
+            $array = array();
+            
+            $printData= false;
+            if(mysql_num_rows($result)>0) 
+                $printData= true;
+            while ($row = mysql_fetch_assoc($result)) {
+                foreach ($row as $key => $value) {
+                    $array[$key][] = $value;
+                }
+            }
+
+            if($printData) {
+                for($i=0; $i<sizeof($array['InvoiceID']); $i++) {
+                    $arrVals = array_values($array['InvoiceID']);
+                    $arrVals[$i] = '';
+                    $index = array_search($array['InvoiceID'][$i], $arrVals);
+
+                    while($index != NULL){                    
+                        $array['InvoiceID'][$index] = NULL;
+
+                        $arrVals[$index] = '';
+                        $indexNew = array_search($array['InvoiceID'][$i], $arrVals);
+                        
+                        if($indexNew == $index)
+                            break;
+                        else $index = $indexNew;
+                    }
+                }
+
+                //end of printing column names  
+                //start while loop to get data
+                $previousInvoice = NULL;
+                $currentRow = 7;
+                $count = 1;
+                $total = 0;
+                for($i=0; $i<sizeof($array['InvoiceID']); $i++)
+                {
+                    $paymentType ='';
+                    if( $previousInvoice == NULL || $previousInvoice != $array['InvoiceID'][$i] ) {
+                        //merge cells  if count >1
+                        if($count > 1) {
+                            //ChromePhp::log('A'. ($currentRow-1-$count) .':A'.($currentRow-1) );
+                            // $objPHPExcel->setActiveSheetIndex(0)->mergeCells('A'. ($currentRow-1-$count) .':A'.($currentRow-1) );
+                        }
+                        $count = 1;
+                    }
+                    else
+                        $previousInvoice = $array['InvoiceID'][$i];
+                        
+                    if( $array['InvoiceID'][$i] != NULL) {                        
+                        $currentRow++;
+                    }
+
+                    if(isset($array['BrandName'][$i])) {
+                        $objPHPExcel->setActiveSheetIndex(0)
+                                    ->setCellValue('O'.$currentRow, $array['BrandName'][$i]);
+                    }
+
+                    if(isset($array['ProductSize'][$i])) {
+                        $objPHPExcel->setActiveSheetIndex(0)
+                                    ->setCellValue('P'.$currentRow, $array['ProductSize'][$i]);
+                    }
+
+                    if(isset($array['Pattern'][$i])) {
+                        $objPHPExcel->setActiveSheetIndex(0)
+                                    ->setCellValue('Q'.$currentRow, $array['Pattern'][$i]);
+                    }
+
+                    if(isset($array['ProductTypeName'][$i])) {
+                        $objPHPExcel->setActiveSheetIndex(0)
+                                    ->setCellValue('R'.$currentRow, $array['ProductTypeName'][$i]);
+                    }
+
+                    if(isset($array['ProductQty'][$i])) {
+                        $objPHPExcel->setActiveSheetIndex(0)
+                                    ->setCellValue('S'.$currentRow, $array['ProductQty'][$i]);
+                    }
+
+                    if(isset($array['UnitPrice'][$i])) {
+                        $objPHPExcel->setActiveSheetIndex(0)
+                                    ->setCellValue('T'.$currentRow, $array['UnitPrice'][$i]);
+                    }
+
+                    if(isset($array['Amount'][$i])) {
+                        $objPHPExcel->setActiveSheetIndex(0)
+                                    ->setCellValue('U'.$currentRow, $array['Amount'][$i]);
+                    }
+
+                    if( $array['InvoiceID'][$i] == NULL) {                        
+                        $currentRow++;
+                        continue;
+                    }
+                    
+
+
+                    if(isset($array['InvoiceID'][$i])){
+                        $objPHPExcel->setActiveSheetIndex(0)
+                                    ->setCellValue('A'.$currentRow, $array['InvoiceID'][$i]);
+                    }                        
+
+                    if(isset($array['InvoiceNumber'][$i])) {
+                        $objPHPExcel->setActiveSheetIndex(0)
+                                    ->setCellValue('B'.$currentRow, $array['InvoiceNumber'][$i]);
+                    }
+                    
+                    if(isset($array['InvoiceDate'][$i])) {
+                        $date = date_create($array['InvoiceDate'][$i]);
+                        $objPHPExcel->setActiveSheetIndex(0)
+                                    ->setCellValue('C'.$currentRow,date_format($date,'d-m-Y'));
+                    }
+
+                    if(isset($array['SupplierName'][$i])) {
+                        $objPHPExcel->setActiveSheetIndex(0)
+                                    ->setCellValue('D'.$currentRow, $array['SupplierName'][$i]);
+                    }
+
+                    if(isset($array['TinNumber'][$i])){
+                        $objPHPExcel->setActiveSheetIndex(0)
+                                    ->setCellValue('E'.$currentRow, $array['TinNumber'][$i]);
+                    }
+
+                    if(isset($array['SubTotal'][$i])){
+                        $objPHPExcel->setActiveSheetIndex(0)
+                                    ->setCellValue('F'.$currentRow, $array['SubTotal'][$i]);
+                    }
+
+                    if(isset($array['VatAmount'][$i])){
+                        $objPHPExcel->setActiveSheetIndex(0)
+                                    ->setCellValue('G'.$currentRow, $array['VatAmount'][$i]);
+                    }
+
+                    if(isset($array['TotalPaid'][$i])){
+                        $objPHPExcel->setActiveSheetIndex(0)
+                                    ->setCellValue('H'.$currentRow, $array['TotalPaid'][$i]);
+                        $total+=$array['TotalPaid'][$i];
+                    }
+
+                    if(isset($array['PaymentType'][$i])){
+                        if($array['PaymentType'][$i] == 1) {
+                            $paymentType = 'Cash';
+                        } else if($array['PaymentType'][$i] == 2) {
+                            $paymentType = 'Card';
+                        } else if($array['PaymentType'][$i] == 3) {
+                            $paymentType = 'Cheque';
+                        }                    
+                        $objPHPExcel->setActiveSheetIndex(0)
+                                    ->setCellValue('I'.$currentRow, $paymentType);
+                    }
+
+                    if($paymentType == 'Cheque') {                
+                        if(isset($array['ChequeNo'][$i])) {
+                            $objPHPExcel->setActiveSheetIndex(0)
+                                        ->setCellValue('J'.$currentRow, $array['ChequeNo'][$i]);
+                        }
+
+                        if(isset($array['ChequeDate'][$i])) {
+                            $date = date_create($array['ChequeDate'][$i]);
+
+                                $objPHPExcel->setActiveSheetIndex(0)
+                                            ->setCellValue('K'.$currentRow, date_format($date,'d-m-Y'));
+                        }
+
+                        if(isset($array['Resolved'][$i])){
+                            if($array['Resolved'][$i] == 0)
+                                $objPHPExcel->setActiveSheetIndex(0)
+                                            ->setCellValue('L'.$currentRow, 'No');
+                            else
+                                $objPHPExcel->setActiveSheetIndex(0)
+                                            ->setCellValue('L'.$currentRow, 'Yes');                            
+                        }
+                    }
+
+                    if(isset($array['Notes'][$i])){
+                        $objPHPExcel->setActiveSheetIndex(0)
+                                    ->setCellValue('M'.$currentRow, $array['Notes'][$i]);
+                    }
+
+                    $currentRow++;
+                }
+                $objPHPExcel->setActiveSheetIndex(0)
+                    ->setCellValue('B4', $total);
+            } else {
+                $objPHPExcel->setActiveSheetIndex(0)
+                ->setCellValue('B4', 0);
+            }
+
         } else {
             $output = json_encode(array('success' => false));
         }
 
         // // Redirect output to a client’s web browser (OpenDocument)
-        header('Content-Type: application/vnd.oasis.opendocument.spreadsheet');
-        header('Content-Disposition: attachment;filename="'. $_POST['FromDate'] .' to '. $_POST['ToDate']. ' '. $ReportType . '.ods"');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="'. $_POST['FromDate'] .' to '. $_POST['ToDate']. ' '. $ReportType . '.xlsx"');
         header('Cache-Control: max-age=0');
         // If you're serving to IE 9, then the following may be needed
         header('Cache-Control: max-age=1');
@@ -577,7 +806,7 @@ if(isLogin() && isAdmin())
         header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
         header ('Pragma: public'); // HTTP/1.0
 
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'OpenDocument');
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $objWriter->save('php://output');
 
       }
