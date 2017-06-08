@@ -8,26 +8,6 @@ if(isLogin() && isAdmin())
 require '_header.php'
 
 ?>
-
-<style>
-
-.invoice-title h2, .invoice-title h3 {
-    display: inline-block;
-}
-
-.table > tbody > tr > .no-line {
-    border-top: none;
-}
-
-.table > thead > tr > .no-line {
-    border-bottom: none;
-}
-
-.table > tbody > tr > .thick-line {
-    border-top: 2px solid;
-}
-
-</style>     
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
   <div id='message' style='display: none;'></div>
@@ -147,9 +127,9 @@ require '_header.php'
       </div>
       <div class="box-body" ng-app="InvoicesApp" ng-controller="InvoiceCtrl">
 
-<div class="container">
-    <div class="row">
-        <div class="col-xs-12">
+<div class="container col-xs-12">
+
+        <div>
     		<div class="invoice-title">
     			<h2>Purchase Invoice</h2><h3 class="pull-right">
                 <button type="button" class="btn btn-md btn-info" ng-click="DisplayPreviousInvoice();"><i class="fa fa-arrow-left" aria-hidden="true"></i></button>
@@ -194,10 +174,9 @@ require '_header.php'
     			</div>
     		</div>
     	</div>
-    </div>
-    
+
     <div class="row">
-    	<div class="col-md-12">
+    	<div class="col-xs-12">
     		<div class="panel panel-default">
     			<div class="panel-heading">
     				<h3 class="panel-title"><strong>Order summary</strong></h3>
@@ -298,7 +277,7 @@ angular.module('InvoicesApp',[])
         $scope.RefreshView();
     }    
 })
-.service('dataservice',function($http){
+.service('dataservice',function($http) {
 
     this.getInvoice = function(invoiceID,callback) {
         $http({

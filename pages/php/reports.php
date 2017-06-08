@@ -52,6 +52,7 @@ require '_header.php';
                       <option value="1" >Sale</option>
                       <option value="2" >Service</option>
                       <option value="3" >Non Billable</option>
+                      <option value="4" >Invoices</option>
                     </select>
                   </div>
                 </div>
