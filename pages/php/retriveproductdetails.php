@@ -14,6 +14,10 @@ if(isLogin()) {
         $ProductInventory->productPattern = FilterInput($_GET['Pattern']);
         $ProductInventory->productTypeID = FilterInput($_GET['TypeID']);
         print RetriveProductID($ProductInventory);
+      } else {
+        $object = new stdClass();
+        $object->productID = NULL;
+        print json_encode($object);
       }
     }
   }

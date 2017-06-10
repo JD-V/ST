@@ -40,16 +40,36 @@ require '_header.php'
   }
 
   function CheckAvailibility() {
-    $("#")
+    var productType = $("[name=ProductTypeID]").val();
+    var productSize = $("[name=ProductSize]").val().trim();
+    var productBrand = $("[name=BrandID]").val();
+    var productPattern = $("[name=ProductPattern]").val().trim();
+
+    if(productType == null) {
+      $(".message").html('');
+      return;
+    } else if(productBrand == null) {
+      $(".message").html('');
+      return;
+    } else if(productSize == '') {
+       $(".message").html('');
+       return;
+    }
+
     $.ajax({
 	    dataType: "json",
 	    type: "GET",
-	    url: "retriveproductdetails.php?action=Retrive&item=InventoryProduct&BrandID=1&TypeID=1&Size=&Pattern=",
+	    url: "retriveproductdetails.php?action=Retrive&item=InventoryProduct&BrandID="+productBrand+"&TypeID="+productType+"&Size="+productSize+"&Pattern="+productPattern,
 	    success: function(result) {
-	      
+        if(result.productID !='' && result.productID != undefined)
+  	      $(".message").html("<i class=\"fa fa-check\"></i> Product Available");
+        else
+          $(".message").html("<i class=\"fa fa-check\"></i> New Product");
 	    },
 	    error: function(XMLHttpRequest, textStatus, errorThrown) {
-	        alert("Status: " + textStatus); alert("Error: " + errorThrown);
+        $(".message").html("<i class=\"fa fa-check\"></i> error");
+	        console.log("Status: " + textStatus);
+          console.log("Error: " + errorThrown);
 	    }
 	  });
   }
@@ -123,34 +143,28 @@ require '_header.php'
                $ProductInventory->productNotes = FilterInput($_POST['ProductNotes']);
 
             if(isset($_POST['Qty']) && !empty($_POST['Qty']))
-              $Qty = (int)$_POST['Qty'];
+              $ProductInventory->qty = (int)$_POST['Qty'];
             
             $result = false;
             $msg = '';
-            if(isset($_POST['ProductID']) && !empty($_POST['ProductID'])) {
-                  $ProductInventory->productID = FilterInput($_POST['ProductID']);
-                  $result = UpdateProductInventory($ProductInventory);
-                  $msg = 'Product updated successfully!';
+            
+            $resultObject = AddProductInventory($ProductInventory);
+            if($resultObject->isProductAdded == 1)
+              $msg = 'Product added successfully!';
+            
+            if($resultObject->isProductAdded == 1 && $resultObject->isStockAdded == 1)
+              $msg .= " and ";
 
-            } else {
-                $result = AddProductInventory($ProductInventory);
-                $msg = 'Product added successfully!';
-            }
+            if($resultObject->isStockAdded == 1)
+              $msg .= 'Stock added successfully!';
+                            
+            if($resultObject->isProductAdded == 0 && $resultObject->isStockAdded == 0) 
+              echo MessageTemplate(MessageType::Failure, "Something went wrong, please contact system admin");
+            else
+              echo MessageTemplate(MessageType::Success, $msg);
 
-            if($result) {
-               
-               if($Qty>0) {
-                 $stock = new Stock();
-                 $stock->ProductID= $ProductInventory->productID++;
-                 $stock->Qty=$Qty;
-                 $stock->TansactionTypeID = 3;  //3=>purchase
-                 if(AddStockEntry($stock))
-                  $msg .= " And Stock entry created with type PURCHASE";
-                 }
-                 echo MessageTemplate(MessageType::Success, $msg);
-            } else {
-              echo MessageTemplate(MessageType::Failure, $msg);
-            }
+            
+            
           } else {
             echo MessageTemplate(MessageType::Failure, "Please enter all the details.");
           }
@@ -338,6 +352,7 @@ require '_header.php'
               <input type="text" class="form-control" onfocus="CheckAvailibility()" name="Qty" onkeypress='return event.charCode >= 48 && event.charCode <= 57' >
               <span class="blue">Note : Adding Quantity here will create stock entry immediately.<br/>you can leave this balnk as well, if you don't want to create stock entry</span>
             </div>
+            <div class="message green"></div>
           </div>
 
           <div class="form-group">

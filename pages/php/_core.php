@@ -854,18 +854,31 @@ function GetProdcutTypes(){
 
 function AddProductInventory($ProductInventory) {
 
-  $addProductInventory = mysql_query("INSERT INTO `productinvetory` (`ProductID`, `BrandID`, `ProductSize`, `ProductPattern`, `SupplierID`, 
-    `ProductTypeID`, `CostPrice`, `MinSellPrice`, `MaxSellPrice`, `ProductNotes`, `MinStockAlert` ) VALUES 
-    ( '$ProductInventory->productID', '$ProductInventory->brandID', '$ProductInventory->productSize',
-      '$ProductInventory->productPattern', '$ProductInventory->supplierID', '$ProductInventory->productTypeID',
-      '$ProductInventory->costPrice', '$ProductInventory->minSellingPrice', '$ProductInventory->maxSellingPrice',
-      '$ProductInventory->productNotes', '$ProductInventory->minStockAlert' )" );
+  mysql_query("CALL InsertProductInventory('$ProductInventory->brandID',
+  '$ProductInventory->productSize','$ProductInventory->productPattern','$ProductInventory->productTypeID',
+  '$ProductInventory->productNotes', '$ProductInventory->minStockAlert','$ProductInventory->qty',@isProductAdded,@isStockAdded);");
+  
+  $addProductInventory = mysql_query("SELECT @isProductAdded as isProductAdded, @isStockAdded  as isStockAdded;");
+  $object = new stdClass();
+  if($addProductInventory) {
+    ChromePhp::log("retrived result");
+    
+    $result = mysql_fetch_assoc($addProductInventory);
+    ChromePhp::log($result);
+    $isProductAdded = $result['isProductAdded'];
+    $isStockAdded = $result['isStockAdded'];
 
-  if($addProductInventory)
-    return 1;
-  else
-    echo mysql_error();
-    return 0;
+    $object->isProductAdded = $isProductAdded;
+    $object->isStockAdded = $isStockAdded;
+  }
+  else {
+    ChromePhp::log("failed to retrived result");
+    $object->isProductAdded = 0;
+    $object->isStockAdded = 0;
+
+  }
+  
+  return $object;
 }
 
 function UpdateProductInventory($ProductInventory) {
