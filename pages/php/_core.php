@@ -905,22 +905,20 @@ function GetProductInventory2(){
   
   $ProductInventoryArray = array();
 
-  if($getProductInventory = mysql_query("select p.*, pt.ProductTypeName, b.BrandName, s.SupplierName from productinvetory p JOIN brands b ON p.BrandID = b.BrandID JOIN supplier s ON p.SupplierID = s.SupplierID JOIN producttype pt ON p.ProductTypeID = pt.ProductTypeID")) {
+  if($getProductInventory = mysql_query("select p.*, pt.ProductTypeName, b.BrandName from productinvetory p JOIN brands b ON p.BrandID = b.BrandID JOIN producttype pt ON p.ProductTypeID = pt.ProductTypeID")) {
     if(mysql_num_rows($getProductInventory) >= 1) {
       while ($product = mysql_fetch_assoc($getProductInventory)) {
         $ProductInventory = new ProductInventory();
         $ProductInventory->productID = $product['ProductID'];
-        $ProductInventory->supplierID = $product['SupplierID'];
-        $ProductInventory->supplierName = $product['SupplierName'];
         $ProductInventory->brandID = $product['BrandID'];
         $ProductInventory->brandName = $product['BrandName'];
         $ProductInventory->productSize = $product['ProductSize'];
         $ProductInventory->productPattern = $product['ProductPattern'];
         $ProductInventory->productTypeID = $product['ProductTypeID'];
         $ProductInventory->productTypeName = $product['ProductTypeName'];        
-        $ProductInventory->costPrice = $product['CostPrice'];
-        $ProductInventory->minSellingPrice = $product['MinSellPrice'];
-        $ProductInventory->maxSellingPrice = $product['MaxSellPrice'];
+        // $ProductInventory->costPrice = $product['CostPrice'];
+        // $ProductInventory->minSellingPrice = $product['MinSellPrice'];
+        // $ProductInventory->maxSellingPrice = $product['MaxSellPrice'];
         $ProductInventory->productNotes = $product['ProductNotes'];
         $ProductInventory->minStockAlert = $product['MinStockAlert'];
         $ProductInventory->dateOfEntry = $product['DateOfEntry'];
@@ -938,14 +936,12 @@ This Method retruns productInvenytory Object
 function GetProductInventoryByID2($productID){
   $ProductInventory = new ProductInventory();
   
-  if($getProductInventory = mysql_query("select p.*, pt.ProductTypeName, b.BrandName, s.SupplierName 
-  from productinvetory p JOIN brands b ON p.BrandID = b.BrandID JOIN supplier s ON p.SupplierID = 
-  s.SupplierID JOIN producttype pt ON p.ProductTypeID = pt.ProductTypeID WHERE p.ProductID = '$productID' " )) {
+  if($getProductInventory = mysql_query("select p.*, pt.ProductTypeName, b.BrandName from productinvetory p 
+      JOIN brands b ON p.BrandID = b.BrandID JOIN producttype pt ON p.ProductTypeID = pt.ProductTypeID WHERE 
+      p.ProductID = '$productID'" )) {
     if(mysql_num_rows($getProductInventory) == 1) {
       while ($product = mysql_fetch_assoc($getProductInventory)) {
         $ProductInventory->productID = $product['ProductID'];
-        $ProductInventory->supplierID = $product['SupplierID'];
-        $ProductInventory->supplierName = $product['SupplierName'];
         $ProductInventory->brandID = $product['BrandID'];
         $ProductInventory->brandName = $product['BrandName'];
         $ProductInventory->productSize = $product['ProductSize'];
@@ -1033,13 +1029,7 @@ function AddStockEntry($stock) {
 function GetStockTransactionHistory() {
   
   if($getStockTransactionHistory = mysql_query("select br.BrandName, pi.ProductSize, pi.ProductPattern, pi.ProductID, se.Qty, se.TansactionTypeID, tt.TranasactionTypeName, se.TimeStamp FROM stockentries se JOIN productinvetory pi ON se.ProductID = pi.ProductID JOIN tranasactiontype tt ON se.TansactionTypeID = tt.TansactionTypeID JOIN brands br ON pi.BrandID = br.BrandID")) {
-    
-    if(mysql_num_rows($getStockTransactionHistory) >= 1) {
-      return $getStockTransactionHistory;
-    }
-  }
-  else {
-    return false;
+    return $getStockTransactionHistory;
   }
 }
 

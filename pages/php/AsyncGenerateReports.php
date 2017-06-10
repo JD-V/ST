@@ -652,9 +652,9 @@ if(isLogin() && isAdmin())
                     else
                         $previousInvoice = $array['InvoiceID'][$i];
                         
-                    if( $array['InvoiceID'][$i] != NULL) {                        
-                        $currentRow++;
-                    }
+                    // if( $array['InvoiceID'][$i] != NULL) {                        
+                    //     $currentRow++;
+                    // }
 
                     if(isset($array['BrandName'][$i])) {
                         $objPHPExcel->setActiveSheetIndex(0)

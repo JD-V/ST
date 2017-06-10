@@ -19,10 +19,11 @@ $(document).ready(function() {
   });
 
   $('#productInventoryTable').DataTable({
-    "paging":   false,
+    "paging":   true,
     "info":     false,
-    "order": [[ 11, "desc" ]],
-    "columnDefs": [{ "orderable": false, "targets": [ 6,7,8,9,10,12,13 ] }]
+    "order": [[7, "desc" ]],
+    "pagingType": "full_numbers",
+    "columnDefs": [{ "orderable": false, "targets": [ 5,6,8,9 ] }]
   });
 
 $('#stockEntryTable').DataTable({

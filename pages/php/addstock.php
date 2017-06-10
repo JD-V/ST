@@ -111,12 +111,12 @@ require '_header.php'
               </div>
             </div>
 
-            <div class="form-group">
+            <!--<div class="form-group">
               <label for="Supplier" class="control-label col-sm-3 lables">Supplier<span class="mandatoryLabel">*</span></label>
               <div class="col-sm-4">
                 <input type="text" class="form-control" name="Supplier" readonly placeholder="Supplier" value="<?php if($isValidProduct) echo $Product->supplierName ?>" >
               </div>
-            </div>
+            </div>-->
 
             <div class="form-group">
               <label for="Brand" class="control-label col-sm-3 lables">Brand<span class="mandatoryLabel">*</span></label>
@@ -139,7 +139,7 @@ require '_header.php'
               </div>
             </div>
 
-              <div class="form-group">
+              <!--<div class="form-group">
                 <label for="CostPrice" class="control-label col-sm-3 lables">Cost Price<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
                   <div class='input-group'>
@@ -173,7 +173,7 @@ require '_header.php'
                     <input type="text" class="form-control rate currency" readonly name="MaxSellingPrice" maskedFormat="10,2" placeholder="0.00" value="<?php if($isValidProduct) echo $Product->maxSellingPrice ?>" >
                   </div>
                 </div>
-              </div>             
+              </div>-->
 
               <div class="form-group">
                 <label for="Qty" class="control-label col-sm-3 lables">Qty</label>

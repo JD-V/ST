@@ -267,7 +267,7 @@ require '_header.php'
               <label for="addItems" class="control-label col-sm-3 lables">Add Products<span class="mandatoryLabel">*</span></label>
               <div class="col-sm-4" >
                   <div id="notebooks">
-                    <input type="text" id="query" ng-model="query"/>
+                    <input type="text" id="query" ng-model="query" placeholer="Serch for size or pattern" />
                     <ul class="ul-style" id="notebook_ul">
                       <li ng-class="{'li-style-red': (product.Qty == undefined || product.Qty == 0), 'li-style-green': (product.Qty >= 9), 'li-style-yellow': (product.Qty < 9 && product.Qty>0)}"  ng-repeat="product in products | filter:query | orderBy: product.ProductName" ng-click="AddProduct(product.ProductID)">
                       Size: {{product.ProductDisplay}}<br/>
@@ -304,14 +304,18 @@ require '_header.php'
                   <td>{{item.ProductTypeName}}</td>
                   <td>
                   <div ng-class="{'edited': item.priceEdited, 'error' : item.priceInvalid}">
-                    <label  ng-hide="item.editing" >{{item.SellPrice}}</label>
-                      <input ng-change="item.priceEdited = true" ng-click="item.editing = true" ng-blur=" item.editing = false; item.priceInvalid = validateInput(item.Price  ); item.priceEdited = !item.priceInvalid" onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editing" ng-model="item.MaxSellPrice"  />
+                    <label  ng-hide="item.editingPrice" >{{item.SellPrice}}</label>
+                      <input ng-change="item.priceEdited = true" ng-click="item.editing = true" 
+                      ng-blur=" item.editingPrice = false; item.priceInvalid = validateInput(item.Price); item.priceEdited = !item.priceInvalid" 
+                      onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editingPrice" ng-model="item.SellPrice"  />
                   </div>
                   </td>
                   <td>
                   <div ng-class="{'edited': item.QtyEdited, 'error' : item.QtyInvalid}">
-                    <label  ng-hide="item.editing" >{{item.Qty}}</label>
-                      <input ng-change="item.QtyEdited = true" ng-click="item.editing = true" ng-blur=" item.editing = false; item.QtyInvalid = validateInput(item.Qty  ); item.QtyEdited = !item.QtyInvalid" onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editing" ng-model="item.Qty"  />
+                    <label  ng-hide="item.editingQty" >{{item.Qty}}</label>
+                      <input ng-change="item.QtyEdited = true" ng-click="item.editing = true" 
+                      ng-blur=" item.editingQty = false; item.QtyInvalid = validateInput(item.Qty  ); item.QtyEdited = !item.QtyInvalid" 
+                      onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editingQty" ng-model="item.Qty"  />
                   </div>
                   </td>
 
@@ -322,7 +326,7 @@ require '_header.php'
                   </td>
 
                   <td>
-                  <a ng-click="item.editing = !item.editing;" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>&nbsp;&nbsp;&nbsp;
+                  <a ng-click="item.editingQty = !item.editingQty; item.editingPrice = !item.editingPrice; " ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>&nbsp;&nbsp;&nbsp;
                   <a ng-click="RemoveItem(item.ItemID, $index);" ><i class="fa fa-times" aria-hidden="true"></i></a>
                   </td>
                 </tr>
@@ -689,19 +693,18 @@ var ValidSubmit = ['$parse', function ($parse) {
       console.log(JSON.stringify(FormData));
 
       dataService.submitOrder(FormData, function(response) {
-          if(parseInt(response.data, 10)) {
-            document.getElementById("messages").innerHTML = 
-              MessageTemplate(0, "Sales Invoice has been added with " + response.data +" product(s)");
-              $scope.reset();              
-              $scope.salesForm.$setPristine();
-              $scope.salesForm.$setUntouched();
-              $scope.salesForm.$submitted = false;
-          }
-          else {
-              document.getElementById("messages").innerHTML = MessageTemplate(1, response.data);
-          }
-          autoClosingAlert(".alert-block", 4000);
-          scrollTo(0,0);          
+        if(parseInt(response.data, 10)) {
+          document.getElementById("messages").innerHTML = 
+            MessageTemplate(0, "Sales Invoice has been added with " + response.data +" product(s)");
+            $scope.reset();              
+            $scope.salesForm.$setPristine();
+            $scope.salesForm.$setUntouched();
+            $scope.salesForm.$submitted = false;
+        } else {
+            document.getElementById("messages").innerHTML = MessageTemplate(1, response.data);
+        }
+        autoClosingAlert(".alert-block", 4000);
+        scrollTo(0,0);
       });
     }
   };

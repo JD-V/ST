@@ -68,21 +68,23 @@ require '_header.php'
     if(@$_POST['UKey'] == '2') {
       ChromePhp::log("AKEY" . $_POST['akey']);
       if(@$_POST['akey'] == $_SESSION['AUTH_KEY']) {
-        if( isset($_POST['SupplierID']) && !empty($_POST['SupplierID']) &&
+        if( 
+            //isset($_POST['SupplierID']) && !empty($_POST['SupplierID']) &&
             isset($_POST['BrandID']) && !empty($_POST['BrandID']) &&
             isset($_POST['ProductSize']) && !empty($_POST['ProductSize']) &&
             // isset($_POST['ProductPattern']) && !empty($_POST['ProductPattern']) &&
-            isset($_POST['ProductTypeID']) && !empty($_POST['ProductTypeID']) &&
-            isset($_POST['CostPrice']) && !empty($_POST['CostPrice']) &&
-            isset($_POST['MaxSellingPrice']) && !empty($_POST['MaxSellingPrice']) &&
-            isset($_POST['MinSellingPrice']) && !empty($_POST['MinSellingPrice']) )
+            isset($_POST['ProductTypeID']) && !empty($_POST['ProductTypeID'])
+            // isset($_POST['CostPrice']) && !empty($_POST['CostPrice']) &&
+            // isset($_POST['MaxSellingPrice']) && !empty($_POST['MaxSellingPrice']) &&
+            // isset($_POST['MinSellingPrice']) && !empty($_POST['MinSellingPrice'])
+             )
           {
             $ProductInventory = new ProductInventory();
             $ProductInventory->productID  = GetMaxProductInventoryID();
 
             if($ProductInventory->productID != NULL)
               $ProductInventory->productID++;
-            $ProductInventory->supplierID = FilterInput($_POST['SupplierID']);
+            // $ProductInventory->supplierID = FilterInput($_POST['SupplierID']);
             $ProductInventory->brandID = FilterInput($_POST['BrandID']);
             $ProductInventory->productSize = FilterInput($_POST['ProductSize']);
 
@@ -92,9 +94,9 @@ require '_header.php'
             } 
             
             $ProductInventory->productTypeID = FilterInput($_POST['ProductTypeID']);
-            $ProductInventory->costPrice = FilterInput($_POST['CostPrice']);
-            $ProductInventory->minSellingPrice = FilterInput($_POST['MinSellingPrice']);
-            $ProductInventory->maxSellingPrice = FilterInput($_POST['MaxSellingPrice']);
+            // $ProductInventory->costPrice = FilterInput($_POST['CostPrice']);
+            // $ProductInventory->minSellingPrice = FilterInput($_POST['MinSellingPrice']);
+            // $ProductInventory->maxSellingPrice = FilterInput($_POST['MaxSellingPrice']);
             $Qty = 0;
             
             if(isset($_POST['minStockAlert']) && !empty($_POST['minStockAlert']) )
@@ -130,40 +132,19 @@ require '_header.php'
                  if(AddStockEntry($stock))
                   $msg .= " And Stock entry created with type PURCHASE";
                  }
-                  echo '<div class="alert alert-block alert-success">
-                          <button type="button" class="close" data-dismiss="alert">
-                            <i class="ace-icon fa fa-times"></i>
-                          </button>
-                          <i class="ace-icon fa fa-check green"></i>&nbsp;&nbsp;'.$msg .'&nbsp;&nbsp;</div>';
+                 echo MessageTemplate(MessageType::Success, $msg);
             } else {
-              echo '<div class="alert alert-block alert-danger">
-                      <button type="button" class="close" data-dismiss="alert">
-                        <i class="ace-icon fa fa-times"></i>
-                      </button>
-                      <i class="ace-icon fa fa-ban red"></i>&nbsp;&nbsp;'.$msg .'&nbsp;&nbsp;</div>';
+              echo MessageTemplate(MessageType::Failure, $msg);
             }
           } else {
-            echo '<div class="alert alert-block alert-danger">
-                    <button type="button" class="close" data-dismiss="alert">
-                      <i class="ace-icon fa fa-times"></i>
-                    </button>
-                    <i class="ace-icon fa fa-ban red"></i>
-                    Please enter all the details.
-                  </div>';
+            echo MessageTemplate(MessageType::Failure, "Please enter all the details.");
           }
           /* codefellas Security Robot for re-submission of form */
           $_SESSION['AUTH_KEY'] = mt_rand(100000000,999999999);
           ChromePhp::log($_SESSION['AUTH_KEY']);
           /* END */
         } else {
-
-          echo '<div class="alert alert-block alert-danger">
-                  <button type="button" class="close" data-dismiss="alert">
-                    <i class="ace-icon fa fa-times"></i>
-                  </button>
-                  <i class="ace-icon fa fa-android red"></i>
-                  Pikes ACE security Robot has detected re-submission of same data or hack attempt. Please try later.
-                </div>';
+          echo MessageTemplate(MessageType::RoboWarning, "");
         }
     }
 
@@ -224,7 +205,7 @@ require '_header.php'
                 </div>
               </div>
 
-            <div class="form-group">
+            <!--<div class="form-group">
                 <label for="SupplierID" class="control-label col-sm-3 lables">Supplier<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
                   <select class="form-control"  name="SupplierID" >
@@ -242,7 +223,7 @@ require '_header.php'
                     ?>
                   </select>
               </div>
-            </div>
+            </div>-->
 
             <div class="form-group">
                 <label for="BrandID" class="control-label col-sm-3 lables product-brand-lable">Brand<span class="mandatoryLabel">*</span></label>
@@ -278,7 +259,7 @@ require '_header.php'
               </div>
             </div>
 
-              <div class="form-group">
+              <!--<div class="form-group">
                 <label for="CostPrice" class="control-label col-sm-3 lables">Cost Price<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
                   <div class='input-group'>
@@ -312,7 +293,7 @@ require '_header.php'
                     <input type="text" class="form-control rate currency" name="MaxSellingPrice" maskedFormat="10,2" placeholder="0.00" value="<?php if($isValidProduct) echo $Product->maxSellingPrice ?>" >
                   </div>
                 </div>
-              </div>              
+              </div>-->
 
             <div class="form-group">
                 <label for="ProductNotes" class="control-label col-sm-3 lables">Notes</label>

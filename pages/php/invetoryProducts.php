@@ -53,14 +53,10 @@ require '_header.php';
             <thead>
               <tr>
                 <th>#</th>
-                <th>supplier</th>
+                <th>Type</th>
                 <th>Brand</th>
                 <th>Size</th>
                 <th>Pattern</th>
-                <th>Type</th>
-                <td align="right" style="font-weight:bold">Cost Price</td>
-                <td align="right" style="font-weight:bold">Min Sell Price</td>
-                <td align="right" style="font-weight:bold">Max Sell Price</td>
                 <th>Stock Alert</th>
                 <th>Notes</th>
                 <th>Last Modified</th>                
@@ -76,14 +72,10 @@ require '_header.php';
                   ?>
                   <tr>
                     <td><?php echo '<a href="addproduct.php?id='. $product->productID.'">' . $i+=1  . '</a>'; ?></td>
-                    <td><?php echo $product->supplierID ?></td>
+                    <td><?php echo $product->productTypeName ?></td>
                     <td><?php echo $product->brandName; ?></td>                    
                     <td><?php echo $product->productSize ?></td>
                     <td><?php echo $product->productPattern ?></td>
-                    <td><?php echo $product->productTypeName ?></td>
-                    <td align="right"><?php echo $product->costPrice ?></td>
-                    <td align="right"><?php echo $product->minSellingPrice; ?></td>
-                    <td align="right"><?php echo $product->maxSellingPrice; ?></td>
                     <td align="center"><?php if($product->minStockAlert) echo '<i class="fa fa-check green" aria-hidden="true"></i>'; else echo '<i class="fa fa-times red" aria-hidden="true" ></i>'; ?></td>
                     <td><?php echo $product->productNotes; ?></td>
                     <td><?php echo $product->lastModified; ?></td>
