@@ -38,6 +38,21 @@ require '_header.php'
       $("[data-mask]").rules( "remove", "productSizeFormat" );
     }
   }
+
+  function CheckAvailibility() {
+    $("#")
+    $.ajax({
+	    dataType: "json",
+	    type: "GET",
+	    url: "retriveproductdetails.php?action=Retrive&item=InventoryProduct&BrandID=1&TypeID=1&Size=&Pattern=",
+	    success: function(result) {
+	      
+	    },
+	    error: function(XMLHttpRequest, textStatus, errorThrown) {
+	        alert("Status: " + textStatus); alert("Error: " + errorThrown);
+	    }
+	  });
+  }
 </script>
 
 
@@ -320,7 +335,7 @@ require '_header.php'
           <div class="form-group" <?php if($isValidProduct) echo 'hidden'; ?> >
             <label for="Qty" class="control-label col-sm-3 lables">Qty</label>
             <div class="col-sm-4">    
-              <input type="text" class="form-control" name="Qty" onkeypress='return event.charCode >= 48 && event.charCode <= 57' >
+              <input type="text" class="form-control" onfocus="CheckAvailibility()" name="Qty" onkeypress='return event.charCode >= 48 && event.charCode <= 57' >
               <span class="blue">Note : Adding Quantity here will create stock entry immediately.<br/>you can leave this balnk as well, if you don't want to create stock entry</span>
             </div>
           </div>

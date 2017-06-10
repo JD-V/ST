@@ -1033,6 +1033,16 @@ function GetStockTransactionHistory() {
   }
 }
 
+function GetInventoryProductID($product) {
+  $GetInventoryProduct = mysql_query("SELECT * FROM `productinvetory` WHERE ProductTypeID = '$product->productTypeID' 
+  AND BrandID='$product->brandID' AND ProductSize = '$product->productSize' AND ProductPattern = '$product->productPattern'");
+    if( mysql_num_rows($GetInventoryProduct) == 1) {
+      $showData =  mysql_fetch_assoc($GetInventoryProduct);
+      $product->productID = $showData['ProductID'];
+    }
+}
+
+
 function AddNewSalesItem($order) {
   $userID = $_SESSION['userID'];
   $AddOrder = mysql_query("INSERT INTO `sales` 
