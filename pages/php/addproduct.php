@@ -83,7 +83,7 @@ require '_header.php'
   <!-- Content Header (Page header) -->
   <section class="content-header" id="MainEventInfo" >
     <h1>
-      <div>Add or update Product</div>
+      <div>Add Product / Stock</div>
     </h1>
 <!--     <ol class="breadcrumb">
       <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -210,7 +210,7 @@ require '_header.php'
       <div class="box-body">
 
       <div>
-          <form class="form-horizontal" id="AddorUpdateProduct" name="AddorUpdateProduct" action="addProduct.php?_auth=<?php echo $_SESSION['AUTH_KEY']; ?>" method="post">
+          <form class="form-horizontal" id="AddorUpdateProduct" name="AddorUpdateProduct" action="addproduct.php?_auth=<?php echo $_SESSION['AUTH_KEY']; ?>" method="post">
             <input type="hidden" value="<?php echo $_SESSION['AUTH_KEY']; ?>" name="akey" id="ID_akey" >
             <input type="hidden" value="14.5" name="VatPer">
 

@@ -789,13 +789,76 @@ if(isLogin() && isAdmin())
                 ->setCellValue('B4', 0);
             }
 
+        } else if($ReportTypeID == 5) {
+            //non billable
+            $ReportType = "Inventory";
+           
+            // Add some data
+            $objPHPExcel->setActiveSheetIndex(0)
+                        ->setCellValue('A1', 'Report type')
+                        ->setCellValue('B1', 'Invnentory')
+                        ->setCellValue('A3', 'Product ID')
+                        ->setCellValue('B3', 'Type')
+                        ->setCellValue('C3', 'Brand')
+                        ->setCellValue('D3', 'Size')
+                        ->setCellValue('E3', 'Pattern')
+                        ->setCellValue('F3', 'Quantity');           
+
+            // Rename worksheet
+            $objPHPExcel->getActiveSheet()->setTitle('Inventory');
+            // Set active sheet index to the first sheet, so Excel opens this as the first sheet
+            $objPHPExcel->setActiveSheetIndex(0);
+            //end of printing column names
+            //start while loop to get data
+
+            $result = GetProductStocks();
+            $currentRow = 4;
+            $total = 0;
+            while ($Record = mysql_fetch_assoc($result)) {
+
+                if(isset($Record['ProductID'])) {
+                    $objPHPExcel->setActiveSheetIndex(0)
+                                ->setCellValue('A'.$currentRow, $Record['ProductID']);
+                }
+                
+                if(isset($Record['ProductTypeName'])) {
+                    $objPHPExcel->setActiveSheetIndex(0)
+                                ->setCellValue('B'.$currentRow, $Record['ProductTypeName']);
+                }
+
+                if(isset($Record['BrandName'])) {
+                    $objPHPExcel->setActiveSheetIndex(0)
+                                ->setCellValue('C'.$currentRow, $Record['BrandName']);
+                }
+
+                if(isset($Record['ProductSize'])) {
+                    $objPHPExcel->setActiveSheetIndex(0)
+                                ->setCellValue('D'.$currentRow, $Record['ProductSize']);
+                }
+
+                if(isset($Record['ProductPattern'])) {
+                    $objPHPExcel->setActiveSheetIndex(0)
+                                ->setCellValue('E'.$currentRow, $Record['ProductPattern']);
+                }
+
+                if(isset($Record['Qty'])) {
+                    $objPHPExcel->setActiveSheetIndex(0)
+                                ->setCellValue('F'.$currentRow, $Record['Qty']);
+                }
+
+                $currentRow++;
+            }
         } else {
             $output = json_encode(array('success' => false));
         }
 
         // // Redirect output to a client’s web browser (OpenDocument)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="'. $_POST['FromDate'] .' to '. $_POST['ToDate']. ' '. $ReportType . '.xlsx"');
+        if($ReportTypeID == 5)
+            header('Content-Disposition: attachment;filename="' . $ReportType . '.xlsx"');
+        else
+            header('Content-Disposition: attachment;filename="'. $_POST['FromDate'] .' to '. $_POST['ToDate']. ' '. $ReportType . '.xlsx"');
+
         header('Cache-Control: max-age=0');
         // If you're serving to IE 9, then the following may be needed
         header('Cache-Control: max-age=1');

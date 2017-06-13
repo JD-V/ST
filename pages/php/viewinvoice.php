@@ -27,93 +27,7 @@ require '_header.php'
   <!-- Main content -->
   <section class="content">
     <div id ="messages">
-
-    <?php
-    //$_SESSION['AUTH_KEY'] = mt_rand(100000000,999999999);
-    if(@$_POST['UKey'] == '2')
-    {
-      if(@$_POST['akey'] == $_SESSION['AUTH_KEY'])
-      {
-        if( isset($_POST['InvoiceDate']) && !empty($_POST['InvoiceDate']) &&
-            isset($_POST['SupplierID']) && !empty($_POST['SupplierID']) &&
-            isset($_POST['InvoiceNumber']) && !empty($_POST['InvoiceNumber']) &&
-            isset($_POST['ProductSize']) && !empty($_POST['ProductSize']) &&
-            isset($_POST['Brand']) && !empty($_POST['Brand']) &&
-            isset($_POST['ProductPattern']) && !empty($_POST['ProductPattern']) &&
-            isset($_POST['Quantity']) && !empty($_POST['Quantity']) &&
-            isset($_POST['Rate']) && !empty($_POST['Rate']) &&
-            isset($_POST['Amount']) && !empty($_POST['Amount']) &&
-            isset($_POST['SubTotalAmount']) && !empty($_POST['SubTotalAmount']) &&
-            isset($_POST['VatAmount']) && !empty($_POST['VatAmount']) &&
-            isset($_POST['TotalAmount']) && !empty($_POST['TotalAmount']) &&
-            isset($_POST['paymentType']) && !empty($_POST['paymentType']) )
-          {
-            $Invoice = new Invoice();
-            
-            $dateStr = FilterInput($_POST['InvoiceDate']);
-            $date = DateTime::createFromFormat('d-m-Y', $dateStr);
-            $Invoice->invoiceDate = $date->format('Y-m-d'); // => 2013-12-24
-            $Invoice->supplierID = FilterInput($_POST['SupplierID']);
-            $Invoice->invoiceNumber = FilterInput($_POST['InvoiceNumber']);
-            $Invoice->totalAmount = FilterInput($_POST['TotalAmount']);
-            $Invoice->vatAmount = FilterInput($_POST['VatAmount']);
-            $Invoice->subTotalAmount = FilterInput($_POST['SubTotalAmount']);
-            $Invoice->paymentType = FilterInput($_POST['paymentType']);
-
-            if(isset($_POST['InvoiceNotes']) && !empty($_POST['InvoiceNotes']) )
-              $Invoice->invoiceNotes = FilterInput($_POST['InvoiceNotes']);
-            
-            if($Invoice->paymentType == 3) {
-              $Invoice->chequeNo = FilterInput($_POST['ChequeNo']);
-
-              $dateC = date_create(FilterInput($_POST['ChequeDate'])); 
-              $Invoice->chequeDate = date_format($dateC, 'Y-m-d H:i');
-            }
-
-            $Invoice->invoiceID = GetMaxInvoiceID() + 1;
-            
-            if(AddInvoice($Invoice))
-            {
-              $successCount = 0;
-              $ProductTypeID = $_POST['ProductTypeID'];
-              $productSize = $_POST['ProductSize'];
-              $ProductPattern = $_POST['ProductPattern'];
-              $brand = $_POST['Brand'];
-              $units = $_POST['Quantity'];
-              $rate = $_POST['Rate'];
-              $amount = $_POST['Amount'];
-              
-              for ($i=0; $i < count($productSize); $i++) {
-                $Product =  new Product();
-                $Product->invoiceID = $Invoice->invoiceID;
-                $Product->productTypeID = $ProductTypeID[$i];
-                $Product->productSize = $productSize[$i];
-                $Product->productPattern = $ProductPattern[$i];
-                $Product->brand = $brand[$i];
-                $Product->units = $units[$i];
-                $Product->rate = $rate[$i];
-                $Product->amount = $amount[$i];
-
-                if(AddProduct($Product))
-                  $successCount++;
-              }
-              echo MessageTemplate(MessageType::Success, "Invoice Added successfully!");
-            } else {
-              echo MessageTemplate(MessageType::Failure, "Something went wrong, please contact your system admin.");
-            }
-          } else {
-            echo MessageTemplate(MessageType::Failure, "Please enter all the details.");
-          }
-          /* pikesAce Security Robot for re-submission of form */
-          $_SESSION['AUTH_KEY'] = mt_rand(100000000,999999999);
-          /* END */
-        } else {
-          echo MessageTemplate(MessageType::RoboWarning, "");
-        }
-    }
-
-      ?>
-  </div>
+    </div>
     <!-- Default box -->
     <div class="box">
       <div class="box-header with-border">
@@ -127,113 +41,113 @@ require '_header.php'
       </div>
       <div class="box-body" ng-app="InvoicesApp" ng-controller="InvoiceCtrl">
 
-<div class="container col-xs-12">
+        <div class="container col-xs-12">
 
-        <div>
-    		<div class="invoice-title">
-    			<h2>Purchase Invoice</h2><h3 class="pull-right">
-                <button type="button" class="btn btn-md btn-info" ng-click="DisplayPreviousInvoice();"><i class="fa fa-arrow-left" aria-hidden="true"></i></button>
-                #{{Invoice.invoiceNumber}}
-                <button type="button" class="btn btn-md btn-info" ng-click="DisplayNextInvoice();"><i class="fa fa-arrow-right" aria-hidden="true"></i></button></h3>
-    		</div>
-    		<hr>
-    		<div class="row">
-    			<div class="col-xs-6">
-    				<address>
-    				<strong>Supplier: &nbsp;&nbsp;</strong>{{Invoice.supplierName}}<br>
-                    <strong>TIN: &nbsp;&nbsp;</strong>{{Invoice.tinNumber}}<br>
-    				</address>
-    			</div>
-    			<!--<div class="col-xs-6 text-right">
-    				<address>
-        			<strong>Shipped To:</strong><br>
-    					Jane Smith<br>
-    					1234 Main<br>
-    					Apt. 4B<br>
-    					Springfield, ST 54321
-    				</address>
-    			</div>-->
-    		</div>
-    		<div class="row">
-    			<div class="col-xs-6">
-    				<address>
-    					<strong>Payment Method: &nbsp;&nbsp;</strong>
-                        <span ng-if="Invoice.paymentType==1">Cash</span>
-                        <span ng-if="Invoice.paymentType==2">Card</span>
-                        <span ng-if="Invoice.paymentType==3">Cheque</span>
-                        <br/>
-                        <span ng-if="Invoice.paymentType==3">Cheque No: {{Invoice.chequeNo}} <br/> Cheque Date : {{Invoice.chequeDate}} </span>    					
-    				</address>
-    			</div>
-    			<div class="col-xs-6 text-right">
-    				<address>
-    					<strong>Invoice Date:</strong><br>
-                        {{Invoice.invoiceDate}}
-    					
-    				</address>
-    			</div>
-    		</div>
-    	</div>
+            <div>
+                <div class="invoice-title">
+                    <h2>Purchase Invoice</h2><h3 class="pull-right">
+                    <button type="button" class="btn btn-md btn-info" ng-click="DisplayPreviousInvoice();"><i class="fa fa-arrow-left" aria-hidden="true"></i></button>
+                    #{{Invoice.invoiceNumber}}
+                    <button type="button" class="btn btn-md btn-info" ng-click="DisplayNextInvoice();"><i class="fa fa-arrow-right" aria-hidden="true"></i></button></h3>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <address>
+                        <strong>Supplier: &nbsp;&nbsp;</strong>{{Invoice.supplierName}}<br>
+                        <strong>TIN: &nbsp;&nbsp;</strong>{{Invoice.tinNumber}}<br>
+                        </address>
+                    </div>
+                    <!--<div class="col-xs-6 text-right">
+                        <address>
+                        <strong>Shipped To:</strong><br>
+                            Jane Smith<br>
+                            1234 Main<br>
+                            Apt. 4B<br>
+                            Springfield, ST 54321
+                        </address>
+                    </div>-->
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <address>
+                            <strong>Payment Method: &nbsp;&nbsp;</strong>
+                            <span ng-if="Invoice.paymentType==1">Cash</span>
+                            <span ng-if="Invoice.paymentType==2">Card</span>
+                            <span ng-if="Invoice.paymentType==3">Cheque</span>
+                            <br/>
+                            <span ng-if="Invoice.paymentType==3">Cheque No: {{Invoice.chequeNo}} <br/> Cheque Date : {{Invoice.chequeDate}} </span>    					
+                        </address>
+                    </div>
+                    <div class="col-xs-6 text-right">
+                        <address>
+                            <strong>Invoice Date:</strong><br>
+                            {{Invoice.invoiceDate}}
+                            
+                        </address>
+                    </div>
+                </div>
+            </div>
 
-    <div class="row">
-    	<div class="col-xs-12">
-    		<div class="panel panel-default">
-    			<div class="panel-heading">
-    				<h3 class="panel-title"><strong>Order summary</strong></h3>
-    			</div>
-    			<div class="panel-body">
-    				<div class="table-responsive">
-    					<table class="table table-condensed">
-    						<thead>
-                                <tr>
-        							<td><strong>Type</strong></td>
-                                    <td><strong>Brand</strong></td>
-                                    <td><strong>Size</strong></td>
-                                    <td><strong>Pattern</strong></td>
-        							<td class="text-right"><strong>Price</strong></td>
-        							<td class="text-right"><strong>Quantity</strong></td>
-        							<td class="text-right"><strong>Total</strong></td>
-                                </tr>
-    						</thead>
-    						<tbody>
-                                  
-    							<!-- foreach ($order->lineItems as $line) or some such thing here -->
-    							<tr ng-repeat="product in InvoiceProducts">
-    								<td>{{product.productTypeName}}</td>
-                                    <td>{{product.brand}}</td>
-                                    <td>{{product.productSize}}</td>
-                                    <td>{{product.productPattern}}</td>
-    								<td class="text-right">{{product.rate}}</td>
-    								<td class="text-right">{{product.units}}</td>
-    								<td class="text-right">{{product.Amount}}</td>
-    							</tr>
-    							<tr>
-                                    <td class="no-line" colspan="5"></td>
-    								<td class="no-line text-right"><strong>Sub Total</strong></td>
-    								<td class="no-line text-right">{{Invoice.subTotalAmount}}</td>
-    							</tr>
-    							<tr>
-                                    <td class="no-line" colspan="5"></td>
-    								<td class="no-line text-right"><strong>Vat</strong></td>
-    								<td class="no-line text-right">{{Invoice.vatAmount}}</td>
-    							</tr>
-    							<tr>
-                                    <td class="no-line" colspan="5"></td>
-    								<td class="no-line text-right"><strong>Total</strong></td>
-    								<td class="no-line text-right">{{Invoice.totalAmount}}</td>
-    							</tr>
-    							<tr>
-    								<td class="no-line text-right"><strong>Notes</strong></td>
-    								<td class="no-line">{{Invoice.invoiceNotes}}</td>
-    							</tr>
-    						</tbody>
-    					</table>
-    				</div>
-    			</div>
-    		</div>
-    	</div>
-    </div>
-</div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><strong>Order summary</strong></h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <td><strong>Type</strong></td>
+                                            <td><strong>Brand</strong></td>
+                                            <td><strong>Size</strong></td>
+                                            <td><strong>Pattern</strong></td>
+                                            <td class="text-right"><strong>Price</strong></td>
+                                            <td class="text-right"><strong>Quantity</strong></td>
+                                            <td class="text-right"><strong>Total</strong></td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                        <!-- foreach ($order->lineItems as $line) or some such thing here -->
+                                        <tr ng-repeat="product in InvoiceProducts">
+                                            <td>{{product.productTypeName}}</td>
+                                            <td>{{product.brand}}</td>
+                                            <td>{{product.productSize}}</td>
+                                            <td>{{product.productPattern}}</td>
+                                            <td class="text-right">{{product.rate}}</td>
+                                            <td class="text-right">{{product.units}}</td>
+                                            <td class="text-right">{{product.Amount}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="no-line" colspan="5"></td>
+                                            <td class="no-line text-right"><strong>Sub Total</strong></td>
+                                            <td class="no-line text-right">{{Invoice.subTotalAmount}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="no-line" colspan="5"></td>
+                                            <td class="no-line text-right"><strong>Vat</strong></td>
+                                            <td class="no-line text-right">{{Invoice.vatAmount}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="no-line" colspan="5"></td>
+                                            <td class="no-line text-right"><strong>Total</strong></td>
+                                            <td class="no-line text-right">{{Invoice.totalAmount}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="no-line text-right"><strong>Notes</strong></td>
+                                            <td class="no-line">{{Invoice.invoiceNotes}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- /.form div -->
       </div>
       <!-- /.box body -->

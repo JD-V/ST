@@ -12,7 +12,7 @@ if(isLogin()) {
       RetriveStocks();
     }
     else if($action == 'save'  && isAdmin() ) {
-      if(isset($_GET["ItemArr"])) { 
+      if(isset($_GET["ItemArr"])) {
         SaveStocks($_GET["ItemArr"]);
       }
       else {

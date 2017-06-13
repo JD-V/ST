@@ -8,6 +8,18 @@ ob_start();
 $CDATA['CURRENT_FILE'] = @$_SERVER['SCRIPT_NAME'];
 $CDATA['BASE_URL'] = "http://localhost/GMS2/GMS";
 
+function DisableAutoCommit() {
+  mysql_query('SET AUTOCOMMIT=0');
+}
+
+function EnableAutoCommit() {
+  mysql_query('SET AUTOCOMMIT=1');
+}
+
+function PerformRollback() {
+  mysql_query('ROLLBACK');
+}
+
 if(isset($_SERVER['HTTP_REFERER']) && !empty($_SERVER['HTTP_REFERER']))
 {
   $http_referer = $_SERVER['HTTP_REFERER'];
@@ -762,11 +774,41 @@ function AddProduct($Product){
           '$Product->productPattern', '$Product->units', '$Product->rate', 
           '$Product->amount' )" );
 
-  if($addProduct)
-    return 1;
-  else
-    echo mysql_error();
-    return 0;
+  // if($addProduct)
+
+  //   return 1;
+  // else
+  //   echo mysql_error();
+  //   return 0;
+    $object = new stdClass();
+    if($addProduct)
+      $object->isProductAdded = 1;
+    else
+      $object->isProductAdded = 0;
+
+    mysql_query("CALL InsertProductInventory('$Product->brandID',
+    '$Product->productSize','$Product->productPattern','$Product->productTypeID',
+    '', '1','$Product->units',@isProductAdded,@isStockAdded);");
+    
+    $addProductInventory = mysql_query("SELECT @isProductAdded as isProductAdded, @isStockAdded  as isStockAdded;");
+   
+    if($addProductInventory) {
+      // ChromePhp::log("retrived result");
+      
+      $result = mysql_fetch_assoc($addProductInventory);
+      // ChromePhp::log($result);
+      $object->isInventoryProductAdded = $result['isProductAdded'];
+      $object->isStockAdded = $result['isStockAdded'];
+    }
+    else {
+      ChromePhp::log("failed to retrived result");
+      $object->isInventoryProductAdded = 0;
+      $object->isStockAdded = 0;
+
+    }
+    
+    return $object;
+
 }
 
 function GetInvoices(){

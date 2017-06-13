@@ -260,7 +260,9 @@ $(document).ready(function () {
             
             if(AddInvoice($Invoice))
             {
-              $successCount = 0;
+              $successCountProduct = 0;
+              $successCountInventotry = 0;
+              $successCountStock = 0;
               $ProductTypeID = $_POST['ProductTypeID'];
               $productSize = $_POST['ProductSize'];
               $ProductPattern = $_POST['ProductPattern'];
@@ -280,10 +282,15 @@ $(document).ready(function () {
                 $Product->rate = $rate[$i];
                 $Product->amount = $amount[$i];
 
-                if(AddProduct($Product))
+                $result = AddProduct($Product);
+                if($result->isProductAdded == 1)
                   $successCount++;
+                if($result->isInventoryProductAdded == 1)
+                  $successCountInventotry++;
+                if($result->isStockAdded == 1)
+                  $isStockAdded++;
               }
-              echo MessageTemplate(MessageType::Success, "Invoice Added successfully!");
+              echo MessageTemplate(MessageType::Success, "Invoice Added successfully. with " . $successCountProduct . " and  ". $successCountInventotry ." new Inventory Product." );
             } else {
               echo MessageTemplate(MessageType::Failure, "Something went wrong, please contact your system admin.");
             }
