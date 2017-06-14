@@ -228,6 +228,32 @@ function GetServiceRecord($InvoiceNumber) {
   }
 }
 
+function GetProductsSalesInInvoice($InvoiceNumber) {
+
+  if($GetRecordInformation = mysql_query("SELECT * FROM `salesproducts` WHERE `InvoiceNumber` = '$InvoiceNumber' ") ) {
+    if(mysql_num_rows($GetRecordInformation) >= 1) {
+      return $GetRecordInformation;
+    }
+  }
+  else {
+    return false;
+  }
+}
+
+
+function GetSaleInvoice($InvoiceNumber) {
+
+  if($GetRecordInformation = mysql_query("SELECT * FROM `sales` WHERE `InvoiceNumber` = '$InvoiceNumber' ") ) {
+    if(mysql_num_rows($GetRecordInformation) == 1) {
+      return $GetRecordInformation;
+    }
+  }
+  else {
+    return false;
+  }
+
+}
+
 function GetServiceRecordItems($InvoiceNumber) {
   return  mysql_query("SELECT * FROM `serviceitems` WHERE InvoiceNumber='$InvoiceNumber' ");
 }
@@ -822,6 +848,17 @@ function GetInvoices(){
   }
 }
 
+function GetLastInsertedID() {
+  if($lastInsertedID = mysql_query("SELECT LAST_INSERT_ID() AS 'ID'")) {
+    if(mysql_num_rows($lastInsertedID) >= 1) {
+      $ShowData = mysql_fetch_assoc($lastInsertedID);
+      return $ShowData['ID'];
+    }
+  } else {
+    return 0;
+  } ;
+}
+
 function GetProducts() {
 
   if($getProducts = mysql_query("SELECT p.*, pi.InvoiceNumber, pt.ProductTypeName FROM products p 
@@ -1036,6 +1073,7 @@ function GetProductStocks() {
     SUM(st.Qty) AS Qty, pr.MinSellPrice,pr.MaxSellPrice, pt.ProductTypeName FROM productinvetory pr LEFT JOIN 
     stockentries st ON pr.ProductID = st.ProductID JOIN brands br ON br.BrandID = pr.BrandID JOIN producttype 
     pt ON pt.ProductTypeID = pr.ProductTypeID GROUP BY ProductID")) {
+
     if(mysql_num_rows($getProductInventory) >= 1) {
       return $getProductInventory;
     }
@@ -1071,20 +1109,20 @@ function getProductWithStocks($BrandID) {
 }
 
 function AddStockEntry($stock) {
-   $addStockEntry = mysql_query("INSERT INTO `stockentries` (`ProductID`, `Qty`, `TansactionTypeID`) VALUES 
-    ( '$stock->ProductID', '$stock->Qty',  '$stock->TansactionTypeID' )" );
+   $addStockEntry = mysql_query("INSERT INTO `stockentries` (`ProductID`, `Qty`, `TansactionTypeID`, `SaleID`) VALUES 
+    ( '$stock->ProductID', '$stock->Qty',  '$stock->TansactionTypeID', '$stock->SaleID' )" );
 
-  if($addStockEntry)
-    return 1;
-  else
-    echo mysql_error();
-    return 0;
+   return mysql_affected_rows();
 }
 
 function GetStockTransactionHistory() {
   
-  if($getStockTransactionHistory = mysql_query("select br.BrandName, pi.ProductSize, pi.ProductPattern, pi.ProductID, se.Qty, se.TansactionTypeID, tt.TranasactionTypeName, se.TimeStamp FROM stockentries se JOIN productinvetory pi ON se.ProductID = pi.ProductID JOIN tranasactiontype tt ON se.TansactionTypeID = tt.TansactionTypeID JOIN brands br ON pi.BrandID = br.BrandID")) {
-    return $getStockTransactionHistory;
+  if($getStockTransactionHistory = mysql_query("SELECT br.BrandName, pt.ProductTypeName, pi.ProductSize, 
+    pi.ProductPattern, pi.ProductID, se.Qty, se.TansactionTypeID, tt.TranasactionTypeName, se.TimeStamp 
+    FROM stockentries se JOIN productinvetory pi ON se.ProductID = pi.ProductID JOIN tranasactiontype tt 
+    ON se.TansactionTypeID = tt.TansactionTypeID JOIN brands br ON pi.BrandID = br.BrandID JOIN producttype pt 
+    ON pi.ProductTypeID = pt.ProductTypeID")) {
+        return $getStockTransactionHistory;
   }
 }
 
@@ -1107,27 +1145,20 @@ function AddNewSalesItem($order) {
        '$order->customerPAN', '$order->vehicleNumber', '$order->vehicleMileage', '$order->basic',  '$order->discount', 
        '$order->vatAmount', '$order->amountPaid', '$order->paymentMethod', '$order->chequeNo', 
        '$order->chequeDate', '$order->address', '$order->notes', '$userID' )" );
-  if($AddOrder)
-    return 1;
-  else
-    echo mysql_error();
-    return 0;
+
+  return mysql_affected_rows();
 }
 
-function AddProductToSalesInvoice($product,$invoiceNumber) {
+function AddProductToSalesInvoice($product,$invoiceNumber,$saleID) {
   $AddProductToInvoice = mysql_query("INSERT INTO `salesproducts` 
-    (`ProductID`, `BrandName`, `Productsize`, `Pattern`, 
+    (`SaleID`, `ProductID`, `BrandName`, `Productsize`, `Pattern`, 
      `ProductType`, `Qty`, `CostPrice`, `SalePrice`, `InvoiceNumber` ) VALUES 
-    ( '$product->productID', '$product->brandName', '$product->productSize', 
+    ( '$saleID', '$product->productID', '$product->brandName', '$product->productSize', 
       '$product->productPattern', '$product->productType', '$product->qty',
       '$product->costPrice', '$product->maxSellingPrice','$invoiceNumber' )" );
-  if($AddProductToInvoice)
-    return 1;
-  else
-    echo mysql_error();
-    return 0;
+    
+    return mysql_affected_rows();
 }
-
 
 function AddNewSeriveRecord($service) {
   $userID = $_SESSION['userID'];
@@ -1161,12 +1192,71 @@ function UpdateSeriveRecord($service) {
     return 1;
 }
 
+function UpdateSaleInvoice($order) {
+  $userID = $_SESSION['userID'];
+
+  $UpdateOrder = mysql_query("UPDATE `sales` SET `InvoiceDateTime` = '$order->invoiceDate', 
+     `CustomerName` = '$order->customerName' , `CustomerPhone` = '$order->customerPhone', `CustomerTIN` = '$order->customerTIN', 
+     `CustomerPAN` = '$order->customerPAN', `VehicleNumber` = '$order->vehicleNumber', `VehicleMileage` = '$order->vehicleMileage',
+     `BasicAmount` = '$order->basic', `Discount` = '$order->discount', `Vat` = '$order->vatAmount', `AmountPaid` = '$order->amountPaid',
+     `PaymentType` = '$order->paymentMethod', `ChequeNo` = '$order->chequeNo', `chequeDate` = '$order->chequeDate', 
+     `Address` = '$order->address', `Notes` = '$order->notes', `UserID`='$userID' WHERE `InvoiceNumber` = '$order->invoiceNumber' " );
+
+   if(!mysql_error())
+    return 1;
+  else
+    return 0;
+}
+
+function UpdateStockEntry($stock) {
+
+     $addStockEntry = mysql_query("UPDATE `stockentries` SET `Qty`='$stock->Qty'
+      WHERE `SaleID` = '$stock->SaleID' AND `ProductID` = '$stock->ProductID' LIMIT 1 ");
+
+   if(!mysql_error())
+    return 1;
+  else
+    return 0;
+}
+
+function UpdateProductInSalesInvoice($product,$saleID) {
+    $updateStockEntry = mysql_query("UPDATE `salesproducts` SET 
+     `ProductID` = '$product->productID', `BrandName` = '$product->brandName', `Productsize` = '$product->productSize',
+     `Pattern` = '$product->productPattern', `ProductType` = '$product->productType', `Qty` = '$product->qty', 
+     `CostPrice` = '$product->costPrice', `SalePrice` = '$product->maxSellingPrice' WHERE `SaleID` = '$saleID' " );
+    
+   if(!mysql_error())
+    return 1;
+  else
+    return 0;
+}
+
+function RemoveAllItemsFromSaleInvoice($invoiceNumber) {
+    $AddProductToInvoice = mysql_query("DELETE FROM `salesproducts` WHERE `InvoiceNumber`='$invoiceNumber' ");
+
+     if(-1 == mysql_affected_rows())
+       return 0;
+     else
+       return 1;
+}
+
 function GetMaxUserID() {
   
     $getMaxUserID = mysql_query("SELECT MAX(UserID) as UserID FROM user");
     if(mysql_num_rows($getMaxUserID)>=1) {
         $ShowData = mysql_fetch_assoc($getMaxUserID);
         return $ShowData['UserID'];       
+    } else {
+      return 0;
+    }
+}
+
+function GetMaxSaleID() {
+  
+    $getMaxSaleID = mysql_query("SELECT MAX(SaleID) as SaleID FROM salesproducts");
+    if(mysql_num_rows($getMaxSaleID)>=1) {
+        $ShowData = mysql_fetch_assoc($getMaxSaleID);
+        return $ShowData['SaleID'];       
     } else {
       return 0;
     }
@@ -1394,6 +1484,7 @@ class Stock
   public $ProductID;
   public $Qty;
   public $TansactionTypeID;
+  public $SaleID;
 }
 
 class user 

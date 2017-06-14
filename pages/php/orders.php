@@ -6,6 +6,7 @@ require '_core.php';
 if(isLogin())
 {
 require '_header.php';
+$roleID = getUserRoleID();
 ?>
 <script type = "text/javascript">
 
@@ -73,6 +74,7 @@ window.open("DisplaySaleInvoice.php?id="+InvoiceID);
                 <th>Notes</th>
                 <!--<th><i class="fa fa-pencil" aria-hidden="true"></i></th>-->
                 <th>Invoice</i></th>
+                <th><i class="fa fa-pencil" aria-hidden="true"></i></th>
               </tr>
             </thead>
             <tbody>
@@ -101,6 +103,12 @@ window.open("DisplaySaleInvoice.php?id="+InvoiceID);
                     <td><?php echo $order['Address']; ?></td>
                     <td><?php echo $order['Notes']; ?></td>
                     <td><?php echo '<input type="button" class="btn btn-sm btn-info" value="Invoice" onclick = "DisplayInvoice('.$order['InvoiceNumber'].');" />'; ?></td>
+                    <th>
+                    <?php 
+                      if( $roleID == 1 || strtotime(date('d-m-Y H:i:s')) - strtotime($service->invoiceDate) <= 900) 
+                        echo '<a href="addneworder.php?id='. $order['InvoiceNumber'] .'">' . '<i class="fa fa-pencil" aria-hidden="true"></i>'. '</a>'; 
+                    ?>
+                    </th>                    
                   </tr>
                   <?php
                 }

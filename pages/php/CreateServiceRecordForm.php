@@ -22,6 +22,7 @@ if(isLogin()) {
         print 'No updates to save';
       }
     } else if($action == 'update') {
+      
       if(isset($_GET["FormData"])) {
         modifySeriveRecord($_GET["FormData"]);
       }

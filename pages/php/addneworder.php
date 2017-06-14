@@ -160,16 +160,8 @@ require '_header.php'
     <!-- Default box -->
     <div class="box">
       <div class="box-header with-border">
-      <?php
-          $title= "Add";
-          if($GetServiceRecord = @GetServiceRecord($_GET['id'])) {
-            ChromePhp::log("got record id ");
-            $serviceRecord  = mysql_fetch_assoc($GetServiceRecord);
-            ChromePhp::log($serviceRecord);
-            $title= "Update";
-          }
-        ?>
-        <h3 class="box-title"><?php echo $title; ?></h3>
+
+        <h3 class="box-title">Add New</h3>
 
        <!--  <div class="box-tools pull-right">
           <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
@@ -187,7 +179,7 @@ require '_header.php'
               <div class="form-group">
                 <label for="InvoiceNo" class="control-label col-sm-3 lables">Invoice No<span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control" name="InvoiceNo" ng-model = "InvoiceNo"  required >
+                  <input type="text" class="form-control invoice-number" name="InvoiceNo" ng-model = "InvoiceNo"  required >
                 </div>
                 <div ng-show = "salesForm.InvoiceNo.$dirty && salesForm.InvoiceNo.$invalid" class="errorMessage">Invoice No. is required</div>                
               </div>
@@ -294,7 +286,7 @@ require '_header.php'
                     <th>Qty</th>
                     <th>Amount</th>
 
-                    <th><i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp;&nbsp;&nbsp;<i class="fa fa-times" aria-hidden="true"></i></th>
+                    <th><i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp;&nbsp;&nbsp;<i ng-hide="OperationType==2" class="fa fa-times" aria-hidden="true"></i></th>
                   </tr>
                 </thead>
                 <tr ng-repeat="item in addedProducts">
@@ -304,7 +296,7 @@ require '_header.php'
                   <td>{{item.ProductTypeName}}</td>
                   <td>
                   <div ng-class="{'edited': item.priceEdited, 'error' : item.priceInvalid}">
-                    <label  ng-hide="item.editingPrice" >{{item.SellPrice}}</label>
+                    <label  ng-hide="item.editingPrice" >{{item.SellPrice | num}}</label>
                       <input ng-change="item.priceEdited = true" ng-click="item.editing = true" 
                       ng-blur=" item.editingPrice = false; item.priceInvalid = validateInput(item.Price); item.priceEdited = !item.priceInvalid" 
                       onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editingPrice" ng-model="item.SellPrice"  />
@@ -312,7 +304,7 @@ require '_header.php'
                   </td>
                   <td>
                   <div ng-class="{'edited': item.QtyEdited, 'error' : item.QtyInvalid}">
-                    <label  ng-hide="item.editingQty" >{{item.Qty}}</label>
+                    <label  ng-hide="item.editingQty" >{{item.Qty | num}}</label>
                       <input ng-change="item.QtyEdited = true" ng-click="item.editing = true" 
                       ng-blur=" item.editingQty = false; item.QtyInvalid = validateInput(item.Qty  ); item.QtyEdited = !item.QtyInvalid" 
                       onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editingQty" ng-model="item.Qty"  />
@@ -321,13 +313,13 @@ require '_header.php'
 
                   <td>
                   <div>
-                    <label  ng-model="item.Amount" >{{item.Qty*item.SellPrice}}</label>
+                    <label  ng-model="item.Amount" >{{ item.Qty * item.SellPrice }}</label>
                   </div>
                   </td>
 
                   <td>
                   <a ng-click="item.editingQty = !item.editingQty; item.editingPrice = !item.editingPrice; " ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>&nbsp;&nbsp;&nbsp;
-                  <a ng-click="RemoveItem(item.ItemID, $index);" ><i class="fa fa-times" aria-hidden="true"></i></a>
+                  <a ng-hide="OperationType==2" ng-click="RemoveItem(item.ItemID, $index);" ><i class="fa fa-times" aria-hidden="true"></i></a>
                   </td>
                 </tr>
               </table>
@@ -435,9 +427,9 @@ require '_header.php'
                 <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> </label>
 
                 <div class="col-sm-9">
-                  <button type="submit" class="btn btn-sm btn-success">Submit!</button>
+                  <button type="submit" class="btn btn-sm btn-success submit-form">Submit!</button>
                   <input type="hidden" name="UKey" value="1" id="ID_UKey"  />
-                  <button class="btn btn-sm btn-default" ng-click = "reset()" >Clear</button>
+                  <button class="btn btn-sm btn-default reset-form" ng-click = "reset()" >Clear</button>
                 </div>
               </div>
 
@@ -501,12 +493,75 @@ var ValidSubmit = ['$parse', function ($parse) {
     return null;
   }
 })
-  .controller('salesCtrl', function($scope,$filter, dataService) {
+.filter('num', function() {
+    return function(input) {
+      return parseInt(input, 10);
+    };
+})
+  .controller('salesCtrl', function($scope,$filter,dataService) {
   
+  var urlparam = new URLSearchParams(window.location.search)
+  var invoiceid = urlparam.get('id'); // 'mdn query string'
+  var roleID = <?php echo $_SESSION['roleID'] ?>;
+  $scope.FillnvoiceData = function(invoiceid) {
+    dataService.getSaleOrderData(invoiceid, function(response) {
+      if(response.data.status == 1) {
+        if(roleID!=1) {
+          var currentDate = new Date();
+          var invoiceDate = new Date(response.data.InvoicDateUnfomrmatted);        
+          if( ((currentDate.getTime() - invoiceDate.getTime()) / 1000)<=900.00 )
+            $scope.set(response.data);
+          else {
+            $("#messages").html(MessageTemplate(1, "Updataing Invoice not allowed after 15 minutes"));
+            autoClosingAlert(".alert-block", 4000);
+            $scope.reset();
+          }
+        } else {
+          $scope.set(response.data);
+        }
+      } else {
+        $scope.reset();
+      }
+    });
+  }
+
+  $scope.set = function(data){
+
+    $('.submit-form').html('update');
+    $('.box-title').html('update');
+    $('.invoice-number').attr('readonly','readonly');
+    $('.reset-form').hide();
+    $scope.Brand = 0;
+    $scope.OperationType = 2; // update
+    $scope.CustomerName  = data.CustomerName;
+    $scope.SalesInvoiceDate = data.InvoiceDateTime;
+    $scope.InvoiceNoActual = data.InvoiceNumber;
+    $scope.InvoiceNo = data.InvoiceNumber;
+    $scope.addedProducts = data.products;
+    $scope.BasicAmount = data.Basic;
+    $scope.VatAmount = data.Vat;
+    $scope.TotalAmountPaid = data.AmountPaid;
+
+    $scope.VehicleNo = data.VehicleNumber;
+    $scope.VehicleMileage = data.VehicleMileage;
+    $scope.CustomerPhone = data.CustomerPhone;
+    $scope.DiscountAmount = data.Discount;
+    $scope.Notes = data.Notes;
+    $scope.Address = data.Address;
+
+    $scope.CustomerTIN = data.CustomerTIN;
+    $scope.CustomerPAN = data.CustomerPAN;
+
+    $scope.PaymentMethod = data.PaymentType;
+    $scope.ChequeNo = data.ChequeNo;
+    $scope.ChequeDate = data.chequeDate;
+    $scope.RefreshView($scope.PaymentMethod);
+  }
+
   // refreshing data in the table
-  $scope.RefreshView = function() {
+  $scope.RefreshView = function(PaymentMethod = 1) {
     $scope.VatFactor = <?php echo $_SESSION['VatFactor']; ?>;
-    $scope.PaymentMethod = '1';
+    $scope.PaymentMethod = PaymentMethod;
   };
 
   $scope.GetProducts = function() {
@@ -532,24 +587,6 @@ var ValidSubmit = ['$parse', function ($parse) {
       }
     });
   }
-  // $scope.updateSalesDate = function(){
-  //   $scope.SalesInvoiceDate = $('.sales-invoice-date').val();
-  // }
-
-  // $scope.AddDatePlugin = function() {
-    
-  //   $("input").prop('required',true);
-  // }
-
-  // $scope.$watch('PaymentMethod', function(newValue, oldValue) {
-  //   if( $scope.PaymentMethod == '3') {
-  //     $(".cheque-date").prop('required',true);
-  //     $(".cheque-no").prop('required',true);
-  //   } else {
-  //     $(".cheque-date").prop('required',false);
-  //     $(".cheque-no").prop('required',false);
-  //   } 
-  // });
   
   $scope.AddProduct = function(ProductID){
 
@@ -592,8 +629,8 @@ var ValidSubmit = ['$parse', function ($parse) {
 
   $scope.CalculateAmount = function(){
     var sum = 0;
-      angular.forEach($scope.addedProducts, function(value){
-          sum += +(value.Qty*value.SellPrice);
+      angular.forEach($scope.addedProducts, function(product){
+          sum += +(product.Qty*product.SellPrice);
       });
       $scope.VatAmount = Math.ceil(sum * $scope.VatFactor) / 100;
       $scope.BasicAmount = sum-$scope.VatAmount;
@@ -622,6 +659,7 @@ var ValidSubmit = ['$parse', function ($parse) {
         console.log(response.data);
         $scope.InvoiceNo = parseInt(response.data) +  +1;
       });
+      $scope.OperationType= 1;
         $scope.Brand = 0;
         $scope.addedProducts = [];
         $scope.BasicAmount = 0;
@@ -639,8 +677,6 @@ var ValidSubmit = ['$parse', function ($parse) {
         $scope.ChequeNo = '';
         $scope.ChequeDate = '<?php echo date("d-m-Y") ?>';
    }
-  
-  $scope.reset();
 
   $scope.sendForm = function() {
     var salesInvoiceDateVal = $('.sales-invoice-date').val();
@@ -680,32 +716,53 @@ var ValidSubmit = ['$parse', function ($parse) {
       FormData.Notes = $scope.Notes;
       FormData.Address = $scope.Address;
       FormData.PaymentMethod = $scope.PaymentMethod;
+      FormData.InvoiceNoActual = $scope.InvoiceNoActual;
+
 
       if($scope.PaymentMethod == '3') {
         FormData.ChequeNo = $scope.ChequeNo;
         $scope.ChequeDate = chequeDateVal;
         FormData.ChequeDate = $scope.ChequeDate;
         if($scope.ChequeNo == '') {
-          document.getElementById("messages").innerHTML = MessageTemplate(1, "Please proviude the cheque no.");
+          document.getElementById("messages").innerHTML = MessageTemplate(1, "Please provide the cheque no.");
           autoClosingAlert(".alert-block", 4000);
         }
       }
       console.log(JSON.stringify(FormData));
 
-      dataService.submitOrder(FormData, function(response) {
-        if(parseInt(response.data, 10)) {
-          document.getElementById("messages").innerHTML = 
-            MessageTemplate(0, "Sales Invoice has been added with " + response.data +" product(s)");
-            $scope.reset();              
-            $scope.salesForm.$setPristine();
-            $scope.salesForm.$setUntouched();
-            $scope.salesForm.$submitted = false;
-        } else {
-            document.getElementById("messages").innerHTML = MessageTemplate(1, response.data);
-        }
-        autoClosingAlert(".alert-block", 4000);
-        scrollTo(0,0);
-      });
+      if($scope.OperationType == 1) {
+
+        dataService.submitOrder(FormData, function(response) {
+          if(parseInt(response.data, 10)) {
+            document.getElementById("messages").innerHTML = 
+              MessageTemplate(0, "Sales Invoice has been added with " + response.data +" product(s)");
+              $scope.reset();              
+              $scope.salesForm.$setPristine();
+              $scope.salesForm.$setUntouched();
+              $scope.salesForm.$submitted = false;
+          } else {
+              document.getElementById("messages").innerHTML = MessageTemplate(1, response.data);
+          }
+          autoClosingAlert(".alert-block", 4000);
+          scrollTo(0,0);
+        });
+      } else {
+        dataService.updateSalesInvoice(FormData, function(response) {
+            if(parseInt(response.data, 10)) {
+              document.getElementById("messages").innerHTML = 
+                MessageTemplate(0, "sales Invoice has been updated with " + response.data +" item(s)");
+                $scope.reset();              
+                $scope.salesForm.$setPristine();
+                $scope.salesForm.$setUntouched();
+                $scope.salesForm.$submitted = false;
+            }
+            else {
+                document.getElementById("messages").innerHTML =  MessageTemplate(1, response.data);
+            }
+            autoClosingAlert(".alert-block", 4000);
+            scrollTo(0,0);
+        });        
+      }
     }
   };
   $scope.getClass = function(b) {
@@ -713,7 +770,13 @@ var ValidSubmit = ['$parse', function ($parse) {
   }
 
   // initial call
-  $scope.RefreshView();
+  if(invoiceid!=null) {
+    $scope.FillnvoiceData(invoiceid);
+  } else {
+    $scope.RefreshView();
+    $scope.reset();
+  }  
+  
   })  
   .service('dataService', function($http) {
 
@@ -733,6 +796,14 @@ var ValidSubmit = ['$parse', function ($parse) {
         }).then(callback)
       };
 
+    //get Invoice data
+    this.getSaleOrderData = function(invoiceid, callback) {
+      $http({
+        method : "GET",
+        url : "CreateOrderForm.php?action=Retrive&item=SaleOrderData&InvoiceNumber="+invoiceid,
+      }).then(callback)
+    };      
+
   // Get customerData
   this.getcustomerData = function(CustomerData,callback) {
         
@@ -742,16 +813,24 @@ var ValidSubmit = ['$parse', function ($parse) {
         }).then(callback)
       };
 
-    //Save orders
+    //Save Orders
     this.submitOrder = function(FormData,callback) {
-      
-      console.log("Save All Locations");
       $http({
         method : 'GET',
         url : "CreateOrderForm.php?action=save",
         params:{FormData : JSON.stringify(FormData)},
       }).then(callback)
     };
+
+    //Update Orders
+    this.updateSalesInvoice = function(FormData,callback) {
+      $http({
+        method : 'GET',
+        url : "CreateOrderForm.php?action=update",
+        params:{FormData : JSON.stringify(FormData)},
+      }).then(callback)
+    };
+
 
   })
   .directive('validSubmit', ValidSubmit);

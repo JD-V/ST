@@ -27,10 +27,11 @@ $(document).ready(function() {
   });
 
 $('#stockEntryTable').DataTable({
-    "paging":   false,
+    "paging":   true,
     "info":     false,
     "order": [[ 0, "desc" ]],
-    "columnDefs": [{ "orderable": false, "targets": [4] }]
+    "pagingType": "full_numbers",    
+    "columnDefs": [{ "orderable": false, "targets": [5] }]
   });
 
 $('#salesTable').DataTable({

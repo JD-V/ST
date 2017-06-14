@@ -52,6 +52,7 @@ require '_header.php';
             <thead>
               <tr>
                 <th>Date/Time</th>
+                <th>Type</th>
                 <th>Brand</th>
                 <th>Size</th>
                 <th>Pattern</th>
@@ -68,7 +69,8 @@ require '_header.php';
                   ?>
                   <tr>
                     <td><?php $date= date_create($entry['TimeStamp']); echo "<span class='hide'>".$entry['TimeStamp'] ."</span>"; echo date_format($date, 'd-m-Y H:i'); ?></td>
-                    <td><?php echo $entry['BrandName']; ?></td>
+                    <td><?php echo $entry['ProductTypeName']?></td>
+                    <td><?php echo $entry['BrandName']; ?></td>                    
                     <td><?php echo $entry['ProductSize']; ?></td>
                     <td><?php echo $entry['ProductPattern']; ?></td>
                     <td align="right"><?php echo $entry['Qty']; ?></td>
