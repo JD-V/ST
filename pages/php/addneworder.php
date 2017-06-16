@@ -609,14 +609,14 @@ var ValidSubmit = ['$parse', function ($parse) {
         'ProductTypeName' : found.ProductTypeName,
         'SellPrice': found.MaxSellPrice,
         'CostPrice': found.CostPrice,
-        'Qty' : 1
+        'Qty' : 0
       };
       $scope.addedProducts.push(obj);
       $scope.CalculateAmount();
     }
   };
       
- $scope.RemoveItem = function($ItemID,$index){
+ $scope.RemoveItem = function($ItemID,$index) {
       $scope.addedProducts.splice($index,1);
       $scope.CalculateAmount();
  };
@@ -632,8 +632,8 @@ var ValidSubmit = ['$parse', function ($parse) {
       angular.forEach($scope.addedProducts, function(product){
           sum += +(product.Qty*product.SellPrice);
       });
-      $scope.VatAmount = Math.ceil(sum * $scope.VatFactor) / 100;
-      $scope.BasicAmount = sum-$scope.VatAmount;
+      $scope.BasicAmount  = Math.ceil(sum*100/(100 + $scope.VatFactor));
+      $scope.VatAmount = sum-$scope.BasicAmount;
       
       $scope.TotalAmountPaid = sum;
   };
@@ -676,6 +676,7 @@ var ValidSubmit = ['$parse', function ($parse) {
         $scope.PaymentMethod = 1;
         $scope.ChequeNo = '';
         $scope.ChequeDate = '<?php echo date("d-m-Y") ?>';
+        $scope.RefreshView();
    }
 
   $scope.sendForm = function() {

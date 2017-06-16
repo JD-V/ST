@@ -481,12 +481,10 @@ function RemoveLocation($LocationId) {
 
 function RemoveBrand($BrandID) {
 
-  $RemoveBrand =  mysql_query("DELETE FROM `Brands` WHERE `BrandID` = $BrandID ");
+  $RemoveBrand =  mysql_query("UPDATE `brands` SET `Depricated` = 1 WHERE `BrandID` = $BrandID ");
   $result = mysql_affected_rows();
   if($result == -1)
-    print 'can not delete.!!  Room is Already Occupied.';
-  else if ($result == 0)
-    print 'Something went wrong. Try after refreshing page once.';
+    print mysql_error();
   else
     print 1;
 }
@@ -500,14 +498,9 @@ function AddLocation($Location) {
 }
 
 function AddBrand($Brand) {
+  $addBrand = mysql_query(" INSERT INTO `brands` (`BrandName`) VALUES ( '$Brand->BrandName')" );
 
-  $addBrand = mysql_query(" INSERT INTO `Brands` (`BrandName`) VALUES ( '$Brand->BrandName')" );
-
-  if($addBrand) {
-    return 1;
-  } else {
-    return 0;
-  }
+  return mysql_affected_rows();
 }
 
 function UpdateLocation($Location) {
@@ -911,7 +904,7 @@ function AddServiceable($srv) {
 
 function GetBrands() {
   
-  if($getBrands = mysql_query("SELECT * FROM brands")) {
+  if($getBrands = mysql_query("SELECT * FROM brands WHERE `Depricated`= 0")) {
     if(mysql_num_rows($getBrands) >= 1) {
       return $getBrands;
     }

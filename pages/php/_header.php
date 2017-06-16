@@ -79,7 +79,7 @@
               //console.log(StockArray);
               $.each(StockArray, function( key, value ) {
                 var Qty= parseInt(value.Qty)
-                if(Qty != NaN && Qty>9) { 
+                if(Qty != NaN && Qty>3) { 
                   //console.log( value.ProductName + " : green : " + value.Qty );
                 }
                 else if(Qty != NaN && Qty>0) {

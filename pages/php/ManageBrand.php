@@ -166,17 +166,22 @@ require '_header.php';
     console.log("Save All");
     var ItemArr = [];
     for (var i = 0; i < $scope.Brands.length; i++) {
-       if( $scope.Brands[i].hasOwnProperty('BrandEdited') && $scope.Brands[i].BrandEdited )
-            ItemArr.push($scope.Brands[i]);
+       if( $scope.Brands[i].hasOwnProperty('BrandEdited') && $scope.Brands[i].BrandEdited ) {
+         var BrandItem = { };
+         if($scope.Brands[i].hasOwnProperty('BrandID')){
+            BrandItem.BrandID = $scope.Brands[i].BrandID;
+         }          
+         BrandItem.BrandName = $scope.Brands[i].BrandName;
+         ItemArr.push(BrandItem);
+       }
 
-        if( $scope.Brands[i].hasOwnProperty('BrandInvalid') && $scope.Brands[i].BrandInvalid )
-            {
-              document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
-              alert-warning\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\"> \
-              <i class=\"ace-icon fa fa-times\"></i></button><i class=\"ace-icon fa fa-hand-paper-o\"></i>&nbsp;&nbsp; Please correct the errors.</div>";
-              autoClosingAlert(".alert-block", 2000);
-              return;
-            }
+      if( $scope.Brands[i].hasOwnProperty('BrandInvalid') && $scope.Brands[i].BrandInvalid ) {
+            document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
+            alert-warning\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\"> \
+            <i class=\"ace-icon fa fa-times\"></i></button><i class=\"ace-icon fa fa-hand-paper-o\"></i>&nbsp;&nbsp; Please correct the errors.</div>";
+            autoClosingAlert(".alert-block", 2000);
+            return;
+          }
     }
 
     if(ItemArr.length == 0) {

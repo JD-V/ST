@@ -19,7 +19,7 @@ if(isLogin() && isAdmin() ) {
     }
     else if($action == 'save') {
       if(isset($_GET["BrandArr"])) {
-      chromephp::log($_GET["BrandArr"]);
+      //chromephp::log($_GET["BrandArr"]);
         saveBrands($_GET["BrandArr"]);
       }
       else {
@@ -47,19 +47,17 @@ function RetriveBrands() {
 
 function saveBrands($BrandArray) {
   $BrandArray  = json_decode($BrandArray);
-  chromephp::log("BrandArray to be updated");
-  chromephp::log($BrandArray);
-  $i = 0;
+  $i=0;
   foreach($BrandArray as $Brand) { //foreach element in $arr
     if(property_exists($Brand, 'BrandID')) {
       //Fire update Query
       $i += UpdateBrand($Brand);
-      chromephp::log("Brand Id " . $Brand->BrandID);
+      // chromephp::log("Brand Id " . $Brand->BrandID);
     }
     else {
       //Fire Insert Query
       $i += AddBrand($Brand);
-      chromephp::log("Brand Name " . $Brand->BrandName);
+      // chromephp::log("Brand Name " . $Brand->BrandName);
     }
   }
 
