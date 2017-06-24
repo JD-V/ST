@@ -4,14 +4,19 @@ require '_core.php';
 
 if(isLogin()) {
 
-  if( isset($_GET['action']) ) {
+  if(isset($_GET['action']) ) {
 
-    $action = mysql_real_escape_string($_GET['action']);
+    $action = FilterInput($_GET['action']);
 
-    if($action == 'Retrive') {
+    if($action == 'Retrive' && isset($_GET['item']) && isAdmin()) {
+      $item = FilterInput($_GET['item']);
+      if($item = 'stocktxns') {
+        RetriveStockTransactions();
+      }
+    } else if($action == 'Retrive') {
       RetriveStocks();
     }
-    else if($action == 'save'  && isAdmin() ) {
+    else if($action == 'save'  && isAdmin()) {
       if(isset($_GET["ItemArr"])) {
         SaveStocks($_GET["ItemArr"]);
       }
@@ -54,6 +59,10 @@ function SaveStocks($stockArray) {
     $i += AddStockEntry($stock);
     chromephp::log("Item Id " . $stock->ProductID); 
   }
-
   print $i;
+}
+
+function RetriveStockTransactions() {
+ $stockTransactions = GetStockTransactionHistory();
+  print json_encode($stockTransactions);
 }

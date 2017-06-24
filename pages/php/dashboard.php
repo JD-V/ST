@@ -158,6 +158,12 @@ require '_header.php';
 <!-- /.content-wrapper -->
 
 <script>
+function getQuarter(d) {
+  d = d || new Date(); // If no date supplied, use today
+  var q = [1,2,3,4];
+  return q[Math.floor(d.getMonth() / 3)];
+}
+
 var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 $(function () {
 
@@ -179,21 +185,16 @@ $(function () {
     var currentMonth = currentDate.getMonth();
 
 
-    var ToMonth = currentMonth+ +1;
-    var FromMonth = (parseInt(ToMonth/3) + +1)*3-2;
+    var currentQurter = getQuarter(currentDate);
+    var FromMonth = currentQurter*3-3 +1;
     var year = currentDate.getFullYear();
     var selectedMoths = [];
-
-    for (var i=FromMonth; i<FromMonth+3; i++ ) {
+    for (var i=FromMonth; i<=currentQurter*3; i++ ) {
       selectedMoths.push(months[i-1]+'-' + year);
     }
     
-    var ToMonthPlus1 = FromMonth+ + 3;
-    FromMonth = FromMonth < 10 ? '0' + FromMonth : FromMonth;
-    ToMonthPlus1 = ToMonthPlus1 < 10 ? '0' + ToMonthPlus1 : ToMonthPlus1;
-    console.log(selectedMoths);
     var fromdate = year +'-' + FromMonth +'-' + '01';
-    var todate = year +'-' + ToMonthPlus1 +'-' + '01';
+    var todate = year +'-' + (currentQurter*3 + 1) +'-' + '01';
 
    $.ajax({
     url: "GetReportsData.php?action=Quarterly&fromDate="+fromdate+"&toDate="+todate ,

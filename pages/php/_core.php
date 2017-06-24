@@ -924,6 +924,22 @@ function GetProdcutTypes(){
   }
 }
 
+
+function GetProdcutTypes2() {
+  $ProductTypeArray = array();
+  if($getProductTypes = mysql_query("SELECT * FROM producttype")) {
+    if(mysql_num_rows($getProductTypes) >= 1) {
+      while ($type = mysql_fetch_assoc($getProductTypes)) {
+        $ProductType = new productType();
+        $ProductType->productTypeID = $type['ProductTypeID'];
+        $ProductType->productTypeName = $type['ProductTypeName'];
+        $ProductTypeArray[] = $ProductType;
+      }
+    }
+  }
+  return $ProductTypeArray;
+}
+
 function AddProductInventory($ProductInventory) {
 
   mysql_query("CALL InsertProductInventory('$ProductInventory->brandID',
@@ -1000,14 +1016,12 @@ function GetProductInventory2(){
         $ProductInventory->productSize = $product['ProductSize'];
         $ProductInventory->productPattern = $product['ProductPattern'];
         $ProductInventory->productTypeID = $product['ProductTypeID'];
-        $ProductInventory->productTypeName = $product['ProductTypeName'];        
-        // $ProductInventory->costPrice = $product['CostPrice'];
-        // $ProductInventory->minSellingPrice = $product['MinSellPrice'];
-        // $ProductInventory->maxSellingPrice = $product['MaxSellPrice'];
+        $ProductInventory->productTypeName = $product['ProductTypeName'];
         $ProductInventory->productNotes = $product['ProductNotes'];
         $ProductInventory->minStockAlert = $product['MinStockAlert'];
         $ProductInventory->dateOfEntry = $product['DateOfEntry'];
-        $ProductInventory->lastModified = $product['LastModified'];
+        $date = date_create($product['LastModified']);
+        $ProductInventory->lastModified = date_format($date,'d-m-Y H:i');;
         $ProductInventoryArray[] = $ProductInventory;
       }
     }
@@ -1109,14 +1123,36 @@ function AddStockEntry($stock) {
 }
 
 function GetStockTransactionHistory() {
-  
+  $stockTransactionArray = array();
+
   if($getStockTransactionHistory = mysql_query("SELECT br.BrandName, pt.ProductTypeName, pi.ProductSize, 
     pi.ProductPattern, pi.ProductID, se.Qty, se.TansactionTypeID, tt.TranasactionTypeName, se.TimeStamp 
-    FROM stockentries se JOIN productinvetory pi ON se.ProductID = pi.ProductID JOIN tranasactiontype tt 
-    ON se.TansactionTypeID = tt.TansactionTypeID JOIN brands br ON pi.BrandID = br.BrandID JOIN producttype pt 
-    ON pi.ProductTypeID = pt.ProductTypeID")) {
-        return $getStockTransactionHistory;
+    FROM stockentries se 
+    JOIN productinvetory pi ON se.ProductID = pi.ProductID 
+    JOIN tranasactiontype tt ON se.TansactionTypeID = tt.TansactionTypeID 
+    JOIN brands br ON pi.BrandID = br.BrandID 
+    JOIN producttype pt ON pi.ProductTypeID = pt.ProductTypeID")) {
+        
+    if(mysql_num_rows($getStockTransactionHistory) > 0) {
+      while($transaction = mysql_fetch_assoc($getStockTransactionHistory)) {
+        $stockTransaction = new stockTransaction();
+        // $stockTransaction->transactionID = $transaction[''];
+        $date = date_create($transaction['TimeStamp']);
+        $stockTransaction->transactionDate = date_format($date,'d-m-Y H:i');
+        $stockTransaction->brand = $transaction['BrandName'];
+        $stockTransaction->productType = $transaction['ProductTypeName'];
+        $stockTransaction->productSize = $transaction['ProductSize'];
+        $stockTransaction->productPattern = $transaction['ProductPattern'];
+        $stockTransaction->productID = $transaction['ProductID'];
+        $stockTransaction->qty = $transaction['Qty'];
+        $stockTransaction->transactionTypeID = $transaction['TansactionTypeID'];
+        $stockTransaction->transactionType = $transaction['TranasactionTypeName'];
+
+        $stockTransactionArray[] = $stockTransaction;
+      }
+    }
   }
+  return $stockTransactionArray;
 }
 
 function GetInventoryProductID($product) {
@@ -1427,6 +1463,21 @@ function MessageTemplate($MessageType, $text) {
    public $qty;
  }
 
+
+class stockTransaction
+ {
+   public $transactionID;
+   public $transactionDate;
+   public $brand;
+   public $productType;
+   public $productSize;
+   public $productPattern;
+   public $productID;
+   public $qty;
+   public $transactionTypeID;
+   public $transactionType;
+ }
+
  class Invoice
  {
     public $invoiceID;
@@ -1501,6 +1552,12 @@ abstract class MessageType
     const Warning = 2;
     const RoboWarning = 3;
     // etc.
+}
+
+class productType
+{
+  public $productTypeID;
+  public $productTypeName;
 }
 
 ?>

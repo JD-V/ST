@@ -81,7 +81,6 @@ require '_header.php';
                     <td><?php echo $product->lastModified; ?></td>
                     <td><?php echo '<a href="addproduct.php?id='.$product->productID.'"  class=""><i class="fa fa-pencil" aria-hidden="true"></i></a>'; ?></td>
                     <th><a href="addstock.php?id=<?php echo $product->productID ?>" class="btn btn-sm btn-info">ADD</a></th>
-                    
                   </tr>
                   <?php
                 }

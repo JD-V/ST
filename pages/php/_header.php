@@ -426,7 +426,7 @@
            if($CDATA['PAGE_NAME'] == 'INVPRDS') { $isActive =  'active'; ChromePhp::log('isa active '. $CDATA['PAGE_NAME'] );  }
           
            echo "<li class=\"hover " . $isActive . " \">
-                    <a href=\"invetoryProducts.php\" >
+                    <a href=\"inventory.php\" >
                       <i class=\"fa fa-list\"></i>
                       <span>Products</span>
                       <span class=\"pull-right-container\">
@@ -499,7 +499,7 @@
            if($CDATA['PAGE_NAME'] == 'STOCKENT') { $isActive =  'active';  }
 
               echo "<li class=\"hover " . $isActive . " \">
-                      <a href=\"stockTransactions.php\" >
+                      <a href=\"transactions.php\" >
                         <i class=\"fa fa-list\"></i>
                         <span>Transactions</span>
                         <span class=\"pull-right-container\">

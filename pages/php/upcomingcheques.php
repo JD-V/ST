@@ -78,7 +78,7 @@ require '_header.php';
                     <td><lable class="label" ng-class="{'label-danger': cheque.Type==2, 'label-success' : cheque.Type==1 }">{{cheque.Type == 1 ? "Incoming" : "Outgoing"}}</lable> </td>
                     <td>{{cheque.AmountPaid}} </td>
                     <th><input type="button" class="btn btn-sm btn-info" value="Resolve" ng-click="Resolve(cheque.ChequeNo,cheque.Invoice,cheque.Type)" ></th>
-                 
+                 <tr/>
             </tbody>
           </table>
         </div>

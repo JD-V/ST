@@ -54,6 +54,8 @@
 
 <!-- custom styles -->
 <link rel="stylesheet" type="text/css" href="../css/mainCSS.css">
+<link rel="stylesheet"; href="https://unpkg.com/ng-table@2.0.2/bundles/ng-table.min.css">
+<script src="https://unpkg.com/ng-table@2.0.2/bundles/ng-table.min.js"></script>
 
 <!-- custom styles -->
 <!--<link rel="stylesheet" type="text/css" href="../css/timelineBS.css">-->

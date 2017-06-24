@@ -13,150 +13,32 @@ require '_header.php';
   <!-- Content Header (Page header) -->
   <section class="content-header">
     <h1>
-      <div>Manage Stokcs
+      <div>Available Stock
       <small></small><div>
     </h1>
-<!--     <ol class="breadcrumb">
-      <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-      <li><a href="#">Layout</a></li>
-      <li class="active">Fixed</li>
-    </ol> -->
   </section>
 
   <!-- Main content -->
   <section class="content">
-    <!-- <div class="callout callout-info">
-      <h4>Tip!</h4>
-
-      <p>Add the fixed class to the body tag to get this layout. The fixed layout is your best option if your sidebar
-        is bigger than your content because it prevents extra unwanted scrolling.</p>
-    </div> -->
     <div id="messages">
     </div>
     <!-- Default box -->
-
-
-    <div class="box" ng-app="stockApp" ng-controller="stockCtrl">
+    <div class="box" ng-app="stockApp" ng-controller="stockCtrl" data-ng-init="RefreshView()">
       <div class="box-header with-border">
-        <p class="box-title">Products</p>
-        <!--<div class="box-tools pull-right">
-          <button type="button" class="btn btn-md btn-success" ng-click="SaveAll();">
-            <i class="fa fa-floppy-o"></i>&nbsp;
-            Save changes
-          </button>
-        </div>-->
+        <p class="box-title">Stock</p>
       </div>
       <div class="box-body">
-        <form>
-          <div class="form-group">
-            <div class="input-group">
-              <div class="input-group-addon"><i class="fa fa-search"></i></div>
-              <input type="text" class="form-control" placeholder="Search product" ng-model="serchProduct">
-            </div>      
-          </div>
-        </form>
-
       <div class="table-responsive col-sm-12" >
-        <table id="StockTable" class="table table-striped table-hover" datatable="ng" >
-          <thead>
-            <tr>
-             <th>
-                <a href="#" ng-click="sortType = 'ProductType'; sortReverse = !sortReverse">
-                Product Type
-                <span ng-show="sortType == 'ProductType' && !sortReverse" class="fa fa-caret-down"></span>
-                <span ng-show="sortType == 'ProductType' && sortReverse" class="fa fa-caret-up"></span>
-                </a>
-              </th>            
-              <th>
-                <a href="#" ng-click="sortType = 'ProductBrand'; sortReverse = !sortReverse">
-                Product Brand
-                <span ng-show="sortType == 'ProductBrand' && !sortReverse" class="fa fa-caret-down"></span>
-                <span ng-show="sortType == 'ProductBrand' && sortReverse" class="fa fa-caret-up"></span>
-                </a>
-              </th>
-              <th>
-                <a href="#" ng-click="sortType = 'ProductSize'; sortReverse = !sortReverse">
-                Product Size
-                <span ng-show="sortType == 'ProductSize' && !sortReverse" class="fa fa-caret-down"></span>
-                <span ng-show="sortType == 'ProductSize' && sortReverse" class="fa fa-caret-up"></span>
-                </a>
-              </th>  
-              <th>
-                <a href="#" ng-click="sortType = 'ProductPattern'; sortReverse = !sortReverse">
-                Product Pattern
-                <span ng-show="sortType == 'ProductPattern' && !sortReverse" class="fa fa-caret-down"></span>
-                <span ng-show="sortType == 'ProductPattern' && sortReverse" class="fa fa-caret-up"></span>
-                </a>
-              </th>                            
-              <th>
-                <a href="#" ng-click="sortType = 'Qty'; sortReverse = !sortReverse">
-                  Quantity
-                  <span ng-show="sortType == 'Qty' && !sortReverse" class="fa fa-caret-down"></span>
-                  <span ng-show="sortType == 'Qty' && sortReverse" class="fa fa-caret-up"></span>
-              </a>
-            </th>
-            <th>
-                <a href="#" ng-click="sortType = 'MinSellPrice'; sortReverse = !sortReverse">
-                  Min Sell Price
-                  <span ng-show="sortType == 'MinSellPrice' && !sortReverse" class="fa fa-caret-down"></span>
-                  <span ng-show="sortType == 'MinSellPrice' && sortReverse" class="fa fa-caret-up"></span>
-              </a>
-            </th>
-            <th>
-                <a href="#" ng-click="sortType = 'MaxSellPrice'; sortReverse = !sortReverse">
-                  Max Sell Price
-                  <span ng-show="sortType == 'MaxSellPrice' && !sortReverse" class="fa fa-caret-down"></span>
-                  <span ng-show="sortType == 'MaxSellPrice' && sortReverse" class="fa fa-caret-up"></span>
-              </a>
-            </th>
-            <th><a href="#">Add Stock</a></th>            
-              <!--<th><i class="fa fa-pencil-square-o" aria-hidden="true"></i></th>-->
-            </tr>
-          </thead>
-          <tr ng-repeat="item in stocks | orderBy:sortType:sortReverse | filter:serchProduct ">
-            <td ng-class="{'red' : item.Qty==0}">
-            <div>
-              <label>{{item.ProductType}}</label>
-            </div>
-            </td>
-            <td ng-class="{'red' : item.Qty==0}">
-            <div>
-              <label>{{item.ProductBrand}}</label>
-            </div>
-            </td>
-            <td ng-class="{'red' : item.Qty==0}">
-            <div>
-              <label>{{item.ProductSize}}</label>
-            </div>
-            </td>
-            <td ng-class="{'red' : item.Qty==0}">
-            <div>
-              <label>{{item.ProductPattern}}</label>
-            </div>
-            </td>
-            <td ng-class="{'red' : item.Qty==0}">
-            <div>
-              <label  ng-hide="item.editing"  class='normal' >{{item.Qty}}</label>
-                <!--<input id="someid" ng-change="item.qtyEdited = true" ng-click="item.editing = true" ng-blur=" item.editing = false; item.qtyInvalid = validateInput(item.Qty); item.qtyEdited = !item.qtyInvalid" onkeypress='return event.charCode >= 48 && event.charCode <= 57' type="text" ng-show="item.editing" auto-focus="{{ item.editing }}" ng-model="item.Qty"  />-->
-            </div>
-            </td>
-            <td align:right ng-class="{'red' : item.Qty==0}">
-            <div>
-              <label>{{item.MinSellPrice}}</label>
-            </div>
-            </td>
-            <td align:right ng-class="{'red' : item.Qty==0}">
-            <div>
-              <label>{{item.MaxSellPrice}}</label>
-            </div>
-            </td>
+        <table id="StockTable" class="table table-striped table-hover" ng-table="stocks"  show-filter="true" >
+          <tr ng-repeat="item in $data">
+            <td align="center" title="'ProductType'" filter="{ ProductType: 'select'}" filter-data="productTypes" sortable="'ProductType'">{{item.ProductType}}</td>
+            <td align="center" title="'ProductBrand'" filter="{ ProductBrand: 'text'}" sortable="'ProductBrand'">{{item.ProductBrand}}</td>
+            <td align="center" title="'ProductSize'" filter="{ ProductSize: 'text'}" sortable="'ProductSize'">{{item.ProductSize}}</td>
+            <td align="center" title="'ProductPattern'" filter="{ ProductPattern: 'text'}" sortable="'ProductPattern'">{{item.ProductPattern}}</td>
+            <td align="center" title="'Qty'" sortable="'Qty'">{{item.Qty}}</td>
             <td>
               <a href="addstock.php?id={{item.ProductID}}" class="btn btn-sm btn-info">ADD</a>
             </td>
-                    
-            <!--<td>
-            <a href="#" ng-click="item.editing = !item.editing; angular.element('#someid').focus()" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>&nbsp;&nbsp;&nbsp;
-            </td>-->
           </tr>
         </table>
       </div>
@@ -164,152 +46,49 @@ require '_header.php';
       <!-- /.box-body -->
     </div>
     <!-- /.box -->
-
   </section>
   <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
 
 <script type="text/javascript">
+  angular.module('stockApp', ['ngTable'])
+  .controller('stockCtrl', function($scope, dataService, $q, NgTableParams) {
+    // refreshing data in the table
+    $scope.RefreshView = function() {
+      $scope.productTypes = [{id:'', title:'All'}];
+      dataService.getProductTypes(function(response) {
+        response.data.forEach(function(item,i) {
+            console.log(item);
+            $scope.productTypes.push({id:item.productTypeName, title:item.productTypeName });
+        });
+      });
 
-  angular.module('stockApp', [])
-  .filter('getById', function() {
-  return function(input, id) {
-    var i=0, len=input.length;
-    for (; i<len; i++) {
-      if (+input[i].ProductID == +id) {
-        return input[i];
-      }
-    }
-    return null;
-  }
-})
-  .controller('stockCtrl', function($scope,$filter, dataService) {
-  $scope.sortType     = 'ProductName'; // set the default sort type
-  $scope.sortReverse  = false;  // set the default sort order
-  $scope.serchProduct   = '<?php if(isset($_GET['product'])) echo $_GET['product'] ?>';     // set the default search/filter term
-
-  // refreshing data in the table
-  $scope.RefreshView = function() {
-    dataService.getStocks(function(response) {
-      console.log(response.data);
-      $scope.stocksActual = angular.copy(response.data);
-      $scope.stocks = response.data;
-      
-    });
-  };
-  $scope.minlength = 3;
-
-  // initial call
-  $scope.RefreshView();
-
-  // save Stocks Action
-  $scope.SaveAll = function() {
-    console.log("Save All");
-    var ItemArr = []; 
-    for (var i = 0; i < $scope.stocks.length; i++) {
-       if(  $scope.stocks[i].hasOwnProperty('qtyEdited')  &&  $scope.stocks[i].qtyEdited ) {
-          var found = $filter('getById')($scope.stocksActual, $scope.stocks[i].ProductID);
-          if($scope.stocks[i].Qty != found.Qty) {
-            var obj = {};
-            if($scope.stocks[i].Qty < found.Qty) {
-              obj = {
-                'ProductID': $scope.stocks[i].ProductID,
-                'Qty' : $scope.stocks[i].Qty - found.Qty,
-                'TansactionTypeID'  : '2' // 2=>REMOVE
-              };
-            } else {
-              obj = {
-                'ProductID': $scope.stocks[i].ProductID,
-                'Qty' :  $scope.stocks[i].Qty - found.Qty,
-                'TansactionTypeID'  : '1'  // 1=>ADD
-              };
-            }
-            ItemArr.push(obj);
-          } else $scope.stocks[i].qtyEdited = false;
-        
-          if( $scope.stocks[i].hasOwnProperty('qtyInvalid') &&  $scope.stocks[i].qtyInvalid )
-              {
-                document.getElementById("messages").innerHTML = MessageTemplate(1, "Please correct all the errors.");
-                autoClosingAlert(".alert-block", 2000);
-                return;
-              }
-       }
-    }
-
-    if(ItemArr.length == 0) {
-
-      document.getElementById("messages").innerHTML = "<div class=\"alert alert-block \
-          alert-warning\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\"> \
-          <i class=\"ace-icon fa fa-times\"></i></button><i class=\"ace-icon fa fa-ban\"></i>&nbsp;&nbsp; Nothing to update.</div>";
-          autoClosingAlert(".alert-block", 2000);
-          return;
-    }
-
-    dataService.saveAll(ItemArr, function(response) {
-      if(parseInt(response.data, 10)) {
-         document.getElementById("messages").innerHTML = MessageTemplate(0, response.data+" Item(s) saved successfully");
-          $scope.RefreshView();
-          autoClosingAlert(".alert-block", 2000);
-      }
-      else {
-          document.getElementById("messages").innerHTML = MessageTemplate(1, response.data);
-          autoClosingAlert(".alert-block", 4000);
-      }
-    });
-  };
-  // Over
-  $scope.validateInput = function($inputValue) {
-    if($inputValue === "") {
-      document.getElementById("messages").innerHTML = MessageTemplate(1, "can not be blank.");
-      autoClosingAlert(".alert-block", 2000);
-      return true;
-    }
-    else
-      return false;
-  };
-
-  })
+      dataService.getStocks(function(response) {
+        $scope.stocks = new NgTableParams({page: 1, count: 10}, { dataset: response.data});
+      });
+    };
+ })
   .service('dataService', function($http) {
 
-    //get Location Service
+    // get Stocks Service
     this.getStocks = function(callback) {
-      console.log("Get Locations"); 
       $http({
         method : "GET",
         url : "AddUpdateRetriveStokcs.php?action=Retrive",
       }).then(callback)
     };
-
-    //Save Location Service
-    this.saveAll = function(ItemArray,callback) {
-      
-      console.log("Save All Locations");
+    
+    this.getProductTypes = function(callback) {
       $http({
-        method : 'GET',
-        url : "AddUpdateRetriveStokcs.php?action=save",
-        params:{ItemArr : JSON.stringify(ItemArray)},
+        method : "GET",
+        url : "getinventorydetails.php?action=retrive&item=producttypes",
       }).then(callback)
     };
 
   })
-  .directive('autoFocus', function($timeout) {
-    return {
-        link: function (scope, element, attrs) {
-            attrs.$observe("autoFocus", function(newValue){
-                if (newValue === "true")
-                    $timeout(function(){element.focus()});
-            });
-        }
-    };
-});
-
-  function autoClosingAlert(selector, delay) {
-   var alert = $(selector).alert();
-   window.setTimeout(function() { alert.alert('close') }, delay);
-  }
-
 </script>
+
 <?php
 require '_footer.php';
 }

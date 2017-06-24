@@ -85,11 +85,6 @@ require '_header.php'
     <h1>
       <div>Add Product / Stock</div>
     </h1>
-<!--     <ol class="breadcrumb">
-      <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-      <li><a href="#">Layout</a></li>
-      <li class="active">Fixed</li>
-    </ol> -->
   </section>
 
   <!-- Main content -->
@@ -97,11 +92,7 @@ require '_header.php'
     <div id ="messages">
 
     <?php
-    //$_SESSION['AUTH_KEY'] = mt_rand(100000000,999999999);
-    ChromePhp::log("form");
-    ChromePhp::log("UKEY" . @$_POST['UKey']);
     if(@$_POST['UKey'] == '2') {
-      ChromePhp::log("AKEY" . $_POST['akey']);
       if(@$_POST['akey'] == $_SESSION['AUTH_KEY']) {
         if( 
             //isset($_POST['SupplierID']) && !empty($_POST['SupplierID']) &&
@@ -119,7 +110,7 @@ require '_header.php'
 
             if($ProductInventory->productID != NULL)
               $ProductInventory->productID++;
-            // $ProductInventory->supplierID = FilterInput($_POST['SupplierID']);
+
             $ProductInventory->brandID = FilterInput($_POST['BrandID']);
             $ProductInventory->productSize = FilterInput($_POST['ProductSize']);
 
@@ -129,9 +120,7 @@ require '_header.php'
             } 
             
             $ProductInventory->productTypeID = FilterInput($_POST['ProductTypeID']);
-            // $ProductInventory->costPrice = FilterInput($_POST['CostPrice']);
-            // $ProductInventory->minSellingPrice = FilterInput($_POST['MinSellingPrice']);
-            // $ProductInventory->maxSellingPrice = FilterInput($_POST['MaxSellingPrice']);
+
             $Qty = 0;
             
             if(isset($_POST['minStockAlert']) && !empty($_POST['minStockAlert']) )
@@ -162,8 +151,6 @@ require '_header.php'
               echo MessageTemplate(MessageType::Failure, "Something went wrong, please contact system admin");
             else
               echo MessageTemplate(MessageType::Success, $msg);
-
-            
             
           } else {
             echo MessageTemplate(MessageType::Failure, "Please enter all the details.");

@@ -33,8 +33,6 @@ require '_header.php';
      
     </div>
     <!-- Default box -->
-
-
     <div class="box">
       <div class="box-header with-border">
         <h3 class="box-title">Entries</h3>
@@ -46,7 +44,7 @@ require '_header.php';
             <i class="fa fa-times"></i></button> 
         </div>
       </div>
-      <div class="box-body">      
+      <div class="box-body">
         <div class="table-responsive col-sm-12" >
           <table id="stockEntryTable" class="table table-striped table-hover" >
             <thead>
@@ -63,7 +61,6 @@ require '_header.php';
             <tbody>
               <?php
                 $i = 0;
-
                 $stockTransactionHistory = GetStockTransactionHistory();
                 while ($entry = mysql_fetch_assoc($stockTransactionHistory)) {
                   ?>
@@ -86,7 +83,6 @@ require '_header.php';
       <!-- /.box-body -->
     </div>
     <!-- /.box -->
-
   </section>
   <!-- /.content -->
 </div>

@@ -286,7 +286,7 @@ require '_header.php';
     }
     ToMonthPlus1 = parseInt(ToMonth)+1;
     ToMonthPlus1 = ToMonthPlus1 < 10 ? '0' + ToMonthPlus1 : ToMonthPlus1;
-    console.log(selectedMoths);
+    // console.log(selectedMoths);
     var fromdate = year[0] +'-' + FromMonth +'-' + '01';
     var todate = year[1] +'-' + ToMonthPlus1 +'-' + '01';
 
@@ -297,6 +297,7 @@ require '_header.php';
     async: false,
     success: function(data) {
       var reportData = jQuery.parseJSON(data);
+      // console.log(reportData);
       var saleData = [];
       //console.log(data.sale);
       var saleData = [];
@@ -332,14 +333,14 @@ require '_header.php';
       labels: selectedMoths,
       datasets: [
         {
-          label: "Non billable",
+          label: "Sale",
           fillColor: "rgba(210, 214, 222, 1)",
           strokeColor: "rgba(210, 214, 222, 1)",
           pointColor: "rgba(210, 214, 222, 1)",
           pointStrokeColor: "#c1c7d1",
           pointHighlightFill: "#fff",
           pointHighlightStroke: "rgba(220,220,220,1)",
-          data: saleData
+          data: saleData,
         },
         {
           label: "Service",
@@ -349,17 +350,17 @@ require '_header.php';
           pointStrokeColor: "#98FB98",
           pointHighlightFill: "#fff",
           pointHighlightStroke: "rgba(152,251,152,1)",
-          data: serviceData
+          data: serviceData,
         },
         {
-          label: "Sale",
+          label: "Non billable",
           fillColor: "rgba(60,141,188,0.5)",
           strokeColor: "rgba(60,141,188,0.4)",
           pointColor: "#3b8bba",
           pointStrokeColor: "rgba(60,141,188,1)",
           pointHighlightFill: "#fff",
           pointHighlightStroke: "rgba(60,141,188,1)",
-          data: nonbillableData
+          data: nonbillableData,
         },
       ]
     };
