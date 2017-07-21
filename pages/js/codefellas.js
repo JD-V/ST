@@ -135,14 +135,14 @@ $(document).ready(function () {
     },
   });
 
-  //Reservation form
+  //AddOrUpdateInvoice form
   $("#AddorUpdateInvoice").submit(function (e) {}).validate({
     rules: {
       InvoiceDate: {
         required: true,
         dateonly: true,
       },
-      CompanyName: {
+      SupplierID: {
         required: true,
       },
       InvoiceNumber: {
@@ -236,11 +236,13 @@ $(document).ready(function () {
       $('input[name="UKey"]').val('2');
       removeMultiInputNamingRules(form, 'input[alt="ProductSize[]"]');
       removeMultiInputNamingRules(form, 'input[alt="Brand[]"]');
-      removeMultiInputNamingRules(form, 'input[alt="ProductPattern[]"]');
+      removeMultiInputNamingRules(form, 'select[alt="ProductPattern[]"]');
+      removeMultiInputNamingRules(form, 'input[alt="NewProductPattern[]"]');
       removeMultiInputNamingRules(form, 'input[alt="Quantity[]"]');
       removeMultiInputNamingRules(form, 'input[alt="Rate[]"]');
       removeMultiInputNamingRules(form, 'input[alt="Amount[]"]');
       removeMultiInputNamingRules(form, 'select[alt="ProductTypeID[]"]');
+
       form.submit();
     }
   });

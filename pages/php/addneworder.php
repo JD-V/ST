@@ -685,6 +685,7 @@ var ValidSubmit = ['$parse', function ($parse) {
     if($scope.BasicAmount == 0 || salesInvoiceDateVal == ''  || chequeDateVal == '' ) {
       document.getElementById("messages").innerHTML = MessageTemplate(1, "Please correct all the errors.");
       autoClosingAlert(".alert-block", 4000);
+      scrollTo(0,0);
     } else {
       var FormData = {
         Products: []
@@ -719,7 +720,6 @@ var ValidSubmit = ['$parse', function ($parse) {
       FormData.PaymentMethod = $scope.PaymentMethod;
       FormData.InvoiceNoActual = $scope.InvoiceNoActual;
 
-
       if($scope.PaymentMethod == '3') {
         FormData.ChequeNo = $scope.ChequeNo;
         $scope.ChequeDate = chequeDateVal;
@@ -733,20 +733,35 @@ var ValidSubmit = ['$parse', function ($parse) {
 
       if($scope.OperationType == 1) {
 
-        dataService.submitOrder(FormData, function(response) {
-          if(parseInt(response.data, 10)) {
-            document.getElementById("messages").innerHTML = 
-              MessageTemplate(0, "Sales Invoice has been added with " + response.data +" product(s)");
-              $scope.reset();              
-              $scope.salesForm.$setPristine();
-              $scope.salesForm.$setUntouched();
-              $scope.salesForm.$submitted = false;
-          } else {
-              document.getElementById("messages").innerHTML = MessageTemplate(1, response.data);
-          }
-          autoClosingAlert(".alert-block", 4000);
-          scrollTo(0,0);
+        $.ajax({
+            url: "CreateOrderForm.php?action=save",
+            type: "POST",
+            data: FormData,
+            dataType: 'json',
+            success: function(result) {
+              if(result.succees == 1) {
+                
+                document.getElementById("messages").innerHTML = MessageTemplate(0, result.message);
+                $scope.reset();              
+                $scope.salesForm.$setPristine();
+                $scope.salesForm.$setUntouched();
+                $scope.salesForm.$submitted = false;
+
+              } else {
+                document.getElementById("messages").innerHTML = MessageTemplate(1, result.message);
+              }
+              
+              autoClosingAlert(".alert-block", 4000);
+              scrollTo(0,0);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+              document.getElementById("messages").innerHTML = MessageTemplate(1, errorThrown);
+              autoClosingAlert(".alert-block", 4000);
+              scrollTo(0,0);
+            }
         });
+
+
       } else {
         dataService.updateSalesInvoice(FormData, function(response) {
             if(parseInt(response.data, 10)) {
@@ -766,9 +781,6 @@ var ValidSubmit = ['$parse', function ($parse) {
       }
     }
   };
-  $scope.getClass = function(b) {
-    return b.toString();
-  }
 
   // initial call
   if(invoiceid!=null) {
@@ -776,7 +788,7 @@ var ValidSubmit = ['$parse', function ($parse) {
   } else {
     $scope.RefreshView();
     $scope.reset();
-  }  
+  }
   
   })  
   .service('dataService', function($http) {
@@ -817,9 +829,9 @@ var ValidSubmit = ['$parse', function ($parse) {
     //Save Orders
     this.submitOrder = function(FormData,callback) {
       $http({
-        method : 'GET',
+        method : 'POST',
         url : "CreateOrderForm.php?action=save",
-        params:{FormData : JSON.stringify(FormData)},
+        params:{FormData : FormData},
       }).then(callback)
     };
 

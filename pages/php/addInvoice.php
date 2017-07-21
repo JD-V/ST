@@ -17,6 +17,8 @@ require '_header.php'
   $( $fieldset ).find( "input" ).val('');   //clears out input field
   $fieldsetmain.parent().append($fieldset);
 
+  // if new pattern is 
+
   addMultiInputNamingRules('#AddorUpdateInvoice','ProductTypeID[]', 'select[name="ProductTypeID[]"]', {
       required: true,
       messages: {
@@ -39,6 +41,14 @@ require '_header.php'
   } );
 
   addMultiInputNamingRules('#AddorUpdateInvoice','ProductPattern[]', 'input[name="ProductPattern[]"]', {
+      required: true,
+      messages: {
+          required: "Required",
+      }
+  } );
+
+
+  addMultiInputNamingRules('#AddorUpdateInvoice','NewProductPattern[]', 'input[name="NewProductPattern[]"]', {
       required: true,
       messages: {
           required: "Required",
@@ -89,6 +99,9 @@ function ProductTypechanged(e) {
     // });
     $(e).closest('fieldset').find(".product-pattern").rules("add", {
         required: true,
+        messages: {
+          required: "Please Enter Product Pattern",
+        }
     });    
   }
 
@@ -155,6 +168,25 @@ function RemoveProductFieldset(e) {
    });
 }
 
+function PatternSelectionChage(e)  {
+  if(e.value == 0) {
+    // $(e).closest( 'fieldset' ).find('.product-pattern').rules( "remove", "required" );  // remove rule from product pattern
+    
+    $(e).closest( 'fieldset' ).find('.new-product-pattern').removeAttr("disabled");    // enable new-product-pattern and add rule
+    
+    $("#AddorUpdateInvoice").validate(); //sets up the validator
+    $(e).closest('fieldset').find('.new-product-pattern').rules("add", {
+        required: true,
+    });
+  } else {
+    $(e).closest( 'fieldset' ).find('.new-product-pattern').attr("disabled", "disabled"); // disable new-product-pattern and remove rule
+    $(e).closest( 'fieldset' ).find('.new-product-pattern').val("-");      //clear it our
+
+    $("#AddorUpdateInvoice").validate(); //sets up the validator
+    $(e).closest( 'fieldset' ).find('.new-product-pattern').rules( "remove", "required" );
+
+  }
+}
   // $(function () {
   //     $("[data-mask]").inputmask();
   // });
@@ -220,6 +252,23 @@ $(document).ready(function () {
     {
       if(@$_POST['akey'] == $_SESSION['AUTH_KEY'])
       {
+        ChromePhp::log("NewProductPattern = ". isset($_POST['NewProductPattern']) . " count =" . count($_POST['NewProductPattern']));
+        ChromePhp::log("ProductPattern = ". isset($_POST['ProductPattern']) ." count". count($_POST['ProductPattern'])  );
+        ChromePhp::log("InvoiceDate = " .isset($_POST['InvoiceDate']) );
+        ChromePhp::log("InvoiceDate = " .isset($_POST['InvoiceDate']) );
+        ChromePhp::log("SupplierID = " .isset($_POST['SupplierID']) );
+        ChromePhp::log("InvoiceNumber = " .isset($_POST['InvoiceNumber']) );
+        ChromePhp::log("Brand = " .isset($_POST['Brand']) );
+        ChromePhp::log("ProductPattern = " .isset($_POST['ProductPattern']) );
+        ChromePhp::log("NewProductPattern = " .isset($_POST['NewProductPattern']) );
+        ChromePhp::log("Quantity = " .isset($_POST['Quantity']) );
+        ChromePhp::log("Rate = " .isset($_POST['Rate']) );
+        ChromePhp::log("Amount = " .isset($_POST['Amount']) );
+        ChromePhp::log("SubTotalAmount = " .isset($_POST['SubTotalAmount']) );
+        ChromePhp::log("VatAmount = " .isset($_POST['VatAmount']) );
+        ChromePhp::log("TotalAmount = " .isset($_POST['TotalAmount']) );
+        ChromePhp::log("paymentType = " .isset($_POST['paymentType']) );
+
         if( isset($_POST['InvoiceDate']) && !empty($_POST['InvoiceDate']) &&
             isset($_POST['SupplierID']) && !empty($_POST['SupplierID']) &&
             isset($_POST['InvoiceNumber']) && !empty($_POST['InvoiceNumber']) &&
@@ -265,18 +314,29 @@ $(document).ready(function () {
               $successCountStock = 0;
               $ProductTypeID = $_POST['ProductTypeID'];
               $productSize = $_POST['ProductSize'];
-              $ProductPattern = $_POST['ProductPattern'];
+              $productPattern = $_POST['ProductPattern'];
+
+              if(isset($_POST['NewProductPattern']))
+                $newProductPattern = $_POST['NewProductPattern'];
+
               $brand = $_POST['Brand'];
               $units = $_POST['Quantity'];
               $rate = $_POST['Rate'];
               $amount = $_POST['Amount'];
-              
+              $newPatternCount = 0;
               for ($i=0; $i < count($productSize); $i++) {
                 $Product =  new Product();
                 $Product->invoiceID = $Invoice->invoiceID;
                 $Product->productTypeID = $ProductTypeID[$i];
                 $Product->productSize = $productSize[$i];
-                $Product->productPattern = $ProductPattern[$i];
+                
+                if($productPattern[$i] == '0') {
+                  $Product->productPattern = $newProductPattern[$newPatternCount];
+                  $newPatternCount++;
+                }
+                else
+                  $Product->productPattern = $productPattern[$i];
+                
                 $Product->brandID = $brand[$i];
                 $Product->units = $units[$i];
                 $Product->rate = $rate[$i];
@@ -284,13 +344,14 @@ $(document).ready(function () {
 
                 $result = AddProduct($Product);
                 if($result->isProductAdded == 1)
-                  $successCount++;
+                  $successCountProduct++;
                 if($result->isInventoryProductAdded == 1)
                   $successCountInventotry++;
                 if($result->isStockAdded == 1)
-                  $isStockAdded++;
+                  $successCountStock++;
               }
-              echo MessageTemplate(MessageType::Success, "Invoice Added successfully. with " . $successCountProduct . " and  ". $successCountInventotry ." new Inventory Product." );
+              echo MessageTemplate(MessageType::Success, "Invoice Added successfully. with " . $successCountProduct . 
+                " product(s) and  ". $successCountInventotry ." new Inventory Product. And with " . $successCountStock ." Stock Entry");
             } else {
               echo MessageTemplate(MessageType::Failure, "Something went wrong, please contact your system admin.");
             }
@@ -321,7 +382,7 @@ $(document).ready(function () {
       </div>
       <div class="box-body">
 
-      <div id="AddOrUpdateProducts">
+      <div>
           <form class="form-horizontal" id="AddorUpdateInvoice" name="AddorUpdateInvoice" action="addInvoice.php?_auth=<?php echo $_SESSION['AUTH_KEY']; ?>" method="post">
               <input type="hidden" value="<?php echo $_SESSION['AUTH_KEY']; ?>" name="akey" id="ID_akey" >
               <input type="hidden" value="<?php echo $_SESSION['VatFactor']; ?>" name="VatPer" id="VatPer">
@@ -410,10 +471,29 @@ $(document).ready(function () {
                 </div>
               </div>
 
+
+              <div class="form-group" >
+                  <label for="ProductPattern" class="control-label col-sm-3 lables product-brand-lable">Pattern<span class="mandatoryLabel">*</span></label>
+                  <div class="col-sm-4">
+                      <select class="form-control product-pattern" name="ProductPattern[]" onchange="PatternSelectionChage(this)" >
+                      <option selected="true" disabled="disabled" style="display: none" value="default" >Select Pattern</option>
+                      <option value="0" >None of this</option>
+                      <?php
+                        $patterns = GetPatterns();
+                        if(mysql_num_rows($patterns)!=0) {
+                            while($pattern = mysql_fetch_assoc($patterns)) {
+                                echo '<option value="' . $pattern['Pattern'] . '">' . $pattern['Pattern'] . '</option>';
+                            }
+                        }
+                      ?>
+                      </select>
+                  </div>
+              </div>
+
               <div class="form-group">
-                <label for="ProductPattern" class="control-label col-sm-3 lables"><span class="product-pattern-lable">Pattern</span><span class="mandatoryLabel">*</span></label>
+                <label for="NewProductPattern" class="control-label col-sm-3 lables"><span class="new-product-pattern-lable">New Pattern</span><span class="mandatoryLabel">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" class="form-control product-pattern" name="ProductPattern[]" placeholder="" >
+                  <input type="text" class="form-control new-product-pattern" value="-" name="NewProductPattern[]" placeholder="" disabled>
                 </div>
               </div>
 

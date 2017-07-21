@@ -117,6 +117,16 @@ function isAdmin() {
   }
 }
 
+function GetPatterns() {
+   if($getPatterns = mysql_query("SELECT DISTINCT Pattern FROM products")) {
+    if(mysql_num_rows($getPatterns) >= 1) {
+      return $getPatterns;
+    }
+  } else {
+    return false;
+  }
+}
+
 function GetServices() {
 
   if($getServiceList = mysql_query("SELECT * FROM service")) {
@@ -160,7 +170,7 @@ function GetServices2() {
 
 function GetOrders() {
 
-  if($getOrdersList = mysql_query("SELECT * FROM sales")) {
+  if($getOrdersList = mysql_query("SELECT * FROM sales ORDER BY InvoiceDateTime DESC")) {
       return $getOrdersList;
   } else {
     return false;
@@ -753,11 +763,11 @@ function GetServiceReport($fromDate,$toDate) {
 
 function AddInvoice($Invoice){
 
-  ChromePhp::log('InvoiceDate ' . $Invoice->invoiceDate );
-  ChromePhp::log('InvoiceID ' . $Invoice->invoiceID );
-  ChromePhp::log('InvoiceNumber ' . $Invoice->invoiceNumber );
-  ChromePhp::log('TotalPaid ' . $Invoice->totalAmount);
-  ChromePhp::log('Notes' .$Invoice->invoiceNotes);
+  // ChromePhp::log('InvoiceDate ' . $Invoice->invoiceDate );
+  // ChromePhp::log('InvoiceID ' . $Invoice->invoiceID );
+  // ChromePhp::log('InvoiceNumber ' . $Invoice->invoiceNumber );
+  // ChromePhp::log('TotalPaid ' . $Invoice->totalAmount);
+  // ChromePhp::log('Notes' .$Invoice->invoiceNotes);
 
 
   $addInvoice = mysql_query(
@@ -769,11 +779,7 @@ function AddInvoice($Invoice){
               '$Invoice->vatAmount', '$Invoice->totalAmount', '$Invoice->paymentType',
               '$Invoice->chequeNo', '$Invoice->chequeDate', '$Invoice->invoiceNotes' )" );
 
-  if($addInvoice)
-    return 1;
-  else
-    echo mysql_error();
-    return 0;
+  return mysql_affected_rows();
 }
 
 function AddProduct($Product){
@@ -793,18 +799,16 @@ function AddProduct($Product){
           '$Product->productPattern', '$Product->units', '$Product->rate', 
           '$Product->amount' )" );
 
-  // if($addProduct)
-
-  //   return 1;
-  // else
-  //   echo mysql_error();
-  //   return 0;
     $object = new stdClass();
-    if($addProduct)
-      $object->isProductAdded = 1;
-    else
-      $object->isProductAdded = 0;
+    
+    $object->isProductAdded = mysql_affected_rows();
+    $object->isInventoryProductAdded = 0;
+    $object->isStockAdded = 0;
 
+    if($object->isProductAdded != 1)
+      return $object;
+
+    
     mysql_query("CALL InsertProductInventory('$Product->brandID',
     '$Product->productSize','$Product->productPattern','$Product->productTypeID',
     '', '1','$Product->units',@isProductAdded,@isStockAdded);");
@@ -812,10 +816,10 @@ function AddProduct($Product){
     $addProductInventory = mysql_query("SELECT @isProductAdded as isProductAdded, @isStockAdded  as isStockAdded;");
    
     if($addProductInventory) {
-      // ChromePhp::log("retrived result");
+      ChromePhp::log("retrived result");
       
       $result = mysql_fetch_assoc($addProductInventory);
-      // ChromePhp::log($result);
+
       $object->isInventoryProductAdded = $result['isProductAdded'];
       $object->isStockAdded = $result['isStockAdded'];
     }
@@ -1181,10 +1185,10 @@ function AddNewSalesItem($order) {
 function AddProductToSalesInvoice($product,$invoiceNumber,$saleID) {
   $AddProductToInvoice = mysql_query("INSERT INTO `salesproducts` 
     (`SaleID`, `ProductID`, `BrandName`, `Productsize`, `Pattern`, 
-     `ProductType`, `Qty`, `CostPrice`, `SalePrice`, `InvoiceNumber` ) VALUES 
+     `ProductType`, `Qty`, `SalePrice`, `InvoiceNumber` ) VALUES 
     ( '$saleID', '$product->productID', '$product->brandName', '$product->productSize', 
       '$product->productPattern', '$product->productType', '$product->qty',
-      '$product->costPrice', '$product->maxSellingPrice','$invoiceNumber' )" );
+      '$product->maxSellingPrice','$invoiceNumber' )" );
     
     return mysql_affected_rows();
 }
@@ -1422,6 +1426,7 @@ function MessageTemplate($MessageType, $text) {
     public $chequeDate=NULL;
     public $notes="";
     public $address="";
+    public $timeStamp;
   }
 
  class Product
