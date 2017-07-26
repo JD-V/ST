@@ -129,7 +129,7 @@ function GetPatterns() {
 
 function GetServices() {
 
-  if($getServiceList = mysql_query("SELECT * FROM service")) {
+  if($getServiceList = mysql_query("SELECT * FROM service ORDER BY InvoiceDateTime DESC")) {
     ChromePhp::log("true");
     if(mysql_num_rows($getServiceList) >= 1) {
       ChromePhp::log("true1");
@@ -147,6 +147,7 @@ function GetServices2() {
     if(mysql_num_rows($getServiceList) >= 1) {
       while ($service = mysql_fetch_assoc($getServiceList)) {
         $ServiceRecord = new ServiceRecord();
+        $ServiceRecord->timeStamp = $service['InvoiceDateTime'];
         $ServiceRecord->invoiceNumber = $service['InvoiceNumber'];
         $date = date_create($service['InvoiceDateTime']);
         $ServiceRecord->invoiceDate = date_format($date, 'd-m-Y H:i');
@@ -836,7 +837,12 @@ function AddProduct($Product){
 
 function GetInvoices(){
 
-   if($getInvoices = mysql_query("SELECT * FROM `purchaseinvoice`")) {
+   if($getInvoices = mysql_query("
+    SELECT p.InvoiceID, p.InvoiceNumber, p.InvoiceDate, s.SupplierName,
+    s.TinNumber, p.SubTotal, p.VatAmount, p.TotalPaid,
+    p.PaymentType, p.ChequeNo, p.ChequeDate, p.Notes
+    FROM purchaseinvoice p
+    JOIN supplier s ON s.SupplierID = p.SupplierID")) {
     if(mysql_num_rows($getInvoices) >= 1) {
       return $getInvoices;
     }
@@ -1518,6 +1524,7 @@ class ServiceRecord
   public $amountPaid=0.00;
   public $address="";
   public $notes="";
+  public $timeStamp;
 }
 
 class serviceable

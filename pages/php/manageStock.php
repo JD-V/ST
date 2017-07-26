@@ -26,6 +26,9 @@ require '_header.php';
     <div class="box" ng-app="stockApp" ng-controller="stockCtrl" data-ng-init="RefreshView()">
       <div class="box-header with-border">
         <p class="box-title">Stock</p>
+        <div class="box-tools pull-right">
+          <span class=" total-count" > {{stocks.total()}}</span> Record(s) matching
+        </div>          
       </div>
       <div class="box-body">
       <div class="table-responsive col-sm-12" >

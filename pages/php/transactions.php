@@ -26,6 +26,9 @@ require '_header.php';
     <div class="box" ng-app="stockTxnApp" ng-controller="stockTxnCtrl" data-ng-init="RefreshView()">
       <div class="box-header with-border">
         <p class="box-title">Transactions</p>
+        <div class="box-tools pull-right">
+          <span class=" total-count" > {{stockTxn.total()}}</span> Record(s) matching
+        </div>          
       </div>
       <div class="box-body">
       <div class="table-responsive col-sm-12" >
@@ -41,7 +44,8 @@ require '_header.php';
                 ng-class="{'green': item.transactionTypeID == 1, 
                         'red': item.transactionTypeID == 2, 
                         'blue': item.transactionTypeID == 3,
-                        'purple': item.transactionTypeID == 4}" >{{item.transactionType}}</td>
+                        'purple': item.transactionTypeID == 4}" >{{item.transactionType}}
+            </td>
           </tr>
         </table>
       </div>
@@ -68,8 +72,7 @@ require '_header.php';
                                  {id:'REMOVE', title:'REMOVE'}];
       dataService.getProductTypes(function(response) {
         response.data.forEach(function(item,i) {
-            console.log(item);
-            $scope.productTypes.push({id:item.productTypeName, title:item.productTypeName });
+          $scope.productTypes.push({id:item.productTypeName, title:item.productTypeName });
         });
       });
       dataService.getStockTransactions(function(response) {

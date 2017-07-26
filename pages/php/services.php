@@ -9,32 +9,27 @@ require '_header.php';
 $roleID = getUserRoleID();
 ?>
 
-<script type = "text/javascript">
+<!--<script type = "text/javascript">
 
 function DisplayInvoice(InvoiceID){
 
 window.open("DisplayServiceInvoice.php?id="+InvoiceID);
 
 }
-</script>
+</script>-->
 
 <!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
+<div class="content-wrapper" ng-app="ServiceDataApp" ng-controller="ServiceDataCtrl" >
   <!-- Content Header (Page header) -->
-  <section class="content-header" id="MainEventInfo" >
+  <section class="content-header"  >
     <h1>
       <div>Service history
       <small></small><div>
     </h1>
-<!--     <ol class="breadcrumb">
-      <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-      <li><a href="#">Layout</a></li>
-      <li class="active">Fixed</li>
-    </ol> -->
   </section>
 
   <!-- Main content -->
-  <section class="content">
+  <section class="content" >
     <!-- <div class="callout callout-info">
       <h4>Tip!</h4>
 
@@ -48,69 +43,32 @@ window.open("DisplayServiceInvoice.php?id="+InvoiceID);
 
     <div class="box">
       <div class="box-header with-border">
-        <h3 class="box-title">Records</h3>
-
+        <h3 class="box-title"></h3>
         <div class="box-tools pull-right">
-<!--           <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
-            <i class="fa fa-minus"></i></button>
-          <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove">
-            <i class="fa fa-times"></i></button> -->
+          <span class=" total-count" > {{servicesDataNgParams.total()}}</span> Record(s) matching
         </div>
       </div>
       <div class="box-body">
-      <div class="table-responsive col-sm-12" >
-          <table id="serviceTable" class="table table-striped table-hover" >
-            <thead>
-              <tr>
-                <th>Invoice</th>
-                <th>DateTime</th>
-
-                <th>Customer</th>
-                <th>Phone</th>
-                <th>Vehicle No</th>
-                <th>Mileage</th>
-
-                <th>Amount Paid</th>
-                <th>Address</th>
-                <th>Notes</th>
-                
-                <th>Invoice</i></th>
-                <th><i class="fa fa-pencil" aria-hidden="true"></i></th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php
-                $i = 0;
-                $services = GetServices2();
-                foreach ($services as $service) {
-                  ?>
-                  <tr>
-                    <td><?php echo $service->invoiceNumber; ?></td>
-                    <td><?php echo $service->invoiceDate; ?></td>
-
-                    <td><?php echo $service->customerName; ?></td>
-                    <td><?php echo $service->customerPhone ?></td>
-                    <td><?php echo $service->vehicleNumber; ?></td>
-                    <td><?php echo $service->vehicleMileage; ?></td>
-
-                    <td><?php echo $service->amountPaid; ?></td>
-                    <td><?php echo $service->address; ?></td>
-                    <td><?php echo $service->notes; ?></td>
-                    
-                    <td><?php echo '<input type="button" class="btn btn-sm btn-info" value="Invoice" onclick = "DisplayInvoice('.$service->invoiceNumber.');" />'; ?></td>
-                    <th>
-                    <?php 
-                      if( $roleID == 1 || strtotime(date('d-m-Y H:i:s')) - strtotime($service->invoiceDate) <= 900) 
-                        echo '<a href="addservicerecord.php?id='. $service->invoiceNumber.'">' . '<i class="fa fa-pencil" aria-hidden="true"></i>'. '</a>'; 
-                    ?>
-                    </th>
-                  </tr>
-                  <?php
-                }
-              ?>
-            </tbody>
+        <div class="table-responsive col-sm-12" >
+          <table class="table table-striped table-hover" ng-table="servicesDataNgParams" show-filter="true" >
+            <tr ng-repeat='service in $data'>
+              <td align="center" title="'Invoice'" sortable="'invoiceNumber'" filter="{invoiceNumber: 'text'}" >{{service.invoiceNumber }}</td>
+              <td align="center" title="'Date'"  sortable="'invoiceDate'" filter="{'invoiceDate': 'text'}" >{{service.invoiceDate | date : "dd-MM-y"}}</td>
+              <td align="center" title="'Customer'"  sortable="'customerName'" filter="{customerName: 'text'}" >{{service.customerName}}</td>
+              <td align="center" title="'Phone'" sortable="'customerPhone'" filter="{customerPhone: 'text'}" >{{service.customerPhone}}</td>
+              <td align="center" title="'Vehicle'" sortable="'vehicleNumber'" filter="{vehicleNumber: 'text'}" >{{service.vehicleNumber}}</td>
+              <td align="center" title="'Mileage'" sortable="'vehicleMileage'" filter="{vehicleMileage: 'text'}" >{{service.vehicleMileage}}</td>
+              <td align="center" title="'basic'" sortable="'basic'" filter="{basic: 'text'}" >{{service.subTotal | number:2}}</td>
+              <td align="center" title="'Discount'" sortable="'discountAmount'" filter="{discountAmount: 'text'}" >{{service.discountAmount | number:2}}</td>
+              <td align="center" title="'Paid'" sortable="'amountPaid'" filter="{amountPaid: 'text'}" >{{service.amountPaid | number:2}}</td>
+              <td align="center" title="'Notes'" sortable="'notes'" filter="{notes: 'text'}" >{{service.notes}}</td>
+              <td align="center" title="'Invoice'"> <input type="button" class="btn btn-sm btn-info" value="Invoice" ng-click = "DisplayInvoice(order.invoiceNumber);" /></td>
+              <td ng-show="service.showEdit == 1">
+                <a href="addservicerecord.php?id=service.invoiceNumber"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+              </td>
+            </tr>
           </table>
-      </div>
+        </div>
       </div>
       <!-- /.box-body -->
     </div>
@@ -120,6 +78,53 @@ window.open("DisplayServiceInvoice.php?id="+InvoiceID);
   <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
+
+<script type="text/javascript" >
+
+var app = angular.module('ServiceDataApp',['ngTable'])
+ .controller('ServiceDataCtrl', function($scope,dataService,NgTableParams) {
+
+   $scope.refresh = function() {
+    $scope.services = [];
+    
+    dataService.getServiceData(function(response) {
+      $scope.RoleID = <?php echo $roleID ?>;
+      $scope.dateTime = new Date();
+      var services = response.data;
+      
+          
+      services.forEach(function(item,i) {
+        item.timeStamp = new Date(item.timeStamp.replace(/-/g, "-"));
+
+        if($scope.RoleID == 1 || $scope.dateTime.getTime()-item.timeStamp.getTime() <= 900000)
+          item.showEdit = 1;
+        else 
+          item.showEdit = 0;
+      });
+
+      $scope.servicesDataNgParams = new NgTableParams( { },{ dataset: services } );
+    });
+   }
+  
+  $scope.refresh();
+
+  $scope.DisplayInvoice = function(InvoiceID){
+    window.open("DisplayServiceInvoice.php?id="+InvoiceID);
+  }
+
+ })
+ .service('dataService', function($http) {
+    this.getServiceData = function(callback) {
+      $http({
+        method : "GET",
+        url: "CreateServiceRecordForm.php?action=Retrive&item=servicerecords",
+      }).then(callback)
+    }
+ });
+
+</script>
+
+
 <?php
 require '_footer.php';
 }

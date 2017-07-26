@@ -13,6 +13,8 @@ if(isLogin()) {
         print GetMaxServiceInoviceNumber();
       } else if(isset($_GET['item']) && $_GET['item'] == "GetServiceRecordData" && isset($_GET['InvoiceNumber']) ) {
         print GetServiceRecordData($_GET['InvoiceNumber']);
+      } else if(isset($_GET['item']) && $_GET['item'] == "servicerecords") {
+        print GetServiceRecords();
       }
     } else if($action == 'save') {
       if(isset($_GET["FormData"])) {
@@ -153,4 +155,29 @@ function GetServiceRecordData($InvoiceNumber) {
   }
   
   print json_encode($ServiceRecordData);
+}
+
+function GetServiceRecords() {
+    $services = GetServices();
+    $service_array = array();
+    while ($service = mysql_fetch_assoc($services)) {
+        
+      $ServiceRecord = new ServiceRecord();
+      $ServiceRecord->invoiceNumber = $service['InvoiceNumber'];
+      $date = date_create($service['InvoiceDateTime']);
+      $ServiceRecord->invoiceDate = date_format($date, 'd-m-Y');
+      $ServiceRecord->customerName = $service['CustomerName'];
+      $ServiceRecord->customerPhone = $service['CustomerPhone'];
+      $ServiceRecord->vehicleNumber = $service['VehicleNumber'];
+      $ServiceRecord->vehicleMileage = $service['VehicleMileage'];
+      $ServiceRecord->subTotal = $service['SubTotal'];
+      $ServiceRecord->discountAmount = $service['Discount'];
+      $ServiceRecord->amountPaid = $service['AmountPaid'];
+      $ServiceRecord->address = $service['Address'];
+      $ServiceRecord->notes = $service['Note'];
+      $ServiceRecord->timeStamp = $service['TimeStamp'];
+      $service_array[] = $ServiceRecord;
+    }
+
+    return json_encode($service_array);
 }

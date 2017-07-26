@@ -81,6 +81,25 @@ $roleID = getUserRoleID();
 
 <script type="text/javascript" >
   angular.module('OrdersApp',['ngTable'])
+  
+.filter('customUserDateFilter', function($filter) {
+    return function(values, dateString) {
+        var filtered = [];
+        if (typeof values != 'undefined' && typeof dateString != 'undefined') {
+            angular.forEach(values, function(value) {
+                var source = ($filter('date')(value.invoiceDate, 'dd-MM-y')).toLowerCase();
+                var temp = dateString.toLowerCase();
+                //if ($filter('date')(value.start_date).indexOf(dateString) >= 0) {
+                //if (temp.indexOf(" ") >=0)
+                	//debugger;
+                if (source.indexOf(temp) >= 0) {
+                    filtered.push(value);
+                }
+            });
+        }
+        return filtered;
+    }
+})
  .controller('OrdersCtrl', function($scope,$filter,dataService,NgTableParams) {
 
    $scope.refresh = function() { 
@@ -93,7 +112,7 @@ $roleID = getUserRoleID();
       
           
       orders.forEach(function(item,i) {
-        // item.invoiceDate = new Date(item.invoiceDate.replace(/-/g, "-"));
+        item.invoiceDate = new Date(item.invoiceDate.replace(/-/g, "-"));
         item.timeStamp = new Date(item.timeStamp.replace(/-/g, "-"));
 
         console.log($scope.dateTime.getTime()-item.timeStamp.getTime());
@@ -106,10 +125,40 @@ $roleID = getUserRoleID();
 
       $scope.orders = orders;
 
-      $scope.ordersNgParamss = new NgTableParams( { },{ dataset: orders } );
+      $scope.ordersNgParamss = new NgTableParams({
+        page: 1, // show first page
+        count: 10, // count per page
+        sorting: {
+          index: 'asc' // initial sorting
+        }
+      }, $scope.resetNgTable());
     });
    }
   
+
+  $scope.resetNgTable = function() {
+    return {
+      total: $scope.orders.length, // length of data
+      getData: function(params) {
+        var filters = params.filter();
+        var tempDateFilter;
+        var orderedData = params.sorting() ? $filter('orderBy')($scope.orders, params.orderBy()) : $scope.orders;
+        if (filters) {
+            if (filters.invoiceDate) {
+                orderedData = $filter('customUserDateFilter')(orderedData, filters.invoiceDate);
+                tempDateFilter = filters.invoiceDate;
+                delete filters.invoiceDate;
+            }
+            orderedData = $filter('filter')(orderedData, filters);
+            filters.invoiceDate = tempDateFilter;
+        }
+        var table_data = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
+        params.total(orderedData.length); // set total for recalc pagination
+        // params.resolve(table_data);
+        return table_data;
+      }
+    }
+  }
 
   $scope.refresh();
 
@@ -126,7 +175,6 @@ $roleID = getUserRoleID();
       }).then(callback)
     }
  });
- 
 </script>
 
 <?php

@@ -75,7 +75,7 @@ require '_header.php';
                   ?>
                   <tr>
                     <th><?php echo $i+=1; ?></th>
-                    <td><?php echo $Invoice['Company']; ?></td>
+                    <td><?php echo $Invoice['SupplierName']; ?></td>
                     <td><span hidden><?php echo $Invoice['InvoiceDate'] ?></span><?php $date = date_create($Invoice['InvoiceDate']); echo date_format($date, 'd-m-Y'); ?></td>
                     <td><?php echo '<a href="viewinvoice.php?id='. $Invoice['InvoiceID']. ' ">' . $Invoice['InvoiceNumber'] . '</a>'; ?></td>
                     <td><?php echo $Invoice['TinNumber'] ?></td>

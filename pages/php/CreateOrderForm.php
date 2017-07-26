@@ -45,7 +45,9 @@
     while ($order = mysql_fetch_assoc($orders)) {
       $orderItem  = new Order();
       $orderItem->invoiceNumber = $order['InvoiceNumber'];
-      $orderItem->invoiceDate = $order['InvoiceDateTime'];
+      $date = date_create($order['InvoiceDateTime']);
+      $orderItem->invoiceDate = date_format($date,'d-m-Y');
+      // $orderItem->invoiceDate = $order['InvoiceDateTime'];
       $orderItem->customerName = $order['CustomerName'];
       $orderItem->vehicleMileage = $order['VehicleMileage'];
       $orderItem->customerPhone = $order['CustomerPhone'];    

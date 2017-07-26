@@ -43,6 +43,11 @@
 	background: #26ca28;
 }
 
+.total-count {
+	font-size: 22px;
+	font-weight: bold;
+	color:red;
+}
 
 
 /****** Style Star Rating Widget *****/

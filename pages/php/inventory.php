@@ -2,7 +2,7 @@
 require '_connect.php';
 require '_core.php';
 
-$CDATA['PAGE_NAME'] = 'MNSTOCK';
+$CDATA['PAGE_NAME'] = 'INVPRDS';
 if(isLogin())
 {
 require '_header.php';
@@ -26,10 +26,13 @@ require '_header.php';
     <div class="box" ng-app="inventoryApp" ng-controller="inventoryCtrl" data-ng-init="RefreshView()">
       <div class="box-header with-border">
         <p class="box-title">Products</p>
+        <div class="box-tools pull-right">
+          <span class=" total-count" > {{inventory.total()}}</span> Record(s) matching
+        </div>        
       </div>
       <div class="box-body">
       <div class="table-responsive col-sm-12" >
-        <table id="StockTable" class="table table-striped table-hover" ng-table="inventory"  show-filter="true" >
+        <table class="table table-striped table-hover" ng-table="inventory"  show-filter="true" >
           <tr ng-repeat="item in $data">
             <td align="center" title="'Type'" filter="{ productTypeName: 'select'}" filter-data="productTypes" sortable="'productTypeName'">{{item.productTypeName}}</td>
             <td align="center" title="'Brand'" filter="{ brandName: 'text'}" sortable="'brandName'">{{item.brandName}}</td>
